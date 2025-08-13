@@ -297,6 +297,29 @@ interface VideoResult {
 - **Rate Limiting:** Limit AI API calls per session to prevent abuse
 - **Content Filtering:** Use AI content moderation to ensure family-friendly content
 
+## Development Environment Setup
+
+### Prerequisites and Configuration
+- ✅ **Node.js and npm** - Required for Next.js development
+- ✅ **Git** - Version control and repository management
+- ✅ **AWS CLI** - For Bedrock service access and credentials
+
+**Important Setup Note:** On Windows systems, ensure Node.js, npm, and Git are added to the system PATH environment variable for proper command line access. This is essential for:
+- Running npm commands from any directory
+- Git operations and version control
+- Development workflow automation
+
+### Environment Variables
+```bash
+# Required AWS credentials for Bedrock access
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_REGION=us-east-1
+
+# Optional: Development settings
+NODE_ENV=development
+```
+
 ## Testing Strategy - Implemented
 
 ### Unit Testing ✅ **COMPLETED**
