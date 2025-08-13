@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Comic Sans MS', cursive, system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-500 hover:bg-secondary-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-secondary-500 disabled:hover:shadow-lg;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100;
+  }
+  
+  .game-container {
+    @apply min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 p-2 sm:p-4;
+  }
+  
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50;
+  }
+  
+  .modal-content {
+    @apply bg-white rounded-xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors;
+  }
+  
+  .input-error {
+    @apply border-red-300 focus:ring-red-500;
+  }
+  
+  .error-message {
+    @apply mt-1 text-sm text-red-600;
+  }
+  
+  .success-message {
+    @apply mt-1 text-sm text-green-600;
+  }
+  
+  .player-card {
+    @apply flex items-center justify-between p-3 rounded-lg transition-colors;
+  }
+  
+  .player-connected {
+    @apply bg-green-50 border border-green-200;
+  }
+  
+  .player-disconnected {
+    @apply bg-gray-50 border border-gray-200;
+  }
+  
+  .status-indicator {
+    @apply w-3 h-3 rounded-full;
+  }
+  
+  .status-online {
+    @apply bg-green-500;
+  }
+  
+  .status-offline {
+    @apply bg-gray-400;
+  }
+  
+  .badge {
+    @apply text-xs px-2 py-1 rounded-full font-medium;
+  }
+  
+  .badge-host {
+    @apply bg-primary-100 text-primary-700;
+  }
+  
+  .badge-you {
+    @apply bg-secondary-100 text-secondary-700;
+  }
+  
+  .room-code {
+    @apply text-4xl sm:text-5xl font-mono font-bold text-primary-600 bg-primary-50 px-4 sm:px-6 py-2 sm:py-3 rounded-lg border-2 border-primary-200;
+  }
+  
+  .loading-dots {
+    @apply animate-pulse flex justify-center;
+  }
+  
+  .loading-dot {
+    @apply w-2 h-2 bg-primary-400 rounded-full animate-bounce;
+  }
+}
