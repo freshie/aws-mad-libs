@@ -700,7 +700,54 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     return Array.from(contributionMap.values())
   }
   
-  // Image generation is now handled directly in generateStory
+  const generateRemainingImagesInBackground = async (story: any, template: any) => {
+    console.log('🎨 Starting background generation for remaining images...')
+    
+    // Generate images for paragraphs 2, 3, 4, etc. (skip the first one)
+    for (let i = 1; i < template.paragraphs.length; i++) {
+      const templateParagraph = template.paragraphs[i]
+      
+      if (templateParagraph?.imagePrompt) {
+        try {
+          console.log(`🎨 Background: Generating image ${i + 1}/${template.paragraphs.length}`)
+          
+          const response = await fetch('/api/image/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt: templateParagraph.imagePrompt,
+              style: { style: 'cartoon', colorScheme: 'vibrant' }
+            })
+          })
+          
+          if (response.ok) {
+            const { image } = await response.json()
+            console.log(`✅ Background image ${i + 1} generated: ${image.url}`)
+            
+            // Update the story with the new image
+            dispatch({ 
+              type: 'UPDATE_PARAGRAPH_IMAGE', 
+              payload: { paragraphIndex: i, imageUrl: image.url } 
+            })
+            
+          } else {
+            const error = await response.json()
+            console.error(`❌ Failed to generate background image ${i + 1}:`, error)
+          }
+          
+          // Add delay between background images to avoid overwhelming AWS
+          if (i < template.paragraphs.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 2000))
+          }
+          
+        } catch (error) {
+          console.error(`❌ Failed to generate background image ${i + 1}:`, error)
+        }
+      }
+    }
+    
+    console.log('🎨 Background image generation completed')
+  }
 
   const generateStory = async (): Promise<void> => {
     if (!state.currentGame || !state.currentGame.storyTemplate) return
@@ -740,41 +787,35 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
       const originalTexts = template.paragraphs.map(p => p.text)
       const filledParagraphs = splitFilledTextIntoParagraphs(fullStoryText, originalTexts, wordHighlights)
       
-      // Step 2: Generate ALL images before showing story
-      console.log('🎨 Starting image generation for all paragraphs...')
-      dispatch({ type: 'SET_LOADING_MESSAGE', payload: 'Generating AI images...' })
+      // Step 2: Generate ONLY the first image before showing story
+      console.log('🎨 Generating first image for immediate display...')
+      dispatch({ type: 'SET_LOADING_MESSAGE', payload: 'Generating first image...' })
       
-      // Generate images for each paragraph using API
-      for (let i = 0; i < template.paragraphs.length; i++) {
-        const templateParagraph = template.paragraphs[i]
-        
-        if (templateParagraph?.imagePrompt) {
-          try {
-            console.log(`🎨 Generating image ${i + 1}/${template.paragraphs.length}`)
-            dispatch({ type: 'SET_LOADING_MESSAGE', payload: `Generating image ${i + 1} of ${template.paragraphs.length}...` })
-            
-            const response = await fetch('/api/image/generate', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                prompt: templateParagraph.imagePrompt,
-                style: { style: 'cartoon', colorScheme: 'vibrant' }
-              })
+      // Generate only the first paragraph image
+      if (template.paragraphs[0]?.imagePrompt) {
+        try {
+          console.log('🎨 Generating first image:', template.paragraphs[0].imagePrompt)
+          
+          const response = await fetch('/api/image/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt: template.paragraphs[0].imagePrompt,
+              style: { style: 'cartoon', colorScheme: 'vibrant' }
             })
-            
-            if (response.ok) {
-              const { image } = await response.json()
-              filledParagraphs[i].imageUrl = image.url
-              console.log(`✅ Image ${i + 1} generated: ${image.url}`)
-            } else {
-              const error = await response.json()
-              console.error(`❌ Failed to generate image ${i + 1}:`, error)
-            }
-            
-          } catch (error) {
-            console.error(`❌ Failed to generate image ${i + 1}:`, error)
-            // Continue without this image
+          })
+          
+          if (response.ok) {
+            const { image } = await response.json()
+            filledParagraphs[0].imageUrl = image.url
+            console.log('✅ First image generated:', image.url)
+          } else {
+            const error = await response.json()
+            console.error('❌ Failed to generate first image:', error)
           }
+          
+        } catch (error) {
+          console.error('❌ Failed to generate first image:', error)
         }
       }
       
@@ -788,8 +829,11 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         createdAt: new Date()
       }
       
-      console.log('✅ Story and all images generated successfully!')
+      console.log('✅ Story and first image generated successfully!')
       dispatch({ type: 'SET_COMPLETED_STORY', payload: story })
+      
+      // Generate remaining images in background after story is displayed
+      generateRemainingImagesInBackground(story, template)
       
     } catch (error) {
       console.error('Error generating story:', error)
