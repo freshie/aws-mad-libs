@@ -21,6 +21,79 @@ The application follows a **client-side architecture** with AI service integrati
 
 ## Architecture
 
+### Serverless AWS Architecture (Recommended Production Deployment)
+
+```mermaid
+graph TB
+    subgraph "CDN & Frontend"
+        CF[CloudFront CDN]
+        S3F[S3 Static Hosting]
+        RT[Route 53 DNS]
+    end
+    
+    subgraph "API Gateway & Lambda"
+        AG[API Gateway]
+        LSG[Lambda: Story Generation]
+        LIG[Lambda: Image Generation]
+        LTA[Lambda: Test AWS]
+        LGM[Lambda: Game Management]
+    end
+    
+    subgraph "Database Layer"
+        DB[DynamoDB]
+        GS[Game Sessions Table]
+        ST[Story Templates Table]
+        PS[Player Sessions Table]
+    end
+    
+    subgraph "Storage & AI"
+        S3S[S3: Image Storage]
+        BT[Bedrock Text - Nova Lite]
+        BI[Bedrock Images - Nova Canvas]
+    end
+    
+    subgraph "Monitoring & Security"
+        CW[CloudWatch Logs]
+        IAM[IAM Roles]
+        SM[Secrets Manager]
+    end
+    
+    RT --> CF
+    CF --> S3F
+    S3F --> AG
+    
+    AG --> LSG
+    AG --> LIG
+    AG --> LTA
+    AG --> LGM
+    
+    LSG --> DB
+    LIG --> DB
+    LGM --> DB
+    
+    LSG --> BT
+    LIG --> BI
+    BI --> S3S
+    
+    LSG --> CW
+    LIG --> CW
+    LGM --> CW
+    
+    IAM --> LSG
+    IAM --> LIG
+    IAM --> LGM
+    SM --> LSG
+    SM --> LIG
+```
+
+**Serverless Benefits:**
+- 🚀 **Auto-scaling** - Handles traffic spikes automatically
+- 💰 **Cost-effective** - Pay only for actual usage
+- 🔧 **Zero server management** - No infrastructure maintenance
+- 🌍 **Global distribution** - CloudFront edge locations worldwide
+- 🔒 **Built-in security** - AWS IAM and VPC integration
+- 📊 **Monitoring** - CloudWatch logs and metrics included
+
 ### Current Implementation Architecture
 
 ```mermaid
@@ -63,6 +136,42 @@ graph TB
     GM --> SS
     GM --> PS
 ```
+
+### Technology Stack - Serverless Production
+
+**Frontend (Static Hosting):**
+- 🌐 **S3 + CloudFront** - Static site hosting with global CDN
+- ⚡ **Next.js Static Export** - Pre-built static assets
+- 🎨 **React + TypeScript** - Client-side application
+- 💅 **Tailwind CSS** - Responsive styling
+- 🔄 **React Context API** - Client-side state management
+
+**Backend (Serverless Functions):**
+- 🔧 **AWS Lambda** - Serverless compute for API endpoints
+- 🚪 **API Gateway** - RESTful API management and routing
+- 📦 **AWS SDK v3** - Bedrock and S3 integration
+- 🔐 **IAM Roles** - Secure service-to-service authentication
+
+**Database (NoSQL):**
+- 🗄️ **DynamoDB** - Serverless NoSQL database
+- 📊 **Single Table Design** - Optimized for game sessions
+- 🔍 **GSI (Global Secondary Index)** - Efficient querying
+- ⚡ **Auto-scaling** - Handles traffic spikes automatically
+
+**AI Services:**
+- 🤖 **Amazon Bedrock Nova Lite** - Story template generation
+- 🎨 **Amazon Bedrock Nova Canvas** - Image generation
+- 📁 **S3** - Image storage with CloudFront distribution
+
+**Infrastructure as Code:**
+- 🏗️ **AWS CDK or SAM** - Infrastructure deployment
+- 🔄 **GitHub Actions** - CI/CD pipeline
+- 📝 **CloudFormation** - Resource management
+
+**Monitoring & Security:**
+- 📊 **CloudWatch** - Logs, metrics, and alarms
+- 🔒 **AWS Secrets Manager** - Secure credential storage
+- 🛡️ **WAF** - Web application firewall protection
 
 ### Technology Stack - Current Implementation
 
@@ -153,6 +262,160 @@ class ImageGenerator {
 - **`/api/story/fill-template`** - Story completion with word replacement
 - **`/api/image/generate`** - AI image generation
 - **`/api/test-aws`** - AWS connection testing
+
+## Serverless Deployment Strategy
+
+### DynamoDB Table Design
+
+**Single Table Design for Optimal Performance:**
+
+```typescript
+// Primary Table: mad-libs-game-data
+interface DynamoDBRecord {
+  PK: string        // Partition Key
+  SK: string        // Sort Key
+  GSI1PK?: string   // Global Secondary Index 1 PK
+  GSI1SK?: string   // Global Secondary Index 1 SK
+  TTL?: number      // Time to Live (auto-cleanup)
+  // ... entity-specific fields
+}
+
+// Game Session: PK=GAME#{gameId}, SK=METADATA
+// Players: PK=GAME#{gameId}, SK=PLAYER#{playerId}
+// Story Templates: PK=TEMPLATE#{theme}, SK=TEMPLATE#{templateId}
+// Word Submissions: PK=GAME#{gameId}, SK=WORD#{wordId}
+// Completed Stories: PK=GAME#{gameId}, SK=STORY#{storyId}
+```
+
+**Access Patterns:**
+- Get game session by ID: `PK=GAME#{gameId}, SK=METADATA`
+- Get all players in game: `PK=GAME#{gameId}, SK begins_with PLAYER#`
+- Get story templates by theme: `PK=TEMPLATE#{theme}`
+- Get word submissions for game: `PK=GAME#{gameId}, SK begins_with WORD#`
+
+### Lambda Function Architecture
+
+**Function Separation by Domain:**
+
+1. **Story Generation Lambda** (`/api/story/*`)
+   - Generate story templates
+   - Fill templates with words
+   - Store completed stories
+   - Memory: 512MB, Timeout: 30s
+
+2. **Image Generation Lambda** (`/api/image/*`)
+   - Generate AI images
+   - Upload to S3
+   - Return signed URLs
+   - Memory: 1024MB, Timeout: 60s
+
+3. **Game Management Lambda** (`/api/game/*`)
+   - Create/join game sessions
+   - Manage player state
+   - Handle word submissions
+   - Memory: 256MB, Timeout: 15s
+
+4. **AWS Test Lambda** (`/api/test-aws`)
+   - Health checks
+   - Service connectivity tests
+   - Memory: 128MB, Timeout: 10s
+
+### CloudFront Distribution Configuration
+
+```yaml
+# CloudFront Distribution Settings
+Origins:
+  - S3 Static Assets (React App)
+  - API Gateway (Lambda Functions)
+
+Behaviors:
+  - Default: S3 Origin (Static Files)
+  - /api/*: API Gateway Origin (Lambda Functions)
+  
+Cache Policies:
+  - Static Assets: 1 year cache
+  - API Responses: No cache (dynamic content)
+  - Images: 30 days cache with versioning
+
+Security:
+  - HTTPS Only
+  - WAF Integration
+  - Origin Access Control (OAC)
+```
+
+### Deployment Pipeline
+
+**Infrastructure as Code (AWS CDK):**
+
+```typescript
+// Key CDK Stack Components
+export class MadLibsServerlessStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    // S3 Bucket for static hosting
+    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
+      websiteIndexDocument: 'index.html',
+      publicReadAccess: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS
+    });
+
+    // DynamoDB Table
+    const gameTable = new dynamodb.Table(this, 'GameTable', {
+      partitionKey: { name: 'PK', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      timeToLiveAttribute: 'TTL'
+    });
+
+    // Lambda Functions
+    const storyLambda = new lambda.Function(this, 'StoryFunction', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'story.handler',
+      code: lambda.Code.fromAsset('dist/lambda'),
+      environment: {
+        TABLE_NAME: gameTable.tableName
+      }
+    });
+
+    // API Gateway
+    const api = new apigateway.RestApi(this, 'MadLibsApi', {
+      restApiName: 'Mad Libs Game API',
+      description: 'Serverless API for Mad Libs Game'
+    });
+
+    // CloudFront Distribution
+    const distribution = new cloudfront.Distribution(this, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.S3Origin(websiteBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+      },
+      additionalBehaviors: {
+        '/api/*': {
+          origin: new origins.RestApiOrigin(api),
+          cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED
+        }
+      }
+    });
+  }
+}
+```
+
+### Cost Optimization
+
+**Estimated Monthly Costs (1000 games/month):**
+- **Lambda**: $5-10 (pay per invocation)
+- **DynamoDB**: $2-5 (pay per request)
+- **S3**: $1-3 (storage + requests)
+- **CloudFront**: $1-5 (data transfer)
+- **API Gateway**: $3-7 (API calls)
+- **Bedrock**: $10-20 (AI generation)
+
+**Total: ~$22-50/month** for moderate usage
+
+**Scaling Benefits:**
+- Zero cost when not in use
+- Automatic scaling to handle traffic spikes
+- No server maintenance costs
+- Global edge caching reduces latency
 
 ## Data Models
 
@@ -379,6 +642,78 @@ NODE_ENV=development
 - ✅ **Progressive Loading** - Remaining images (2, 3, 4) generate in background
 - ✅ **Seamless Updates** - Images appear as they're ready via state updates
 - ✅ **Error Handling** - Failed images don't break the experience
+
+## Migration to Serverless
+
+### Migration Strategy
+
+**Phase 1: Database Migration**
+1. **Set up DynamoDB table** with single-table design
+2. **Migrate existing game logic** to use DynamoDB instead of local state
+3. **Update data models** to work with NoSQL structure
+4. **Test data persistence** across game sessions
+
+**Phase 2: Lambda Functions**
+1. **Convert Next.js API routes** to standalone Lambda functions
+2. **Package dependencies** for Lambda deployment
+3. **Update environment variables** for Lambda context
+4. **Test individual Lambda functions**
+
+**Phase 3: Static Site Generation**
+1. **Configure Next.js** for static export (`next export`)
+2. **Build optimized static assets** for S3 hosting
+3. **Update API calls** to use API Gateway endpoints
+4. **Test static site functionality**
+
+**Phase 4: Infrastructure Deployment**
+1. **Deploy CDK/SAM stack** with all AWS resources
+2. **Configure CloudFront** distribution and caching
+3. **Set up CI/CD pipeline** for automated deployments
+4. **Configure monitoring** and alerting
+
+**Phase 5: Production Cutover**
+1. **DNS migration** to CloudFront distribution
+2. **Performance testing** and optimization
+3. **Monitor metrics** and error rates
+4. **Gradual traffic migration**
+
+### Code Changes Required
+
+**Minimal Changes Needed:**
+- ✅ **API Routes** → Already serverless-compatible
+- ✅ **React Components** → No changes needed
+- ✅ **AWS SDK Integration** → Already implemented
+- 🔄 **State Management** → Add DynamoDB persistence
+- 🔄 **Build Configuration** → Add static export
+- 🔄 **Environment Variables** → Update for Lambda
+
+**New Components to Add:**
+- DynamoDB service layer
+- Lambda function handlers
+- CDK/SAM infrastructure code
+- CI/CD pipeline configuration
+
+### Benefits of Migration
+
+**Performance:**
+- 🚀 **Global CDN** - Sub-100ms response times worldwide
+- ⚡ **Auto-scaling** - Handle traffic spikes without planning
+- 🔄 **Edge caching** - Static assets served from nearest location
+
+**Reliability:**
+- 🛡️ **99.99% uptime** - AWS SLA guarantees
+- 🔄 **Automatic failover** - Multi-AZ deployment
+- 📊 **Built-in monitoring** - CloudWatch integration
+
+**Cost Efficiency:**
+- 💰 **Pay per use** - No idle server costs
+- 📉 **Predictable scaling** - Costs scale with usage
+- 🔧 **Zero maintenance** - No server management overhead
+
+**Developer Experience:**
+- 🚀 **Faster deployments** - Infrastructure as code
+- 🔄 **Easy rollbacks** - Version-controlled infrastructure
+- 📊 **Better observability** - Detailed metrics and logs
 
 ## Performance Optimizations - Implemented
 
