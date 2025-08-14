@@ -1,6 +1,145 @@
 {
  "Description": "Serverless infrastructure for AI Mad Libs Party Game",
+ "Resources": {
+  "GameDataTable1D572DEE": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "PK",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "SK",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "GSI1PK",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "GSI1SK",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "RoomCode",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "CreatedAt",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "DeletionProtectionEnabled": false,
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "GSI1",
+      "KeySchema": [
+       {
+        "AttributeName": "GSI1PK",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "GSI1SK",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "RoomCodeIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "RoomCode",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "CreatedAt",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "PK",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "SK",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "SSESpecification": {
+     "SSEEnabled": true
+    },
+    "TableName": "MadLibsServerlessStack-GameData",
+    "Tags": [
+     {
+      "Key": "Component",
+      "Value": "Database"
+     },
+     {
+      "Key": "Environment",
+      "Value": "development"
+     },
+     {
+      "Key": "Project",
+      "Value": "MadLibsGame"
+     }
+    ],
+    "TimeToLiveSpecification": {
+     "AttributeName": "TTL",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "MadLibsServerlessStack/GameDataTable/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yXISwqAIBRA0bU011dJraAFBNU8np/APho9TSLae1Cje7gCRFlCkWEirvTCVyvh7gOqhWGiUV8ON68l3APK1bBmch8e1hny8VDfamPYY3iY89rATPkpKqihyGaylh/RBbsZ6P6+weJLf3EAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "MadLibsServerlessStack/CDKMetadata/Default"
+   }
+  }
+ },
  "Outputs": {
+  "DynamoDBTableName": {
+   "Description": "Name of the DynamoDB table for game data",
+   "Value": {
+    "Ref": "GameDataTable1D572DEE"
+   },
+   "Export": {
+    "Name": "MadLibsServerlessStack-TableName"
+   }
+  },
+  "DynamoDBTableArn": {
+   "Description": "ARN of the DynamoDB table",
+   "Value": {
+    "Fn::GetAtt": [
+     "GameDataTable1D572DEE",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "MadLibsServerlessStack-TableArn"
+   }
+  },
   "StackName": {
    "Description": "Name of the CDK stack",
    "Value": "MadLibsServerlessStack"
@@ -8,17 +147,6 @@
   "Region": {
    "Description": "AWS region where resources are deployed",
    "Value": "us-east-1"
-  }
- },
- "Resources": {
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzI01DNQTCwv1k1OydbNyUzSqw4uSUzO1nFOy/MvLSkoLanVyctPSdXLKtYvMzLRM9UzUMwqzszULSrNK8nMTdULgtAAO95FgEoAAAA="
-   },
-   "Metadata": {
-    "aws:cdk:path": "MadLibsServerlessStack/CDKMetadata/Default"
-   }
   }
  },
  "Parameters": {

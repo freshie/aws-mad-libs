@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "f722f60c507589f582aaae8c2ebbc0f083606606f84fd73cd3bf8136009e5506": {
+    "5c3204782c10b54aae8643cc4e038261490869f41ae003133898e01074b5850c": {
       "displayName": "MadLibsServerlessStack Template",
       "source": {
         "path": "MadLibsServerlessStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "553368239051-us-east-1-0febc5e7": {
+        "553368239051-us-east-1-f818a0f2": {
           "bucketName": "cdk-hnb659fds-assets-553368239051-us-east-1",
-          "objectKey": "f722f60c507589f582aaae8c2ebbc0f083606606f84fd73cd3bf8136009e5506.json",
+          "objectKey": "5c3204782c10b54aae8643cc4e038261490869f41ae003133898e01074b5850c.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-file-publishing-role-553368239051-us-east-1"
         }

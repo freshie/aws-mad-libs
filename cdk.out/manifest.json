@@ -22,7 +22,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-deploy-role-553368239051-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-cfn-exec-role-553368239051-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-553368239051-us-east-1/f722f60c507589f582aaae8c2ebbc0f083606606f84fd73cd3bf8136009e5506.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-553368239051-us-east-1/5c3204782c10b54aae8643cc4e038261490869f41ae003133898e01074b5850c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +51,32 @@
                 "Value": "MadLibsGame"
               }
             ]
+          }
+        ],
+        "/MadLibsServerlessStack/GameDataTable": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "GameDataTable1D572DEE"
+            }
+          }
+        ],
+        "/MadLibsServerlessStack/GameDataTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GameDataTable1D572DEE"
+          }
+        ],
+        "/MadLibsServerlessStack/DynamoDBTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBTableName"
+          }
+        ],
+        "/MadLibsServerlessStack/DynamoDBTableArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBTableArn"
           }
         ],
         "/MadLibsServerlessStack/StackName": [

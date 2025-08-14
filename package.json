@@ -16,7 +16,8 @@
     "cdk:bootstrap": "npx cdk bootstrap",
     "deploy:serverless": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cdk.ps1",
     "setup:deploy-user": "powershell -ExecutionPolicy Bypass -File scripts/create-deploy-user.ps1",
-    "setup:deploy-user-cf": "aws cloudformation create-stack --stack-name mad-libs-deploy-user --template-body file://cloudformation/deploy-user-stack.yaml --capabilities CAPABILITY_NAMED_IAM"
+    "setup:deploy-user-cf": "aws cloudformation create-stack --stack-name mad-libs-deploy-user --template-body file://cloudformation/deploy-user-stack.yaml --capabilities CAPABILITY_NAMED_IAM",
+    "test:cdk": "jest cdk/__tests__"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock": "^3.450.0",
@@ -38,6 +39,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@aws-cdk/assertions": "^1.203.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",
     "@types/node": "^20.19.10",

@@ -15,7 +15,7 @@ export class MadLibsServerlessStack extends cdk.Stack {
     // Placeholder resources - will be implemented in subsequent tasks
     
     // DynamoDB Table (Task 17)
-    // const gameTable = this.createDynamoDBTable();
+    const gameTable = this.createDynamoDBTable();
     
     // Lambda Functions (Task 18)
     // const lambdaFunctions = this.createLambdaFunctions(gameTable);
@@ -44,8 +44,86 @@ export class MadLibsServerlessStack extends cdk.Stack {
   // Placeholder methods for future tasks
   
   private createDynamoDBTable(): dynamodb.Table {
-    // Will be implemented in Task 17
-    throw new Error('DynamoDB table creation not yet implemented');
+    // Single table design for optimal performance and cost
+    const table = new dynamodb.Table(this, 'GameDataTable', {
+      tableName: `${this.stackName}-GameData`,
+      
+      // Partition Key and Sort Key for single-table design
+      partitionKey: {
+        name: 'PK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'SK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      
+      // Pay-per-request billing for cost optimization
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      
+      // TTL for automatic cleanup of expired game sessions
+      timeToLiveAttribute: 'TTL',
+      
+      // Point-in-time recovery for data protection
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+      },
+      
+      // Deletion protection for production safety
+      deletionProtection: false, // Set to true in production
+      
+      // Encryption at rest
+      encryption: dynamodb.TableEncryption.AWS_MANAGED,
+      
+      // Tags are applied at the stack level or using cdk.Tags.of()
+    });
+
+    // Apply tags to the table
+    cdk.Tags.of(table).add('Project', 'MadLibsGame');
+    cdk.Tags.of(table).add('Environment', process.env.NODE_ENV || 'development');
+    cdk.Tags.of(table).add('Component', 'Database');
+
+    // Global Secondary Index for alternative access patterns
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: {
+        name: 'GSI1PK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'GSI1SK',
+        type: dynamodb.AttributeType.STRING,
+      },
+      // Inherit billing mode from table
+    });
+
+    // Add a second GSI for room code lookups
+    table.addGlobalSecondaryIndex({
+      indexName: 'RoomCodeIndex',
+      partitionKey: {
+        name: 'RoomCode',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'CreatedAt',
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
+
+    // Output table information
+    new cdk.CfnOutput(this, 'DynamoDBTableName', {
+      value: table.tableName,
+      description: 'Name of the DynamoDB table for game data',
+      exportName: `${this.stackName}-TableName`,
+    });
+
+    new cdk.CfnOutput(this, 'DynamoDBTableArn', {
+      value: table.tableArn,
+      description: 'ARN of the DynamoDB table',
+      exportName: `${this.stackName}-TableArn`,
+    });
+
+    return table;
   }
   
   private createLambdaFunctions(table: dynamodb.Table): { [key: string]: lambda.Function } {
