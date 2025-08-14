@@ -14,7 +14,9 @@
     "cdk:destroy": "npx cdk destroy",
     "cdk:diff": "npx cdk diff",
     "cdk:bootstrap": "npx cdk bootstrap",
-    "deploy:serverless": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cdk.ps1"
+    "deploy:serverless": "powershell -ExecutionPolicy Bypass -File scripts/deploy-cdk.ps1",
+    "setup:deploy-user": "powershell -ExecutionPolicy Bypass -File scripts/create-deploy-user.ps1",
+    "setup:deploy-user-cf": "aws cloudformation create-stack --stack-name mad-libs-deploy-user --template-body file://cloudformation/deploy-user-stack.yaml --capabilities CAPABILITY_NAMED_IAM"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock": "^3.450.0",

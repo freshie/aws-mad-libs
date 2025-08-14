@@ -1,0 +1,222 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM user and permissions for Mad Libs CDK deployment'
+
+Parameters:
+  UserName:
+    Type: String
+    Default: 'mad-libs-cdk-deploy'
+    Description: 'Name for the deployment user'
+  
+  GroupName:
+    Type: String
+    Default: 'mad-libs-deployers'
+    Description: 'Name for the deployment group'
+
+Resources:
+  # IAM Policy for CDK deployment
+  CDKDeployPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: 'MadLibsCDKDeployPolicy'
+      Description: 'Policy for Mad Libs CDK deployment user'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: CDKBootstrapAccess
+            Effect: Allow
+            Action:
+              - 'cloudformation:CreateStack'
+              - 'cloudformation:UpdateStack'
+              - 'cloudformation:DeleteStack'
+              - 'cloudformation:DescribeStacks'
+              - 'cloudformation:DescribeStackEvents'
+              - 'cloudformation:DescribeStackResources'
+              - 'cloudformation:GetTemplate'
+              - 'cloudformation:ValidateTemplate'
+              - 'cloudformation:CreateChangeSet'
+              - 'cloudformation:DescribeChangeSet'
+              - 'cloudformation:ExecuteChangeSet'
+              - 'cloudformation:DeleteChangeSet'
+              - 'cloudformation:ListStacks'
+            Resource:
+              - !Sub 'arn:aws:cloudformation:*:${AWS::AccountId}:stack/CDKToolkit/*'
+              - !Sub 'arn:aws:cloudformation:*:${AWS::AccountId}:stack/MadLibsServerlessStack/*'
+          
+          - Sid: CDKAssetsBucketAccess
+            Effect: Allow
+            Action:
+              - 's3:CreateBucket'
+              - 's3:DeleteBucket'
+              - 's3:GetBucketLocation'
+              - 's3:GetBucketPolicy'
+              - 's3:PutBucketPolicy'
+              - 's3:DeleteBucketPolicy'
+              - 's3:GetBucketVersioning'
+              - 's3:PutBucketVersioning'
+              - 's3:GetBucketPublicAccessBlock'
+              - 's3:PutBucketPublicAccessBlock'
+              - 's3:ListBucket'
+              - 's3:GetObject'
+              - 's3:PutObject'
+              - 's3:DeleteObject'
+              - 's3:GetObjectVersion'
+              - 's3:DeleteObjectVersion'
+            Resource:
+              - 'arn:aws:s3:::cdk-*'
+              - 'arn:aws:s3:::cdk-*/*'
+              - 'arn:aws:s3:::ai-mad-libs-*'
+              - 'arn:aws:s3:::ai-mad-libs-*/*'
+          
+          - Sid: IAMRoleManagement
+            Effect: Allow
+            Action:
+              - 'iam:CreateRole'
+              - 'iam:DeleteRole'
+              - 'iam:GetRole'
+              - 'iam:PassRole'
+              - 'iam:AttachRolePolicy'
+              - 'iam:DetachRolePolicy'
+              - 'iam:PutRolePolicy'
+              - 'iam:DeleteRolePolicy'
+              - 'iam:GetRolePolicy'
+              - 'iam:TagRole'
+              - 'iam:UntagRole'
+            Resource:
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:role/MadLibsServerlessStack-*'
+              - !Sub 'arn:aws:iam::${AWS::AccountId}:role/cdk-*'
+          
+          - Sid: LambdaFunctionManagement
+            Effect: Allow
+            Action:
+              - 'lambda:CreateFunction'
+              - 'lambda:DeleteFunction'
+              - 'lambda:GetFunction'
+              - 'lambda:UpdateFunctionCode'
+              - 'lambda:UpdateFunctionConfiguration'
+              - 'lambda:ListFunctions'
+              - 'lambda:TagResource'
+              - 'lambda:UntagResource'
+              - 'lambda:AddPermission'
+              - 'lambda:RemovePermission'
+              - 'lambda:GetPolicy'
+            Resource: !Sub 'arn:aws:lambda:*:${AWS::AccountId}:function:MadLibsServerlessStack-*'
+          
+          - Sid: APIGatewayManagement
+            Effect: Allow
+            Action:
+              - 'apigateway:GET'
+              - 'apigateway:POST'
+              - 'apigateway:PUT'
+              - 'apigateway:DELETE'
+              - 'apigateway:PATCH'
+            Resource: 'arn:aws:apigateway:*::/restapis*'
+          
+          - Sid: DynamoDBTableManagement
+            Effect: Allow
+            Action:
+              - 'dynamodb:CreateTable'
+              - 'dynamodb:DeleteTable'
+              - 'dynamodb:DescribeTable'
+              - 'dynamodb:UpdateTable'
+              - 'dynamodb:ListTables'
+              - 'dynamodb:TagResource'
+              - 'dynamodb:UntagResource'
+              - 'dynamodb:DescribeTimeToLive'
+              - 'dynamodb:UpdateTimeToLive'
+            Resource: !Sub 'arn:aws:dynamodb:*:${AWS::AccountId}:table/MadLibsServerlessStack-*'
+          
+          - Sid: CloudFrontDistributionManagement
+            Effect: Allow
+            Action:
+              - 'cloudfront:CreateDistribution'
+              - 'cloudfront:DeleteDistribution'
+              - 'cloudfront:GetDistribution'
+              - 'cloudfront:UpdateDistribution'
+              - 'cloudfront:ListDistributions'
+              - 'cloudfront:TagResource'
+              - 'cloudfront:UntagResource'
+              - 'cloudfront:CreateOriginAccessControl'
+              - 'cloudfront:DeleteOriginAccessControl'
+              - 'cloudfront:GetOriginAccessControl'
+              - 'cloudfront:UpdateOriginAccessControl'
+            Resource: '*'
+          
+          - Sid: CloudWatchLogsManagement
+            Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:DeleteLogGroup'
+              - 'logs:DescribeLogGroups'
+              - 'logs:PutRetentionPolicy'
+              - 'logs:TagLogGroup'
+              - 'logs:UntagLogGroup'
+            Resource: !Sub 'arn:aws:logs:*:${AWS::AccountId}:log-group:/aws/lambda/MadLibsServerlessStack-*'
+          
+          - Sid: SSMParameterAccess
+            Effect: Allow
+            Action:
+              - 'ssm:GetParameter'
+              - 'ssm:PutParameter'
+              - 'ssm:DeleteParameter'
+              - 'ssm:GetParameters'
+            Resource:
+              - !Sub 'arn:aws:ssm:*:${AWS::AccountId}:parameter/cdk-bootstrap/*'
+              - !Sub 'arn:aws:ssm:*:${AWS::AccountId}:parameter/mad-libs/*'
+          
+          - Sid: BedrockModelAccess
+            Effect: Allow
+            Action:
+              - 'bedrock:InvokeModel'
+              - 'bedrock:ListFoundationModels'
+              - 'bedrock:GetFoundationModel'
+            Resource:
+              - 'arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0'
+              - 'arn:aws:bedrock:*::foundation-model/amazon.nova-canvas-v1:0'
+              - 'arn:aws:bedrock:*::foundation-model/anthropic.claude-3-haiku-20240307-v1:0'
+
+  # IAM Group for deployment users
+  DeployGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Ref GroupName
+      ManagedPolicyArns:
+        - !Ref CDKDeployPolicy
+
+  # IAM User for deployment
+  DeployUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref UserName
+      Groups:
+        - !Ref DeployGroup
+
+  # Access Key for the deployment user
+  DeployUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref DeployUser
+
+Outputs:
+  UserName:
+    Description: 'Name of the deployment user'
+    Value: !Ref DeployUser
+    Export:
+      Name: !Sub '${AWS::StackName}-UserName'
+  
+  AccessKeyId:
+    Description: 'Access Key ID for the deployment user'
+    Value: !Ref DeployUserAccessKey
+    Export:
+      Name: !Sub '${AWS::StackName}-AccessKeyId'
+  
+  SecretAccessKey:
+    Description: 'Secret Access Key for the deployment user'
+    Value: !GetAtt DeployUserAccessKey.SecretAccessKey
+    Export:
+      Name: !Sub '${AWS::StackName}-SecretAccessKey'
+  
+  PolicyArn:
+    Description: 'ARN of the deployment policy'
+    Value: !Ref CDKDeployPolicy
+    Export:
+      Name: !Sub '${AWS::StackName}-PolicyArn'
