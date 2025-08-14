@@ -100,7 +100,7 @@ EntityType: COMPLETED_STORY
 - GameId, StoryId, Title
 - Paragraphs (nested JSON), PlayerContributions
 - ImageUrls, CreatedAt, GenerationTimeMs
-- TTL (7 days)
+- TTL (24 hours - same as game sessions)
 
 **Access Patterns:**
 - Get story for game: `PK = GAME#{gameId}, SK = STORY#{storyId}`
@@ -202,6 +202,26 @@ const getTemplatesByTheme = async (theme: string) => {
 - **Batch Writes:** Word submissions can be batched
 - **Auto-scaling:** Pay-per-request handles traffic spikes automatically
 
+## Data Lifecycle and Retention
+
+### Permanent Data (No TTL)
+- **Story Templates** - Kept forever for reuse across games
+- **Template metadata** - Theme, difficulty, word blanks structure
+- **System configuration** - Game rules, word types, etc.
+
+### Temporary Data (24-hour TTL)
+- **Game Sessions** - Room codes, player lists, game state
+- **Player Records** - Usernames, connection status, contributions
+- **Word Submissions** - Individual word entries by players
+- **Completed Stories** - Final stories with player words filled in
+- **Generated Images** - AI-created images for story paragraphs
+
+### Benefits of 24-Hour Cleanup
+- **Cost Control** - Prevents unbounded storage growth
+- **Privacy** - Player data automatically removed
+- **Performance** - Keeps table size manageable
+- **Compliance** - Automatic data retention policy
+
 ## Data Consistency
 
 ### Strong Consistency
@@ -223,7 +243,7 @@ const getTemplatesByTheme = async (theme: string) => {
 
 ### TTL-based Cleanup
 - Game sessions: 24 hours
-- Completed stories: 7 days
+- Completed stories: 24 hours
 - Word submissions: Inherit from game session
 - Templates: No expiration
 

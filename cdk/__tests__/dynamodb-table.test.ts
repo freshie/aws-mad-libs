@@ -178,8 +178,8 @@ describe('DynamoDB Access Patterns', () => {
     expect(gameSessionTTL).toBeGreaterThan(now + (23 * 60 * 60));
     expect(gameSessionTTL).toBeLessThan(now + (25 * 60 * 60));
     
-    // Story TTL should be 7 days from now
-    expect(storyTTL).toBeGreaterThan(now + (6 * 24 * 60 * 60));
-    expect(storyTTL).toBeLessThan(now + (8 * 24 * 60 * 60));
+    // Story TTL should be 24 hours from now (same as game sessions)
+    expect(storyTTL).toBeGreaterThan(now + (23 * 60 * 60));
+    expect(storyTTL).toBeLessThan(now + (25 * 60 * 60));
   });
 });

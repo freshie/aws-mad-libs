@@ -205,8 +205,8 @@ export const TTLHelpers = {
   // Story templates don't expire
   NO_TTL: undefined,
   
-  // Completed stories expire after 7 days
-  COMPLETED_STORY_TTL: () => Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
+  // Completed stories expire after 24 hours (same as game sessions)
+  COMPLETED_STORY_TTL: () => Math.floor(Date.now() / 1000) + (24 * 60 * 60),
   
   // Word submissions expire with the game session
   WORD_SUBMISSION_TTL: () => Math.floor(Date.now() / 1000) + (24 * 60 * 60)
