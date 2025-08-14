@@ -22,7 +22,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-deploy-role-553368239051-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-cfn-exec-role-553368239051-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-553368239051-us-east-1/5c3204782c10b54aae8643cc4e038261490869f41ae003133898e01074b5850c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-553368239051-us-east-1/cd69e3523be1f1515d990e13d93cead4fdf37302b94b8ab17437c0883b94c852.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -77,6 +77,90 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DynamoDBTableArn"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryGenerationFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryGenerationFunctionServiceRole5E84642C"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryGenerationFunctionServiceRoleDefaultPolicy026641AB"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryGenerationFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryGenerationFunction1EBBE000"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryFillFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryFillFunctionServiceRole9DD6599F"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryFillFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryFillFunctionServiceRoleDefaultPolicy207543C7"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryFillFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryFillFunctionB9FEA412"
+          }
+        ],
+        "/MadLibsServerlessStack/ImageGenerationFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageGenerationFunctionServiceRole7C68AEC3"
+          }
+        ],
+        "/MadLibsServerlessStack/ImageGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageGenerationFunctionServiceRoleDefaultPolicy57CF8037"
+          }
+        ],
+        "/MadLibsServerlessStack/ImageGenerationFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageGenerationFunction64C380B8"
+          }
+        ],
+        "/MadLibsServerlessStack/TestAwsFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAwsFunctionServiceRole471FBCF4"
+          }
+        ],
+        "/MadLibsServerlessStack/TestAwsFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAwsFunctionServiceRoleDefaultPolicy7CD49E89"
+          }
+        ],
+        "/MadLibsServerlessStack/TestAwsFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAwsFunction3B4B74A8"
+          }
+        ],
+        "/MadLibsServerlessStack/StoryGenerationFunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StoryGenerationFunctionArn"
+          }
+        ],
+        "/MadLibsServerlessStack/ImageGenerationFunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageGenerationFunctionArn"
           }
         ],
         "/MadLibsServerlessStack/StackName": [

@@ -1,16 +1,31 @@
 {
   "version": "48.0.0",
   "files": {
-    "5c3204782c10b54aae8643cc4e038261490869f41ae003133898e01074b5850c": {
+    "60a83c993e7a73406acd180f9b5312de6e0dea92df442f79a02b2d1797d66a35": {
+      "displayName": "StoryGenerationFunction/Code",
+      "source": {
+        "path": "asset.60a83c993e7a73406acd180f9b5312de6e0dea92df442f79a02b2d1797d66a35",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "553368239051-us-east-1-c2965ee2": {
+          "bucketName": "cdk-hnb659fds-assets-553368239051-us-east-1",
+          "objectKey": "60a83c993e7a73406acd180f9b5312de6e0dea92df442f79a02b2d1797d66a35.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-file-publishing-role-553368239051-us-east-1"
+        }
+      }
+    },
+    "cd69e3523be1f1515d990e13d93cead4fdf37302b94b8ab17437c0883b94c852": {
       "displayName": "MadLibsServerlessStack Template",
       "source": {
         "path": "MadLibsServerlessStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "553368239051-us-east-1-f818a0f2": {
+        "553368239051-us-east-1-9ff828a5": {
           "bucketName": "cdk-hnb659fds-assets-553368239051-us-east-1",
-          "objectKey": "5c3204782c10b54aae8643cc4e038261490869f41ae003133898e01074b5850c.json",
+          "objectKey": "cd69e3523be1f1515d990e13d93cead4fdf37302b94b8ab17437c0883b94c852.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-file-publishing-role-553368239051-us-east-1"
         }
