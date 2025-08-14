@@ -37,32 +37,47 @@ A multiplayer party game that creates hilarious Mad Libs stories using AI-genera
 - AWS Account with Bedrock access
 - Redis instance (local or AWS ElastiCache)
 
-### Installation
+### Quick Setup
 
-1. Clone the repository
+1. **Clone the repository**
 ```bash
 git clone <repository-url>
 cd ai-mad-libs
 ```
 
-2. Install dependencies
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Set up environment variables
+3. **Set up environment configuration**
 ```bash
-cp .env.example .env.local
+# Copy the example environment file
+cp .env.local.example .env.local
 ```
 
-4. Configure AWS credentials and services in `.env.local`
+4. **Configure your environment**
+   - 📖 **Follow the detailed setup guide**: [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md)
+   - 🔐 Set up AWS credentials and Bedrock access
+   - 🪣 Configure S3 bucket name
+   - 🚀 Set up deployment profile
 
-5. Run the development server
+5. **Test your configuration**
 ```bash
+# Verify AWS connectivity
+npm run check:deployment
+
+# Start development server
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. **Open [http://localhost:3000](http://localhost:3000)** in your browser
+
+### 📚 Documentation
+- 🚀 **[Environment Setup Guide](docs/ENVIRONMENT_SETUP.md)** - Complete setup instructions
+- 🔧 **[Local Configuration](docs/LOCAL_CONFIG.md)** - Local vs deployment configuration
+- ☁️ **[Serverless Deployment](docs/SERVERLESS_DEPLOYMENT.md)** - Deploy to AWS
+- 👤 **[Deployment User Setup](DEPLOYMENT_USER_SETUP.md)** - Secure deployment credentials
 
 ## Project Structure
 
