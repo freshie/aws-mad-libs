@@ -1,5 +1,30 @@
 # AI Mad Libs Game - Version History
 
+## Version 2.3.0 - GitHub Publication & Enhanced Documentation
+**Date:** August 15, 2025
+
+### New Features & Improvements
+- ✅ **GitHub Repository** - Published open-source project to https://github.com/freshie/aws-mad-libs
+- ✅ **Comprehensive README** - Complete documentation with architecture diagrams, setup instructions, and API endpoints
+- ✅ **App Screenshots** - Visual documentation showing homepage, game setup, management, and final stories
+- ✅ **Security Documentation** - Added SECURITY.md with credential management guidelines
+- ✅ **Professional Presentation** - Enhanced repository with proper descriptions, tags, and documentation structure
+
+### Documentation Improvements
+- Updated README to reflect actual serverless AWS architecture
+- Added visual app screenshots for better user understanding
+- Comprehensive setup instructions for CDK deployment
+- API endpoint documentation for all Lambda functions
+- Professional architecture diagram with AWS service icons
+- Security best practices and credential management guidelines
+
+### Repository Features
+- Public GitHub repository with MIT license
+- Complete project structure documentation
+- CDK deployment scripts and instructions
+- Professional README with screenshots and architecture diagrams
+- Security audit compliance for safe open-source publication
+
 ## Version 2.2.0 - Documentation & Mobile UX Improvements
 **Date:** August 15, 2025
 
