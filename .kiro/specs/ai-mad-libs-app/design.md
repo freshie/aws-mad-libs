@@ -852,3 +852,32 @@ chore(deps): update AWS SDK to latest version
 - **Examples**: Provide template examples that users can customize
 
 **Last Security Review:** August 15, 2025 (v2.3.2)
+
+## 📋 GitHub Push Policy
+
+### IMPORTANT: Version-Based Push Strategy
+
+**✅ DO push to GitHub when:**
+- Creating a new version number (e.g., v2.3.2 → v2.3.3)
+- Version bump includes multiple accumulated changes
+- Ready for a complete release with documentation updates
+
+**❌ DO NOT push to GitHub for:**
+- Individual small changes or fixes
+- Work-in-progress commits
+- Experimental code or temporary changes
+- Single-feature commits without version bump
+
+### Workflow Guidelines
+1. **Local Development**: Make commits locally as needed
+2. **Accumulate Changes**: Build up multiple improvements/fixes
+3. **Version Bump**: Update package.json and VERSION.md when ready
+4. **Single Push**: Push all accumulated changes with the version bump
+
+### Benefits
+- **Cleaner Git History**: Fewer commits in public repository
+- **Professional Releases**: Each push represents a meaningful version
+- **Better Documentation**: Version bumps include comprehensive release notes
+- **Controlled Exposure**: Only push polished, tested changes
+
+**Last Updated:** August 15, 2025
