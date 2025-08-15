@@ -2,24 +2,102 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "CDKBootstrapAndDeploy",
+            "Sid": "CloudFormationAccess",
             "Effect": "Allow",
             "Action": [
-                "cloudformation:*",
-                "iam:*",
-                "s3:*",
-                "ssm:GetParameter",
-                "ssm:PutParameter",
-                "ssm:DeleteParameter",
-                "ssm:GetParameters"
+                "cloudformation:*"
+            ],
+            "Resource": [
+                "arn:aws:cloudformation:*:*:stack/CDKToolkit*/*",
+                "arn:aws:cloudformation:*:*:stack/MadLibsServerless-*/*",
+                "arn:aws:cloudformation:*:*:changeset/*"
+            ]
+        },
+        {
+            "Sid": "CloudFormationGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:DescribeStacks",
+                "cloudformation:ListStacks",
+                "cloudformation:GetTemplate",
+                "cloudformation:DescribeStackEvents",
+                "cloudformation:DescribeStackResources",
+                "cloudformation:ValidateTemplate"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "S3Management",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::cdk-*",
+                "arn:aws:s3:::cdk-*/*",
+                "arn:aws:s3:::madlibsserverless-*",
+                "arn:aws:s3:::madlibsserverless-*/*"
+            ]
+        },
+        {
+            "Sid": "S3Global",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketLocation",
+                "s3:GetAccountPublicAccessBlock"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "IAMManagement",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:GetRole",
+                "iam:PassRole",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:GetRolePolicy",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:TagRole",
+                "iam:UntagRole",
+                "iam:UpdateRole",
+                "iam:UpdateAssumeRolePolicy",
+                "iam:CreateServiceLinkedRole",
+                "iam:ListInstanceProfiles",
+                "iam:ListRoles"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/MadLibsServerless-*",
+                "arn:aws:iam::*:role/cdk-*",
+                "arn:aws:iam::*:service-linked-role/cloudfront.amazonaws.com/*"
+            ]
         },
         {
             "Sid": "LambdaManagement",
             "Effect": "Allow",
             "Action": [
                 "lambda:*"
+            ],
+            "Resource": [
+                "arn:aws:lambda:*:*:function:MadLibsServerless-*",
+                "arn:aws:lambda:*:*:function:cdk-*",
+                "arn:aws:lambda:*:*:layer:*",
+                "arn:aws:lambda:*:*:event-source-mapping:*"
+            ]
+        },
+        {
+            "Sid": "LambdaGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:ListFunctions",
+                "lambda:ListLayers",
+                "lambda:GetAccountSettings"
             ],
             "Resource": "*"
         },
@@ -29,6 +107,24 @@
             "Action": [
                 "apigateway:*"
             ],
+            "Resource": [
+                "arn:aws:apigateway:*::/restapis*",
+                "arn:aws:apigateway:*::/apis*",
+                "arn:aws:apigateway:*::/domainnames*",
+                "arn:aws:apigateway:*::/usageplans*",
+                "arn:aws:apigateway:*::/apikeys*"
+            ]
+        },
+        {
+            "Sid": "APIGatewayGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:GET",
+                "apigateway:POST",
+                "apigateway:PUT",
+                "apigateway:DELETE",
+                "apigateway:PATCH"
+            ],
             "Resource": "*"
         },
         {
@@ -36,6 +132,21 @@
             "Effect": "Allow",
             "Action": [
                 "dynamodb:*"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:*:*:table/MadLibsServerless-*",
+                "arn:aws:dynamodb:*:*:table/MadLibsServerless-*/index/*",
+                "arn:aws:dynamodb:*:*:table/MadLibsServerless-*/stream/*"
+            ]
+        },
+        {
+            "Sid": "DynamoDBGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:DescribeLimits",
+                "dynamodb:DescribeReservedCapacity",
+                "dynamodb:DescribeReservedCapacityOfferings"
             ],
             "Resource": "*"
         },
@@ -48,19 +159,60 @@
             "Resource": "*"
         },
         {
-            "Sid": "CloudWatchManagement",
+            "Sid": "CloudFrontOriginAccessControl",
             "Effect": "Allow",
             "Action": [
-                "logs:*",
-                "cloudwatch:*"
+                "cloudfront:CreateOriginAccessControl",
+                "cloudfront:DeleteOriginAccessControl",
+                "cloudfront:GetOriginAccessControl",
+                "cloudfront:ListOriginAccessControls",
+                "cloudfront:UpdateOriginAccessControl"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "SecretsManagerAccess",
+            "Sid": "LogsManagement",
             "Effect": "Allow",
             "Action": [
-                "secretsmanager:*"
+                "logs:*"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:/aws/lambda/MadLibsServerless-*",
+                "arn:aws:logs:*:*:log-group:/aws/lambda/MadLibsServerless-*:*",
+                "arn:aws:logs:*:*:log-group:/aws/apigateway/*",
+                "arn:aws:logs:*:*:log-group:/aws/cloudfront/*"
+            ]
+        },
+        {
+            "Sid": "LogsGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "SSMAccess",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParameter",
+                "ssm:GetParameters",
+                "ssm:PutParameter",
+                "ssm:DeleteParameter",
+                "ssm:DescribeParameters"
+            ],
+            "Resource": [
+                "arn:aws:ssm:*:*:parameter/cdk-bootstrap/*",
+                "arn:aws:ssm:*:*:parameter/MadLibsServerless-*"
+            ]
+        },
+        {
+            "Sid": "STSAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:GetCallerIdentity"
             ],
             "Resource": "*"
         },
@@ -69,54 +221,48 @@
             "Effect": "Allow",
             "Action": [
                 "bedrock:InvokeModel",
+                "bedrock:InvokeModelWithResponseStream",
                 "bedrock:ListFoundationModels",
                 "bedrock:GetFoundationModel"
             ],
             "Resource": [
                 "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0",
                 "arn:aws:bedrock:*::foundation-model/amazon.nova-canvas-v1:0",
-                "arn:aws:bedrock:*::foundation-model/anthropic.claude-3-haiku-20240307-v1:0"
+                "arn:aws:bedrock:*::foundation-model/amazon.nova-reel-v1:0",
+                "arn:aws:bedrock:*::foundation-model/amazon.titan-image-generator-v1",
+                "arn:aws:bedrock:*::foundation-model/stability.stable-diffusion-xl-v1",
+                "arn:aws:bedrock:*::foundation-model/anthropic.claude-3-haiku-20240307-v1:0",
+                "arn:aws:bedrock:*::foundation-model/*"
             ]
         },
         {
-            "Sid": "WAFManagement",
+            "Sid": "TaggingAccess",
             "Effect": "Allow",
             "Action": [
-                "wafv2:*"
+                "tag:GetResources",
+                "tag:TagResources",
+                "tag:UntagResources"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "XRayTracing",
+            "Sid": "ApplicationAutoScaling",
             "Effect": "Allow",
             "Action": [
-                "xray:*"
+                "application-autoscaling:*"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "SNSNotifications",
+            "Sid": "EventsAccess",
             "Effect": "Allow",
             "Action": [
-                "sns:*"
+                "events:*"
             ],
-            "Resource": "*"
-        },
-        {
-            "Sid": "Route53DNS",
-            "Effect": "Allow",
-            "Action": [
-                "route53:*"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Sid": "ACMCertificates",
-            "Effect": "Allow",
-            "Action": [
-                "acm:*"
-            ],
-            "Resource": "*"
+            "Resource": [
+                "arn:aws:events:*:*:rule/MadLibsServerless-*",
+                "arn:aws:events:*:*:event-bus/MadLibsServerless-*"
+            ]
         }
     ]
 }
