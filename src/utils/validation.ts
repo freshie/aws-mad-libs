@@ -1,27 +1,67 @@
-import { GAME_CONFIG } from './constants'
+import { WordType, StoryTemplate, GameSession } from '@/types/game';
 
-export function validateRoomCode(roomCode: string): boolean {
-  return /^[A-Z0-9]{6}$/.test(roomCode)
+export function validatePlayerName(name: string): boolean {
+  if (!name || typeof name !== 'string') return false;
+  const trimmed = name.trim();
+  return trimmed.length >= 2 && trimmed.length <= 20 && /^[a-zA-Z0-9_-\sÀ-ÿ]+$/.test(trimmed);
 }
 
-export function validateUsername(username: string): boolean {
-  return username.length >= 2 && username.length <= 20 && /^[a-zA-Z0-9\s]+$/.test(username)
+export function validateWordType(type: WordType): boolean {
+  const validTypes: WordType[] = [
+    'noun', 'verb', 'adjective', 'adverb', 'plural_noun',
+    'past_tense_verb', 'color', 'number', 'place', 'person'
+  ];
+  return validTypes.includes(type);
 }
 
-export function validateWord(word: string, wordType?: string): boolean {
-  if (word.length === 0 || word.length > GAME_CONFIG.WORD_MAX_LENGTH) {
-    return false
+export function validateStoryTemplate(template: StoryTemplate): boolean {
+  if (!template || !template.title || !template.paragraphs || template.paragraphs.length === 0) {
+    return false;
   }
   
-  // Allow numbers when the word type is NUMBER
-  if (wordType === 'number' || wordType === 'NUMBER') {
-    return /^[0-9]+$/.test(word)
+  let totalBlanks = 0;
+  for (const paragraph of template.paragraphs) {
+    if (!paragraph.wordBlanks) return false;
+    totalBlanks += paragraph.wordBlanks.length;
+    
+    for (const blank of paragraph.wordBlanks) {
+      if (!validateWordType(blank.type)) return false;
+    }
   }
   
-  // For all other word types, allow letters, spaces, hyphens, and apostrophes
-  return /^[a-zA-Z\s'-]+$/.test(word)
+  return totalBlanks === template.totalWordBlanks;
+}
+
+export function validateGameSession(session: GameSession): boolean {
+  if (!session || !session.roomCode || !session.players || session.players.length === 0) {
+    return false;
+  }
+  
+  const validStates = ['waiting_for_players', 'collecting_words', 'generating_story', 'displaying_story', 'creating_video', 'completed'];
+  if (!validStates.includes(session.gameState)) {
+    return false;
+  }
+  
+  const hasHost = session.players.some(player => player.isHost);
+  return hasHost;
 }
 
 export function sanitizeInput(input: string): string {
-  return input.trim().replace(/[<>\"'&]/g, '')
+  if (!input || typeof input !== 'string') return '';
+  return input.trim().replace(/<[^>]*>/g, '');
+}
+
+export function isValidEmail(email: string): boolean {
+  if (!email || typeof email !== 'string') return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && !email.includes('..');
+}
+
+export function isValidUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }

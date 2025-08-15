@@ -16,9 +16,7 @@ const customJestConfig = {
     '<rootDir>/cdk/',
     '<rootDir>/out/',
   ],
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
+
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
