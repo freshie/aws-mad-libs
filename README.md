@@ -11,6 +11,24 @@ A serverless Mad Libs game that creates hilarious stories using AI-generated con
 - ⚡ **Serverless**: Fully serverless architecture with AWS Lambda
 - 🔒 **Secure**: IAM-based security with encrypted storage
 
+## Screenshots
+
+### Homepage
+![Homepage](docs/homepage.jpg)
+*Clean, modern interface with easy navigation to start playing Mad Libs*
+
+### Game Setup
+![Local Play Setup](docs/local-play-setup.jpg)
+*Simple setup screen to configure your Mad Libs game experience*
+
+### Game Management
+![Mad Libs Games](docs/local-mad-libs-games.jpg)
+*Manage and select from different Mad Libs game templates*
+
+### Final Story with AI-Generated Images
+![Final Story](docs/final-story.jpg)
+*Completed Mad Libs story with beautiful AI-generated images from Amazon Nova Canvas*
+
 ## Tech Stack
 
 ### Frontend
