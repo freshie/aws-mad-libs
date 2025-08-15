@@ -800,7 +800,7 @@ chore(deps): update AWS SDK to latest version
 4. **Push to GitHub** to maintain remote backup
 5. **Create GitHub Release** with changelog and assets
 
-**Current Version:** v2.3.0 - GitHub Publication & Enhanced Documentation
+**Current Version:** v2.3.2 - IAM Policy Cleanup & Documentation Enhancement
 
 ### Repository Benefits
 
@@ -821,3 +821,34 @@ chore(deps): update AWS SDK to latest version
 - 📖 **Learning Resource** - Others can learn from the implementation
 - 🤖 **Kiro Collaboration** - Showcase AI-assisted development workflow
 - 🏆 **Professional Presentation** - Complete, documented project
+
+## 🔒 Security Guidelines for Documentation
+
+### CRITICAL: Never Include Deployment-Specific URLs
+
+**❌ DO NOT include in documentation or README:**
+- Specific CloudFront distribution URLs (e.g., `d1657msoon2g7h.cloudfront.net`)
+- Specific API Gateway URLs (e.g., `zxp4er3qjk.execute-api.us-east-1.amazonaws.com`)
+- Specific S3 bucket names (e.g., `madlibsserverless-development-website-553368239051`)
+- Specific CloudFront distribution IDs (e.g., `E25MXAA5Z3Z2D3`)
+- Any AWS account-specific identifiers or resource ARNs
+
+**✅ DO use instead:**
+- Generic placeholders: `your-cloudfront-domain.cloudfront.net`
+- Environment variable references: `process.env.CLOUDFRONT_DOMAIN`
+- CDK output references: "Check CDK outputs for URL"
+- Template examples: `YOUR-WEBSITE-BUCKET-NAME`
+
+### Security Rationale
+- **Public Repository**: All documentation is publicly visible on GitHub
+- **Infrastructure Security**: Specific URLs can reveal deployment patterns
+- **Account Privacy**: AWS account IDs and resource names should remain private
+- **Professional Standards**: Generic examples are more useful for other developers
+
+### Implementation Guidelines
+- **Code**: Always use environment variables for deployment-specific values
+- **Documentation**: Use generic placeholders and reference deployment outputs
+- **Scripts**: Reference CDK outputs rather than hardcoded values
+- **Examples**: Provide template examples that users can customize
+
+**Last Security Review:** August 15, 2025 (v2.3.2)
