@@ -30,6 +30,17 @@ A multiplayer party game that creates hilarious Mad Libs stories using AI-genera
 - **Amazon S3** for media storage
 - **Amazon CloudFront** for CDN
 
+## Architecture
+
+![AWS Mad Libs Architecture](docs/aws-mad-libs-architecture.drawio.png)
+
+The application follows a serverless architecture pattern with:
+- **Frontend**: Next.js application hosted on S3 with CloudFront distribution
+- **API Gateway**: RESTful endpoints for game management and AI services
+- **Lambda Functions**: Serverless compute for business logic
+- **S3 Storage**: Media files, generated content, and static assets
+- **Bedrock Integration**: AI services for story and image generation
+
 ## Getting Started
 
 ### Prerequisites
