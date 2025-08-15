@@ -702,18 +702,35 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     return Array.from(contributionMap.values())
   }
 
-  const createImagePromptFromText = (filledText: string): string => {
+  const createImagePromptFromText = (filledText: string, wordSubmissions: any[] = []): string => {
     console.log('🎨 Creating image prompt from filled text:', filledText)
+    console.log('📝 Word submissions for emphasis:', wordSubmissions)
     
     // Clean up the text and create a simple, direct prompt
     const cleanText = filledText
       .replace(/[{}]/g, '') // Remove any remaining template markers
       .trim()
     
-    // Create a simple prompt that describes the scene from the text
-    const imagePrompt = `A scene showing: ${cleanText}`
+    // Extract user words for emphasis
+    const userWords = wordSubmissions.map(submission => submission.word).filter(word => word && word.trim())
+    console.log('🔍 User words to emphasize:', userWords)
     
-    console.log('✨ Generated image prompt:', imagePrompt)
+    // Create the base prompt
+    let imagePrompt = `A scene showing: ${cleanText}`
+    
+    // Add emphasis for user's words if we have any
+    if (userWords.length > 0) {
+      // Add emphasis instructions to make sure the AI model pays attention to user words
+      imagePrompt += `. Make sure to prominently feature and emphasize: ${userWords.join(', ')}`
+      
+      // Add extra emphasis for the most important words (first few)
+      const keyWords = userWords.slice(0, 3) // Take first 3 words as most important
+      if (keyWords.length > 0) {
+        imagePrompt += `. Pay special attention to: ${keyWords.join(', ')}`
+      }
+    }
+    
+    console.log('✨ Generated image prompt with emphasis:', imagePrompt)
     return imagePrompt
   }
 
@@ -728,10 +745,10 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         try {
           console.log(`🎨 Background: Generating image ${i + 1}/${template.paragraphs.length}`)
 
-          // Use the actual filled paragraph text as the image prompt
+          // Use the actual filled paragraph text as the image prompt with user word emphasis
           const storyParagraph = story.paragraphs[i]
-          const imagePrompt = createImagePromptFromText(storyParagraph.text)
-          console.log(`🎭 Using paragraph text as prompt: ${imagePrompt}`)
+          const imagePrompt = createImagePromptFromText(storyParagraph.text, story.wordSubmissions || [])
+          console.log(`🎭 Using paragraph text as prompt with emphasis: ${imagePrompt}`)
 
           // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
@@ -827,9 +844,9 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         try {
           console.log('🎨 Generating first image:', template.paragraphs[0].imagePrompt)
 
-          // Use the actual filled paragraph text as the image prompt
-          const imagePrompt = createImagePromptFromText(filledParagraphs[0].text)
-          console.log(`🎭 Using paragraph text as prompt for first image: ${imagePrompt}`)
+          // Use the actual filled paragraph text as the image prompt with user word emphasis
+          const imagePrompt = createImagePromptFromText(filledParagraphs[0].text, wordSubmissions)
+          console.log(`🎭 Using paragraph text as prompt for first image with emphasis: ${imagePrompt}`)
 
           // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
