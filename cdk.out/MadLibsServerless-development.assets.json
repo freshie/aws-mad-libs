@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "3e1f0911526da5bb9a311bc6c1fd28169e6bf32976cafa61b394e420070b9245": {
+    "5b6e0c2011a62e4a0b3e93d18d06cdbaefb913dca955bb1751de258687726909": {
       "displayName": "StoryGenerationFunction/Code",
       "source": {
-        "path": "asset.3e1f0911526da5bb9a311bc6c1fd28169e6bf32976cafa61b394e420070b9245",
+        "path": "asset.5b6e0c2011a62e4a0b3e93d18d06cdbaefb913dca955bb1751de258687726909",
         "packaging": "zip"
       },
       "destinations": {
-        "553368239051-us-east-1-d4224080": {
+        "553368239051-us-east-1-33846bc2": {
           "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
-          "objectKey": "3e1f0911526da5bb9a311bc6c1fd28169e6bf32976cafa61b394e420070b9245.zip",
+          "objectKey": "5b6e0c2011a62e4a0b3e93d18d06cdbaefb913dca955bb1751de258687726909.zip",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
         }
@@ -31,16 +31,16 @@
         }
       }
     },
-    "a1ae6cb7e5261d4067e107388032811f2f50b6dc4e3ab411a9aff41cca43520c": {
+    "05870023b42d4403a4d9ed9311dd784adeff7841fe41b468f4cbe5244c6efee7": {
       "displayName": "MadLibsServerless-development Template",
       "source": {
         "path": "MadLibsServerless-development.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "553368239051-us-east-1-59fdcb34": {
+        "553368239051-us-east-1-10a5ef5f": {
           "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
-          "objectKey": "a1ae6cb7e5261d4067e107388032811f2f50b6dc4e3ab411a9aff41cca43520c.json",
+          "objectKey": "05870023b42d4403a4d9ed9311dd784adeff7841fe41b468f4cbe5244c6efee7.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
         }

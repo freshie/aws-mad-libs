@@ -9,7 +9,7 @@ export const handler = async (
   try {
     // Parse request body
     const body = event.body ? JSON.parse(event.body) : {};
-    const { prompt, style = 'photographic' } = body;
+    const { prompt, style = 'photographic', referenceImageUrl } = body;
 
     // Validate input
     if (!prompt || typeof prompt !== 'string') {
@@ -27,9 +27,9 @@ export const handler = async (
       };
     }
 
-    // Generate image
+    // Generate image with optional reference for character consistency
     const imageGenerator = ImageGenerator.getInstance();
-    const result = await imageGenerator.generateImage(prompt, style);
+    const result = await imageGenerator.generateImage(prompt, style, referenceImageUrl);
 
     return {
       statusCode: 200,

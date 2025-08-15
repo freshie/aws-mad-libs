@@ -39,17 +39,17 @@ export class ImageGenerator {
     ImageGenerator.instance = null
   }
 
-  async generateImage(prompt: string, style: ImageStyle = { style: 'cartoon', colorScheme: 'vibrant' }): Promise<ImageResult> {
+  async generateImage(prompt: string, style: ImageStyle = { style: 'cartoon', colorScheme: 'vibrant' }, referenceImageUrl?: string): Promise<ImageResult> {
     if (!this.bedrockClient || !this.s3Client) {
       throw new Error(
         'AWS Bedrock and S3 clients are not initialized. Please check your AWS credentials.'
       )
     }
 
-    return this.generateImageWithRetry(prompt, style, 0)
+    return this.generateImageWithRetry(prompt, style, 0, referenceImageUrl)
   }
 
-  private async generateImageWithRetry(prompt: string, style: ImageStyle, attempt: number): Promise<ImageResult> {
+  private async generateImageWithRetry(prompt: string, style: ImageStyle, attempt: number, referenceImageUrl?: string): Promise<ImageResult> {
     const maxAttempts = 4
     const backoffDelays = [0, 15000, 30000, 60000, 120000] // 0s, 15s, 30s, 1min, 2min
 
@@ -60,8 +60,10 @@ export class ImageGenerator {
       }
 
       console.log('🎨 Generating image with Bedrock Nova:', prompt)
+      console.log('🖼️ Reference image URL:', referenceImageUrl || 'None (first image)')
+      
       const enhancedPrompt = this.enhancePrompt(prompt, style)
-      const imageData = await this.invokeBedrockImageModel(enhancedPrompt)
+      const imageData = await this.invokeBedrockImageModel(enhancedPrompt, referenceImageUrl)
       const imageUrl = await this.uploadToS3(imageData, prompt)
 
       console.log('✅ Image generated successfully:', imageUrl)
@@ -79,7 +81,7 @@ export class ImageGenerator {
       // Check if it's a throttling error and we have retries left
       if ((error as any).name === 'ThrottlingException' && attempt < maxAttempts - 1) {
         console.log(`🔄 Throttling detected, will retry in ${backoffDelays[attempt + 1] / 1000} seconds...`)
-        return this.generateImageWithRetry(prompt, style, attempt + 1)
+        return this.generateImageWithRetry(prompt, style, attempt + 1, referenceImageUrl)
       }
       
       // If we've exhausted retries or it's a different error, throw
@@ -139,7 +141,7 @@ export class ImageGenerator {
     }
   }
 
-  private async invokeBedrockImageModel(prompt: string): Promise<Uint8Array> {
+  private async invokeBedrockImageModel(prompt: string, referenceImageUrl?: string): Promise<Uint8Array> {
     if (!this.bedrockClient) {
       throw new Error('Bedrock client not initialized')
     }
@@ -147,18 +149,47 @@ export class ImageGenerator {
     // Use Amazon Nova Canvas model
     const modelId = process.env.BEDROCK_IMAGE_MODEL_ID || 'amazon.nova-canvas-v1:0'
     
-    const payload = {
-      taskType: "TEXT_IMAGE",
-      textToImageParams: {
-        text: prompt,
-        negativeText: "blurry, low quality, distorted, text, watermark, signature"
-      },
-      imageGenerationConfig: {
-        numberOfImages: 1,
-        height: 512,
-        width: 512,
-        cfgScale: 8.0,
-        seed: Math.floor(Math.random() * 1000000)
+    let payload: any
+
+    if (referenceImageUrl) {
+      // Use IMAGE_VARIATION for character consistency
+      console.log('🔄 Using IMAGE_VARIATION mode for character consistency')
+      
+      // Download reference image and convert to base64
+      const referenceImageBase64 = await this.downloadImageAsBase64(referenceImageUrl)
+      
+      payload = {
+        taskType: "IMAGE_VARIATION",
+        imageVariationParams: {
+          text: prompt + ". Maintain character consistency and appearance from reference image.",
+          images: [referenceImageBase64],
+          similarityStrength: 0.6, // Moderate similarity - maintain character but allow scene changes
+          negativeText: "different character, inconsistent appearance, blurry, low quality, distorted, text, watermark, signature"
+        },
+        imageGenerationConfig: {
+          numberOfImages: 1,
+          height: 512,
+          width: 512,
+          cfgScale: 8.0
+        }
+      }
+    } else {
+      // Use TEXT_IMAGE for first image generation
+      console.log('🆕 Using TEXT_IMAGE mode for first image')
+      
+      payload = {
+        taskType: "TEXT_IMAGE",
+        textToImageParams: {
+          text: prompt + ". Create detailed, memorable characters for consistency in future images.",
+          negativeText: "blurry, low quality, distorted, text, watermark, signature"
+        },
+        imageGenerationConfig: {
+          numberOfImages: 1,
+          height: 512,
+          width: 512,
+          cfgScale: 8.0,
+          seed: Math.floor(Math.random() * 1000000)
+        }
       }
     }
 
@@ -223,6 +254,26 @@ export class ImageGenerator {
     // Use the known CloudFront domain from deployment
     const cloudfrontDomain = 'd1657msoon2g7h.cloudfront.net' // From deployment outputs
     return `https://${cloudfrontDomain}/${key}`
+  }
+
+  private async downloadImageAsBase64(imageUrl: string): Promise<string> {
+    try {
+      console.log('📥 Downloading reference image:', imageUrl)
+      
+      const response = await fetch(imageUrl)
+      if (!response.ok) {
+        throw new Error(`Failed to download reference image: ${response.status}`)
+      }
+      
+      const arrayBuffer = await response.arrayBuffer()
+      const base64 = Buffer.from(arrayBuffer).toString('base64')
+      
+      console.log('✅ Reference image converted to base64, size:', base64.length)
+      return base64
+    } catch (error) {
+      console.error('❌ Failed to download reference image:', error)
+      throw new Error(`Could not download reference image: ${error}`)
+    }
   }
 
   private enhancePrompt(prompt: string, style: ImageStyle): string {

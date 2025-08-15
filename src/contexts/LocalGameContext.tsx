@@ -750,13 +750,18 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
           const imagePrompt = createImagePromptFromText(storyParagraph.text, story.wordSubmissions || [])
           console.log(`🎭 Using paragraph text as prompt with emphasis: ${imagePrompt}`)
 
+          // Use first image as reference for character consistency
+          const referenceImageUrl = story.paragraphs[0]?.imageUrl
+          console.log(`🖼️ Using reference image for consistency: ${referenceImageUrl}`)
+
           // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               prompt: imagePrompt,
-              style: 'cartoon' // Lambda expects just the style string, not an object
+              style: 'cartoon',
+              referenceImageUrl: referenceImageUrl // Add reference image for character consistency
             })
           })
 

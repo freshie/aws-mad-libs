@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-deploy-role-553368239051-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-cfn-exec-role-553368239051-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-madlibs25-assets-553368239051-us-east-1/a1ae6cb7e5261d4067e107388032811f2f50b6dc4e3ab411a9aff41cca43520c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-madlibs25-assets-553368239051-us-east-1/05870023b42d4403a4d9ed9311dd784adeff7841fe41b468f4cbe5244c6efee7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/madlibs25/version",
         "additionalDependencies": [
