@@ -901,8 +901,9 @@ chore(deps): update AWS SDK to latest version
    git branch -d feature/video-generation-fix
    ```
 
-3. **Version Release:**
+3. **Version Release (USER CONTROLLED):**
    ```bash
+   # Only when user explicitly requests: "Release version 2.3.3"
    git checkout main
    git merge develop
    # Update package.json and VERSION.md
@@ -924,5 +925,34 @@ chore(deps): update AWS SDK to latest version
 - **Version Tags**: `v2.3.3` for each release on main
 - **Pre-release Tags**: `v2.3.3-beta.1` for testing versions
 - **Hotfix Tags**: `v2.3.3-hotfix.1` for critical fixes
+
+### 🔒 **Main Branch Protection Policy**
+
+**CRITICAL: User-Controlled Releases Only**
+
+**❌ Kiro will NEVER automatically:**
+- Merge to main branch
+- Create version releases
+- Push to main branch
+- Create version tags
+
+**✅ Kiro will ONLY merge to main when user explicitly says:**
+- "Release version 2.3.3"
+- "Create new version"
+- "Merge to main"
+- "Ready for production release"
+
+**🤖 Kiro's Automatic Actions (Safe):**
+- Work on develop branch
+- Create and manage feature branches
+- Commit and push to develop/feature branches
+- Merge feature branches to develop
+- Prepare version updates (but not release them)
+
+**👤 User's Exclusive Control:**
+- All main branch operations
+- Version release timing
+- Production deployments
+- Public release decisions
 
 **Last Updated:** August 15, 2025
