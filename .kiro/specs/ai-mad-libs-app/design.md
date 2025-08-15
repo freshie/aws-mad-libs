@@ -740,3 +740,84 @@ NODE_ENV=development
 - ✅ **Error Handling** - User-friendly error messages with recovery options
 - ✅ **Responsive Design** - Works on desktop, tablet, and mobile
 - ✅ **Accessibility** - Proper ARIA labels and keyboard navigation
+
+## Repository Management & Version Control
+
+### GitHub Repository
+**Repository URL:** https://github.com/freshie/aws-mad-libs  
+**Status:** ✅ **PUBLISHED** - Open source project with comprehensive documentation
+
+### Change Management Strategy
+
+**All changes should be committed and pushed to the GitHub repository to maintain:**
+- 📝 **Complete Version History** - Track all development progress and decisions
+- 🔄 **Backup & Recovery** - Secure cloud-based code storage
+- 👥 **Collaboration** - Enable team development and contributions
+- 📊 **Release Management** - Proper versioning and release notes
+- 🔍 **Code Review** - Maintain code quality through review process
+
+### Git Workflow
+
+**Branch Strategy:**
+- **`main`** - Production-ready code with full documentation
+- **`develop`** - Integration branch for new features
+- **`feature/*`** - Individual feature development branches
+- **`hotfix/*`** - Critical bug fixes for production
+
+**Commit Standards:**
+```bash
+# Commit message format
+type(scope): description
+
+# Examples:
+feat(ui): add theme selection spinner animation
+fix(api): handle Bedrock service timeout errors
+docs(readme): add architecture diagram and setup instructions
+chore(deps): update AWS SDK to latest version
+```
+
+**Push Requirements:**
+- ✅ **All code changes** must be committed with descriptive messages
+- ✅ **Documentation updates** should accompany feature changes
+- ✅ **Version bumps** for significant releases (following semantic versioning)
+- ✅ **Security audit** before pushing (no AWS credentials or sensitive data)
+
+### Documentation Maintenance
+
+**Keep Updated in Repository:**
+- 📖 **README.md** - Main project documentation with setup instructions
+- 📋 **VERSION.md** - Detailed version history and release notes
+- 🏗️ **Architecture Diagrams** - Visual documentation of system design
+- 📸 **Screenshots** - Visual documentation of user interface
+- 🔒 **SECURITY.md** - Security guidelines and best practices
+
+### Release Process
+
+**Version Management:**
+1. **Update VERSION.md** with new release notes
+2. **Update package.json** version number
+3. **Commit changes** with version bump message
+4. **Push to GitHub** to maintain remote backup
+5. **Create GitHub Release** with changelog and assets
+
+**Current Version:** v2.3.0 - GitHub Publication & Enhanced Documentation
+
+### Repository Benefits
+
+**For Development:**
+- 🔄 **Continuous Backup** - Never lose work progress
+- 📊 **Change Tracking** - See exactly what changed and when
+- 🔍 **Code Search** - Find code patterns and implementations quickly
+- 📝 **Issue Tracking** - Document bugs and feature requests
+
+**For Collaboration:**
+- 👥 **Team Access** - Multiple developers can contribute
+- 🔄 **Code Review** - Maintain quality through peer review
+- 📋 **Project Management** - Track progress and milestones
+- 🚀 **CI/CD Integration** - Automated testing and deployment
+
+**For Showcase:**
+- 🌟 **Portfolio Project** - Demonstrate development capabilities
+- 📖 **Learning Resource** - Others can learn from the implementation
+- 🤖 **Kiro Collaboration** - Showcase AI-assisted development workflow
+- 🏆 **Professional Presentation** - Complete, documented project
