@@ -19,6 +19,7 @@ This project showcases what it's like to **vibe code with Kiro** - an AI-powered
 
 ## Features
 
+- 🎮 **Local Multiplayer**: Support for 1-8 players on the same device
 - 🤖 **AI-Generated Stories**: Original Mad Libs templates created by Amazon Bedrock
 - 🎨 **AI-Generated Images**: Visual content using Amazon Nova Canvas
 - 🎬 **Video Creation**: Shareable videos using Amazon Nova Reel
@@ -185,12 +186,14 @@ The serverless API provides the following endpoints:
 
 ## Game Flow
 
-1. **Story Template Generation**: AI creates a Mad Libs template with blanks
-2. **Word Collection**: Players provide words for each blank (noun, verb, adjective, etc.)
-3. **Story Completion**: AI fills the template with player words
-4. **Image Generation**: AI creates visual content for each story paragraph
-5. **Video Creation**: Combine story, images, and credits into a shareable video
-6. **Sharing**: Download or share the completed story and media
+1. **Player Setup**: Configure 1-8 players with unique usernames on the same device
+2. **Theme Selection**: Choose from 12 different themes with spinning wheel animation
+3. **Story Template Generation**: AI creates a Mad Libs template with blanks for the chosen theme
+4. **Word Collection**: Players take turns providing words for each blank (noun, verb, adjective, etc.)
+5. **Story Completion**: AI fills the template with player words, highlighting each player's contributions
+6. **Image Generation**: AI creates visual content for each story paragraph using Nova Canvas
+7. **Video Creation**: Combine story, images, and player credits into a shareable video using Nova Reel
+8. **Sharing**: Download or share the completed story and media with all player contributions highlighted
 
 ## Development
 
