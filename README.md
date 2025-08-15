@@ -2,6 +2,21 @@
 
 A serverless Mad Libs game that creates hilarious stories using AI-generated content, images, and videos. Built with Next.js, AWS CDK, and AWS Bedrock AI services.
 
+## 🤖 Built with Kiro AI
+
+This project showcases what it's like to **vibe code with Kiro** - an AI-powered development experience that transforms how we build software. From initial concept to production deployment, this entire serverless application was developed through collaborative sessions with Kiro, demonstrating:
+
+- **Rapid Prototyping**: From idea to working MVP in hours, not days
+- **Architecture Design**: AI-assisted decisions on serverless patterns and AWS services
+- **Code Generation**: Intelligent code completion and full-feature implementation
+- **Documentation**: Auto-generated docs, diagrams, and comprehensive README
+- **Deployment**: Automated CDK infrastructure and deployment scripts
+- **Debugging**: AI-powered troubleshooting and optimization suggestions
+
+**The Result**: A production-ready, fully-documented serverless application with professional architecture, security best practices, and polished user experience - all achieved through natural conversation and collaborative coding with AI.
+
+*Want to experience this development flow yourself? Try Kiro and see how AI can accelerate your next project.*
+
 ## Features
 
 - 🤖 **AI-Generated Stories**: Original Mad Libs templates created by Amazon Bedrock
