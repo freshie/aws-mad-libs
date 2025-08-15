@@ -1,5 +1,48 @@
 # AI Mad Libs Game - Version History
 
+## Version 2.4.0 - Testing Infrastructure & TDD Implementation
+**Date:** January 27, 2025
+
+### Testing Infrastructure Complete ✅
+- ✅ **Comprehensive Test Suite** - Rebuilt complete testing infrastructure lost during v1→v2 migration
+- ✅ **Lambda Unit Tests** - Full test coverage for StoryGenerator, ImageGenerator, VideoGenerator services
+- ✅ **API Handler Tests** - Complete testing for story-generation and other Lambda handlers
+- ✅ **Frontend Tests** - Component and utility function tests with React Testing Library
+- ✅ **Jest Configuration** - Dual Jest setup for both frontend and Lambda environments
+- ✅ **Mock Strategy** - Comprehensive AWS SDK and external service mocking
+
+### Test-Driven Development (TDD) Implementation
+- ✅ **TDD Workflow Documentation** - Complete TDD guidelines and step-by-step processes
+- ✅ **TDD Steering Rules** - Always-active TDD enforcement for all development
+- ✅ **TDD Checklist** - Mandatory checklist for every development task
+- ✅ **Testing Documentation** - Developer guides, quick reference, and architecture docs
+- ✅ **Roadmap Tracking** - Automatic roadmap maintenance system
+
+### Technical Achievements
+- **27 Passing Tests** - All tests passing across frontend and Lambda functions
+- **Comprehensive Coverage** - Services, handlers, components, and utilities tested
+- **AWS Service Mocking** - Proper mocking of Bedrock, S3, and other AWS services
+- **Test Isolation** - Singleton reset patterns and proper test cleanup
+- **CI/CD Ready** - Test infrastructure ready for continuous integration
+
+### Development Process Improvements
+- **TDD Mandate** - All future development must follow Test-Driven Development
+- **Quality Gates** - Automated testing prevents regressions
+- **Documentation** - Complete testing guides for developers and Kiro
+- **Roadmap Integration** - Automatic tracking of development progress
+
+### Files Added/Updated
+- `docs/TESTING.md` - Main developer testing guide
+- `docs/TESTING-QUICK-REFERENCE.md` - Quick reference for developers
+- `.kiro/docs/testing-architecture.md` - Internal Kiro testing documentation
+- `.kiro/steering/test-driven-development.md` - TDD guidelines (always active)
+- `.kiro/steering/tdd-workflow.md` - Step-by-step TDD process (always active)
+- `.kiro/steering/tdd-checklist.md` - Mandatory TDD checklist (always active)
+- `.kiro/steering/roadmap-tracking.md` - Automatic roadmap maintenance (always active)
+- Complete test suite in `src/__tests__/` and `lambda/src/__tests__/`
+
+This version establishes a solid foundation for reliable, test-driven development going forward.
+
 ## Version 2.3.2 - IAM Policy Cleanup & Documentation Enhancement
 **Date:** August 15, 2025
 

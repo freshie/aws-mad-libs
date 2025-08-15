@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import LocalPlaySetup from '@/components/LocalPlaySetup';
+import { LocalPlaySetup } from '@/components/LocalPlaySetup';
 
 // Mock the LocalGameContext
 const mockStartThemeSelection = jest.fn();

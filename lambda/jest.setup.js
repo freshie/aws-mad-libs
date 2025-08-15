@@ -1,22 +1,10 @@
-// Mock AWS SDK for Lambda tests
-jest.mock('@aws-sdk/client-bedrock-runtime', () => ({
-  BedrockRuntimeClient: jest.fn(() => ({
-    send: jest.fn(),
-  })),
-  InvokeModelCommand: jest.fn(),
-}))
-
-jest.mock('@aws-sdk/client-s3', () => ({
-  S3Client: jest.fn(() => ({
-    send: jest.fn(),
-  })),
-  PutObjectCommand: jest.fn(),
-  GetObjectCommand: jest.fn(),
-}))
+// Jest setup file for Lambda tests
+// This file is run before each test file
 
 // Mock environment variables
-process.env.NODE_ENV = 'test'
-process.env.AWS_REGION = 'us-east-1'
-process.env.TABLE_NAME = 'test-table'
-process.env.IMAGES_BUCKET_NAME = 'test-images-bucket'
-process.env.CLOUDFRONT_DOMAIN = 'test-cloudfront-domain.cloudfront.net'
+process.env.CLOUDFRONT_DOMAIN = 'test-cloudfront-domain.cloudfront.net';
+process.env.S3_BUCKET = 'test-bucket';
+process.env.AWS_REGION = 'us-east-1';
+
+// Global test timeout
+jest.setTimeout(30000);

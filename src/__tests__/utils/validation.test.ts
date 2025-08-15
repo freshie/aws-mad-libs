@@ -174,6 +174,7 @@ describe('validation utilities', () => {
     it('should remove HTML tags', () => {
       expect(sanitizeInput('<script>alert("xss")</script>Hello')).toBe('Hello');
       expect(sanitizeInput('<b>Bold</b> text')).toBe('Bold text');
+      expect(sanitizeInput('<div>Content</div>')).toBe('Content');
     });
 
     it('should trim whitespace', () => {

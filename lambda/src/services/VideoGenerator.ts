@@ -194,7 +194,7 @@ export class VideoGenerator {
         console.log('⚠️ All Nova Reel models failed, creating mock video response')
         return this.createMockVideoResponse(storyInput)
         */
-    
+    }
 
     private createMockVideoResponse(storyInput: StoryVideoInput): Uint8Array {
         // Create a simple text-based "video" file that explains the feature isn't available yet
