@@ -1,5 +1,28 @@
 # AI Mad Libs Game - Version History
 
+## Version 2.3.2 - IAM Policy Cleanup & Documentation Enhancement
+**Date:** August 15, 2025
+
+### Security & Policy Improvements
+- ✅ **Simplified IAM Policies** - Consolidated to single CDK deployment policy
+- ✅ **Enhanced Deployment Policy** - Added comprehensive permissions for all AWS services
+- ✅ **Removed Outdated Policies** - Cleaned up local-app-user policy (not needed for serverless)
+- ✅ **Security Best Practices** - Policy follows principle of least privilege with resource scoping
+- ✅ **Future-Proofing** - Added permissions for roadmap Phase 1-2 features
+
+### Documentation Improvements
+- ✅ **Updated IAM README** - Complete rewrite focusing on serverless deployment approach
+- ✅ **Main README Enhancement** - Added IAM setup section with clear prerequisites
+- ✅ **Automatic Service Permissions** - Documented how CDK creates minimal IAM roles automatically
+- ✅ **Project Structure Update** - Added iam-policies/ and ROADMAP.md to structure overview
+- ✅ **Documentation Links** - Added comprehensive documentation section with all guides
+
+### Technical Cleanup
+- Removed unused local-app-user-policy.json (v1 legacy)
+- Removed overly broad cdk-deploy-user-policy.json (security risk)
+- Kept restricted policy as main deployment policy with proper resource scoping
+- Updated all references and setup instructions to use single policy approach
+
 ## Version 2.3.1 - Development Roadmap & Documentation Accuracy
 **Date:** August 15, 2025
 

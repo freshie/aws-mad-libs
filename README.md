@@ -100,6 +100,24 @@ The application follows a fully serverless architecture pattern:
 - **AWS CLI** configured with appropriate permissions
 - **CDK CLI** installed globally (`npm install -g aws-cdk`)
 
+### 🔐 IAM Setup (Required)
+
+Before deploying, you need to set up an IAM user with the proper permissions for CDK deployment:
+
+**Option 1: Automated Setup (Recommended)**
+```bash
+npm run setup:deploy-user
+```
+
+**Option 2: Manual Setup**
+1. Create an IAM user for CDK deployment
+2. Attach the deployment policy from `iam-policies/cdk-deploy-user-policy.json`
+3. Configure AWS CLI with the user's credentials
+
+📖 **Detailed IAM Setup Guide**: [iam-policies/README.md](iam-policies/README.md)
+
+**Important**: The deployment automatically creates minimal IAM roles for each Lambda function and service with only the permissions they need to operate.
+
 ### Quick Setup
 
 1. **Clone the repository**
@@ -168,8 +186,10 @@ aws cloudfront create-invalidation --distribution-id E25MXAA5Z3Z2D3 --paths "/*"
 │   │   └── utils/        # Lambda utilities
 │   └── dist/             # Compiled Lambda code
 ├── cdk/                   # AWS CDK infrastructure code
+├── iam-policies/          # IAM policies for deployment
 ├── docs/                  # Documentation and diagrams
-└── scripts/              # Deployment and setup scripts
+├── scripts/              # Deployment and setup scripts
+└── ROADMAP.md            # Development roadmap and future features
 ```
 
 ## API Endpoints
@@ -235,6 +255,13 @@ npm run build:lambda
 # Clean Lambda build artifacts
 npm run clean:lambda
 ```
+
+## 📚 Documentation
+
+- 🔐 **[IAM Setup Guide](iam-policies/README.md)** - Complete IAM configuration for deployment
+- 🚀 **[Development Roadmap](ROADMAP.md)** - Future features and development timeline
+- 🏗️ **[Architecture Diagrams](docs/)** - Visual documentation and system design
+- 📋 **[Version History](VERSION.md)** - Detailed release notes and changelog
 
 ## Contributing
 
