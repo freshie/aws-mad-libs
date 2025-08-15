@@ -1,44 +1,45 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "MadLibsServerlessStack.assets": {
+    "MadLibsServerless-development.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "MadLibsServerlessStack.assets.json",
+        "file": "MadLibsServerless-development.assets.json",
         "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/madlibs25/version"
       }
     },
-    "MadLibsServerlessStack": {
+    "MadLibsServerless-development": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://553368239051/us-east-1",
       "properties": {
-        "templateFile": "MadLibsServerlessStack.template.json",
+        "templateFile": "MadLibsServerless-development.template.json",
         "terminationProtection": false,
         "tags": {
           "Environment": "development",
+          "ManagedBy": "CDK",
           "Project": "MadLibsGame"
         },
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-deploy-role-553368239051-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-cfn-exec-role-553368239051-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-553368239051-us-east-1/cd69e3523be1f1515d990e13d93cead4fdf37302b94b8ab17437c0883b94c852.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-deploy-role-553368239051-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-cfn-exec-role-553368239051-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-madlibs25-assets-553368239051-us-east-1/5438f6377f45a02500a66b1c7c284106ae53309c2d2d1c05ae242174060168b3.json",
         "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/madlibs25/version",
         "additionalDependencies": [
-          "MadLibsServerlessStack.assets"
+          "MadLibsServerless-development.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-hnb659fds-lookup-role-553368239051-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-lookup-role-553368239051-us-east-1",
           "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/madlibs25/version"
         }
       },
       "dependencies": [
-        "MadLibsServerlessStack.assets"
+        "MadLibsServerless-development.assets"
       ],
       "metadata": {
-        "/MadLibsServerlessStack": [
+        "/MadLibsServerless-development": [
           {
             "type": "aws:cdk:stack-tags",
             "data": [
@@ -47,154 +48,474 @@
                 "Value": "development"
               },
               {
+                "Key": "ManagedBy",
+                "Value": "CDK"
+              },
+              {
                 "Key": "Project",
                 "Value": "MadLibsGame"
               }
             ]
           }
         ],
-        "/MadLibsServerlessStack/GameDataTable": [
-          {
-            "type": "aws:cdk:hasPhysicalName",
-            "data": {
-              "Ref": "GameDataTable1D572DEE"
-            }
-          }
-        ],
-        "/MadLibsServerlessStack/GameDataTable/Resource": [
+        "/MadLibsServerless-development/GameDataTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "GameDataTable1D572DEE"
           }
         ],
-        "/MadLibsServerlessStack/DynamoDBTableName": [
+        "/MadLibsServerless-development/DynamoDBTableName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DynamoDBTableName"
           }
         ],
-        "/MadLibsServerlessStack/DynamoDBTableArn": [
+        "/MadLibsServerless-development/DynamoDBTableArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DynamoDBTableArn"
           }
         ],
-        "/MadLibsServerlessStack/StoryGenerationFunction/ServiceRole/Resource": [
+        "/MadLibsServerless-development/StoryGenerationFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryGenerationFunctionServiceRole5E84642C"
           }
         ],
-        "/MadLibsServerlessStack/StoryGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/MadLibsServerless-development/StoryGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryGenerationFunctionServiceRoleDefaultPolicy026641AB"
           }
         ],
-        "/MadLibsServerlessStack/StoryGenerationFunction/Resource": [
+        "/MadLibsServerless-development/StoryGenerationFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryGenerationFunction1EBBE000"
           }
         ],
-        "/MadLibsServerlessStack/StoryFillFunction/ServiceRole/Resource": [
+        "/MadLibsServerless-development/StoryFillFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryFillFunctionServiceRole9DD6599F"
           }
         ],
-        "/MadLibsServerlessStack/StoryFillFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/MadLibsServerless-development/StoryFillFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryFillFunctionServiceRoleDefaultPolicy207543C7"
           }
         ],
-        "/MadLibsServerlessStack/StoryFillFunction/Resource": [
+        "/MadLibsServerless-development/StoryFillFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryFillFunctionB9FEA412"
           }
         ],
-        "/MadLibsServerlessStack/ImageGenerationFunction/ServiceRole/Resource": [
+        "/MadLibsServerless-development/ImageGenerationFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageGenerationFunctionServiceRole7C68AEC3"
           }
         ],
-        "/MadLibsServerlessStack/ImageGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/MadLibsServerless-development/ImageGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageGenerationFunctionServiceRoleDefaultPolicy57CF8037"
           }
         ],
-        "/MadLibsServerlessStack/ImageGenerationFunction/Resource": [
+        "/MadLibsServerless-development/ImageGenerationFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageGenerationFunction64C380B8"
           }
         ],
-        "/MadLibsServerlessStack/TestAwsFunction/ServiceRole/Resource": [
+        "/MadLibsServerless-development/TestAwsFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAwsFunctionServiceRole471FBCF4"
           }
         ],
-        "/MadLibsServerlessStack/TestAwsFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/MadLibsServerless-development/TestAwsFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAwsFunctionServiceRoleDefaultPolicy7CD49E89"
           }
         ],
-        "/MadLibsServerlessStack/TestAwsFunction/Resource": [
+        "/MadLibsServerless-development/TestAwsFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAwsFunction3B4B74A8"
           }
         ],
-        "/MadLibsServerlessStack/StoryGenerationFunctionArn": [
+        "/MadLibsServerless-development/StoryGenerationFunctionArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StoryGenerationFunctionArn"
           }
         ],
-        "/MadLibsServerlessStack/ImageGenerationFunctionArn": [
+        "/MadLibsServerless-development/ImageGenerationFunctionArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageGenerationFunctionArn"
           }
         ],
-        "/MadLibsServerlessStack/StackName": [
+        "/MadLibsServerless-development/WebsiteBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteBucket75C24D94"
+          }
+        ],
+        "/MadLibsServerless-development/WebsiteBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteBucketPolicyE10E3262"
+          }
+        ],
+        "/MadLibsServerless-development/WebsiteBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteBucketAutoDeleteObjectsCustomResource8750E461"
+          }
+        ],
+        "/MadLibsServerless-development/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/MadLibsServerless-development/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/MadLibsServerless-development/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/MadLibsServerless-development/ImagesBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagesBucket1E86AFB2"
+          }
+        ],
+        "/MadLibsServerless-development/ImagesBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagesBucketPolicy5ED12B6C"
+          }
+        ],
+        "/MadLibsServerless-development/ImagesBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagesBucketAutoDeleteObjectsCustomResource1A749259"
+          }
+        ],
+        "/MadLibsServerless-development/WebsiteBucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteBucketName"
+          }
+        ],
+        "/MadLibsServerless-development/ImagesBucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagesBucketName"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApi19EE5F18"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiCloudWatchRole9B5CC08F"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiAccount00880886"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiDeployment81F8C04817380e4ca01527611d511ddbf57ee141"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiDeploymentStageprod803CAEFB"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiEndpoint9B9662E4"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiOPTIONSCE85B1FD"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiD600B267"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiOPTIONS318DA155"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistory2A57DE63"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistoryOPTIONS810C333C"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/generate-template/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistorygeneratetemplate646247E7"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/generate-template/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistorygeneratetemplateOPTIONSDE236208"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/generate-template/POST/ApiPermission.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.story.generate-template": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistorygeneratetemplatePOSTApiPermissionMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapistorygeneratetemplate0E29752E"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/generate-template/POST/ApiPermission.Test.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.story.generate-template": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistorygeneratetemplatePOSTApiPermissionTestMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapistorygeneratetemplateB8B92C2C"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/generate-template/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistorygeneratetemplatePOST39A649BB"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/fill-template/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistoryfilltemplate389A6396"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/fill-template/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistoryfilltemplateOPTIONS3B9EF7D5"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/fill-template/POST/ApiPermission.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.story.fill-template": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistoryfilltemplatePOSTApiPermissionMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapistoryfilltemplate4E29012A"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/fill-template/POST/ApiPermission.Test.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.story.fill-template": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistoryfilltemplatePOSTApiPermissionTestMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapistoryfilltemplate7639FFB6"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/story/fill-template/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapistoryfilltemplatePOST0CAF170A"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimage22A7932D"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimageOPTIONSDBEEEBDF"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/generate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimagegenerate914820A8"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/generate/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimagegenerateOPTIONS515D7A2E"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/generate/POST/ApiPermission.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.image.generate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimagegeneratePOSTApiPermissionMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapiimagegenerate9B5C1901"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/generate/POST/ApiPermission.Test.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.image.generate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimagegeneratePOSTApiPermissionTestMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapiimagegenerate7B9E3C60"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/image/generate/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapiimagegeneratePOST8FE85C56"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/test-aws/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapitestawsB06AE6E0"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/test-aws/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapitestawsOPTIONS907F990C"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/test-aws/GET/ApiPermission.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.GET..api.test-aws": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapitestawsGETApiPermissionMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2GETapitestaws54493E82"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/test-aws/GET/ApiPermission.Test.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.GET..api.test-aws": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapitestawsGETApiPermissionTestMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2GETapitestaws05A6D6EA"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/test-aws/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapitestawsGET84F214EF"
+          }
+        ],
+        "/MadLibsServerless-development/ApiGatewayUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiGatewayUrl"
+          }
+        ],
+        "/MadLibsServerless-development/ApiGatewayId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiGatewayId"
+          }
+        ],
+        "/MadLibsServerless-development/WebsiteOAC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteOAC7E5DAECB"
+          }
+        ],
+        "/MadLibsServerless-development/CloudFrontLogsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontLogsBucketFE303C6F"
+          }
+        ],
+        "/MadLibsServerless-development/CloudFrontLogsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontLogsBucketPolicy94332991"
+          }
+        ],
+        "/MadLibsServerless-development/CloudFrontLogsBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontLogsBucketAutoDeleteObjectsCustomResourceA0CDE445"
+          }
+        ],
+        "/MadLibsServerless-development/WebsiteDistribution/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteDistribution75DCDA0B"
+          }
+        ],
+        "/MadLibsServerless-development/CloudFrontDistributionId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontDistributionId"
+          }
+        ],
+        "/MadLibsServerless-development/CloudFrontDomainName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudFrontDomainName"
+          }
+        ],
+        "/MadLibsServerless-development/WebsiteUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteUrl"
+          }
+        ],
+        "/MadLibsServerless-development/StackName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StackName"
           }
         ],
-        "/MadLibsServerlessStack/Region": [
+        "/MadLibsServerless-development/Region": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Region"
           }
         ],
-        "/MadLibsServerlessStack/CDKMetadata/Default": [
+        "/MadLibsServerless-development/CDKMetadata/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata"
           }
         ],
-        "/MadLibsServerlessStack/BootstrapVersion": [
+        "/MadLibsServerless-development/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/MadLibsServerlessStack/CheckBootstrapVersion": [
+        "/MadLibsServerless-development/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "MadLibsServerlessStack"
+      "displayName": "MadLibsServerless-development"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -264,7 +585,6 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Do not specify a default DesiredCount for ECS services",
             "unconfiguredBehavesLike": {
@@ -476,22 +796,27 @@
             "explanation": "EFS denies anonymous clients accesses"
           },
           "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables support for Multi-AZ with Standby deployment for opensearch domains"
           },
           "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default"
           },
           "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, mount targets will have a stable logicalId that is linked to the associated subnet."
           },
           "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change."
           },
           "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id."
           },
@@ -532,7 +857,6 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the default volume type of the EBS volume will be GP3"
           },

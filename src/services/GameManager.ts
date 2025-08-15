@@ -203,7 +203,7 @@ export class GameManager {
       const story = await storyGenerator.fillTemplate(game.storyTemplate, game.wordSubmissions)
       
       // Generate images for each paragraph
-      const imageGenerator = new ImageGenerator()
+      const imageGenerator = ImageGenerator.getInstance()
       const imagePrompts = game.storyTemplate.paragraphs.map(p => p.imagePrompt)
       
       console.log('Generating images for story paragraphs...')
@@ -325,7 +325,7 @@ export class GameManager {
     const now = new Date()
     const inactiveThreshold = GAME_CONFIG.RECONNECTION_TIMEOUT
     
-    for (const [roomCode, game] of this.games.entries()) {
+    for (const [roomCode, game] of Array.from(this.games.entries())) {
       const timeSinceUpdate = now.getTime() - game.updatedAt.getTime()
       const hasConnectedPlayers = game.players.some(p => p.isConnected)
       
@@ -363,7 +363,7 @@ export class GameManager {
   }
 
   private findGameById(gameId: string): GameSession | undefined {
-    for (const game of this.games.values()) {
+    for (const game of Array.from(this.games.values())) {
       if (game.id === gameId) {
         return game
       }

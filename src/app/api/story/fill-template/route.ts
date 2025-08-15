@@ -26,16 +26,16 @@ export async function POST(request: NextRequest) {
     // Debug the first paragraph to see what word blanks exist
     const firstParagraph = deserializedTemplate.paragraphs[0]
     console.log('🔧 API: First paragraph text:', firstParagraph.text)
-    console.log('🔧 API: First paragraph word blanks:', firstParagraph.wordBlanks.map(wb => ({ id: wb.id, type: wb.type, position: wb.position })))
-    console.log('🔧 API: Word submissions:', deserializedWordSubmissions.map(ws => ({ id: ws.wordBlankId, word: ws.word, type: ws.wordType })))
+    console.log('🔧 API: First paragraph word blanks:', firstParagraph.wordBlanks.map((wb: any) => ({ id: wb.id, type: wb.type, position: wb.position })))
+    console.log('🔧 API: Word submissions:', deserializedWordSubmissions.map((ws: any) => ({ id: ws.wordBlankId, word: ws.word, type: ws.wordType })))
     
     // Check if word submissions match word blanks
-    const allWordBlanks = deserializedTemplate.paragraphs.flatMap(p => p.wordBlanks)
-    const submissionIds = new Set(deserializedWordSubmissions.map(ws => ws.wordBlankId))
-    const missingSubmissions = allWordBlanks.filter(wb => !submissionIds.has(wb.id))
+    const allWordBlanks = deserializedTemplate.paragraphs.flatMap((p: any) => p.wordBlanks)
+    const submissionIds = new Set(deserializedWordSubmissions.map((ws: any) => ws.wordBlankId))
+    const missingSubmissions = allWordBlanks.filter((wb: any) => !submissionIds.has(wb.id))
     
     if (missingSubmissions.length > 0) {
-      console.error('🚨 API: Missing word submissions for blanks:', missingSubmissions.map(wb => ({ id: wb.id, type: wb.type, position: wb.position })))
+      console.error('🚨 API: Missing word submissions for blanks:', missingSubmissions.map((wb: any) => ({ id: wb.id, type: wb.type, position: wb.position })))
     } else {
       console.log('✅ API: All word blanks have corresponding submissions')
     }

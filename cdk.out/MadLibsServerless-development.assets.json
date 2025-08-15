@@ -1,0 +1,51 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "3e1f0911526da5bb9a311bc6c1fd28169e6bf32976cafa61b394e420070b9245": {
+      "displayName": "StoryGenerationFunction/Code",
+      "source": {
+        "path": "asset.3e1f0911526da5bb9a311bc6c1fd28169e6bf32976cafa61b394e420070b9245",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "553368239051-us-east-1-d4224080": {
+          "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
+          "objectKey": "3e1f0911526da5bb9a311bc6c1fd28169e6bf32976cafa61b394e420070b9245.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
+        }
+      }
+    },
+    "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6": {
+      "displayName": "MadLibsServerless-development/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "553368239051-us-east-1-78f573a6": {
+          "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
+          "objectKey": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
+        }
+      }
+    },
+    "5438f6377f45a02500a66b1c7c284106ae53309c2d2d1c05ae242174060168b3": {
+      "displayName": "MadLibsServerless-development Template",
+      "source": {
+        "path": "MadLibsServerless-development.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "553368239051-us-east-1-503cd037": {
+          "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
+          "objectKey": "5438f6377f45a02500a66b1c7c284106ae53309c2d2d1c05ae242174060168b3.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

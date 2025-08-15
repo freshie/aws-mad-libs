@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mad Libs Game</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+        
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .api-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .api-status.connected {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .api-status.error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .api-status.loading {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .game-area {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .game-area.active {
+            display: block;
+        }
+        
+        .word-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+        
+        .word-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .word-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .word-type {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .story-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .highlighted-word {
+            background: #ffeb3b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .back-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const API_BASE_URL = 'https://ae38g4kioc.execute-api.us-east-1.amazonaws.com/prod';
+        
+        function App() {
+            const [gameMode, setGameMode] = useState('menu'); // menu, setup, theme, playing, story
+            const [players, setPlayers] = useState([]);
+            const [selectedTheme, setSelectedTheme] = useState('');
+            const [storyTemplate, setStoryTemplate] = useState(null);
+            const [currentWords, setCurrentWords] = useState([]);
+            const [wordIndex, setWordIndex] = useState(0);
+            const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+            const [story, setStory] = useState(null);
+            const [isLoading, setIsLoading] = useState(false);
+            const [wordSubmissions, setWordSubmissions] = useState([]);
+            
+            // Load previous player names from localStorage
+            const loadPreviousNames = () => {
+                try {
+                    const saved = localStorage.getItem('madlibs-player-names');
+                    return saved ? JSON.parse(saved) : [];
+                } catch {
+                    return [];
+                }
+            };
+            
+            // Initialize with previous names if available
+            React.useEffect(() => {
+                const previousNames = loadPreviousNames();
+                if (previousNames.length > 0 && players.length === 0) {
+                    const initialPlayers = [];
+                    for (let i = 0; i < Math.max(2, previousNames.length); i++) {
+                        initialPlayers.push({
+                            id: `player-${i}`,
+                            name: previousNames[i] || '',
+                            isHost: i === 0,
+                            wordsContributed: 0
+                        });
+                    }
+                    setPlayers(initialPlayers);
+                }
+            }, []);
+            
+            const startLocalGame = async () => {
+                setIsLoading(true);
+                try {
+                    // Generate a story template
+                    const response = await fetch(`${API_BASE_URL}/api/story/generate-template`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            theme: 'adventure',
+                            playerCount: 1
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to generate story template');
+                    }
+                    
+                    const data = await response.json();
+                    const template = data.template; // API returns {success: true, template: {...}}
+                    
+                    // Extract word blanks from the template
+                    const words = [];
+                    template.paragraphs.forEach(paragraph => {
+                        paragraph.wordBlanks.forEach(blank => {
+                            words.push({
+                                id: blank.id,
+                                type: blank.type,
+                                position: blank.position
+                            });
+                        });
+                    });
+                    
+                    setCurrentWords(words);
+                    setWordIndex(0);
+                    setGameMode('playing');
+                } catch (error) {
+                    console.error('Error starting game:', error);
+                    alert('Failed to start game. Please try again.');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            
+            const submitWord = (word) => {
+                const updatedWords = [...currentWords];
+                updatedWords[wordIndex].word = word;
+                setCurrentWords(updatedWords);
+                
+                if (wordIndex < currentWords.length - 1) {
+                    setWordIndex(wordIndex + 1);
+                } else {
+                    generateStory(updatedWords);
+                }
+            };
+            
+            const generateStory = async (words) => {
+                setIsLoading(true);
+                try {
+                    // This would normally call the fill-template API
+                    // For now, create a mock story
+                    const mockStory = {
+                        title: "Your Amazing Adventure",
+                        paragraphs: [
+                            {
+                                text: `Once upon a time, there was a ${words[0]?.word || 'mysterious'} ${words[1]?.word || 'creature'} who loved to ${words[2]?.word || 'dance'} in the ${words[3]?.word || 'forest'}.`,
+                                imageUrl: null
+                            },
+                            {
+                                text: `The ${words[4]?.word || 'brave'} hero decided to ${words[5]?.word || 'explore'} the ${words[6]?.word || 'magical'} land with ${words[7]?.word || 'friends'}.`,
+                                imageUrl: null
+                            }
+                        ]
+                    };
+                    
+                    setStory(mockStory);
+                    setGameMode('story');
+                } catch (error) {
+                    console.error('Error generating story:', error);
+                    alert('Failed to generate story. Please try again.');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            
+            const resetGame = () => {
+                setGameMode('menu');
+                setCurrentWords([]);
+                setWordIndex(0);
+                setStory(null);
+            };
+            
+            if (gameMode === 'menu') {
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>🎭 AI Mad Libs</h1>
+                            <p>Create hilarious stories with AI magic! ✨</p>
+                        </div>
+                        
+
+                        
+                        <div className="game-modes">
+                            <div className="card">
+                                <h2>🏠 Local Play</h2>
+                                <p>Play a quick game on this device. Perfect for testing the AI story generation!</p>
+                                <button 
+                                    className="btn" 
+                                    onClick={startLocalGame}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Starting...' : 'Start Local Game'}
+                                </button>
+                            </div>
+                            
+                            <div className="card">
+                                <h2>🌐 Online Play</h2>
+                                <p>Host or join online games with friends on different devices!</p>
+                                <button 
+                                    className="btn" 
+                                    onClick={() => alert('Online multiplayer coming soon!')}
+                                    disabled={true}
+                                >
+                                    Coming Soon
+                                </button>
+                            </div>
+                            
+                            <div className="card">
+                                <h2>ℹ️ About</h2>
+                                <p>This Mad Libs game uses AI to create unique stories and images based on your words!</p>
+                                <div style={{fontSize: '0.9rem', color: '#666', marginTop: '1rem'}}>
+                                    <p>• AI generates story templates</p>
+                                    <p>• Your words fill the blanks</p>
+                                    <p>• AI creates matching images</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            
+            if (gameMode === 'playing') {
+                const currentWord = currentWords[wordIndex];
+                
+                return (
+                    <div className="container">
+                        <div className="game-area active">
+                            <h2>Word Collection ({wordIndex + 1} of {currentWords.length})</h2>
+                            
+                            {currentWord && (
+                                <WordInput 
+                                    wordType={currentWord.type}
+                                    onSubmit={submitWord}
+                                    isLoading={isLoading}
+                                />
+                            )}
+                            
+                            <div style={{marginTop: '2rem', textAlign: 'center', color: '#666'}}>
+                                Progress: {wordIndex} / {currentWords.length} words collected
+                            </div>
+                        </div>
+                        
+                        <button className="back-btn" onClick={resetGame}>
+                            ← Back to Menu
+                        </button>
+                    </div>
+                );
+            }
+            
+            if (gameMode === 'story') {
+                return (
+                    <div className="container">
+                        <div className="game-area active">
+                            <h2>🎉 Your Story is Ready!</h2>
+                            
+                            {story && (
+                                <div className="story-display">
+                                    <h3>{story.title}</h3>
+                                    {story.paragraphs.map((paragraph, index) => (
+                                        <p key={index} style={{marginBottom: '1rem'}}>
+                                            {paragraph.text}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            <div style={{textAlign: 'center', marginTop: '2rem'}}>
+                                <button className="btn" onClick={resetGame}>
+                                    Create Another Story
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button className="back-btn" onClick={resetGame}>
+                            ← Back to Menu
+                        </button>
+                    </div>
+                );
+            }
+            
+            return null;
+        }
+        
+        function WordInput({ wordType, onSubmit, isLoading }) {
+            const [word, setWord] = useState('');
+            
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (word.trim()) {
+                    onSubmit(word.trim());
+                    setWord('');
+                }
+            };
+            
+            const getWordTypeDisplay = (type) => {
+                return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            };
+            
+            const getPlaceholder = (type) => {
+                const examples = {
+                    noun: 'cat, house, pizza',
+                    verb: 'run, jump, sing',
+                    adjective: 'funny, big, colorful',
+                    adverb: 'quickly, loudly, carefully',
+                    plural_noun: 'dogs, cars, cookies',
+                    past_tense_verb: 'walked, laughed, danced',
+                    color: 'red, blue, purple',
+                    number: '5, 100, 42',
+                    place: 'park, school, Mars',
+                    person: 'teacher, superhero, friend'
+                };
+                return `e.g. ${examples[type] || 'word'}`;
+            };
+            
+            return (
+                <form onSubmit={handleSubmit}>
+                    <div className="word-input">
+                        <div className="word-type">
+                            {getWordTypeDisplay(wordType)}
+                        </div>
+                        <input
+                            type="text"
+                            value={word}
+                            onChange={(e) => setWord(e.target.value)}
+                            placeholder={getPlaceholder(wordType)}
+                            disabled={isLoading}
+                            autoFocus
+                        />
+                        <button 
+                            type="submit" 
+                            className="btn" 
+                            disabled={!word.trim() || isLoading}
+                            style={{width: 'auto', minWidth: '100px'}}
+                        >
+                            {isLoading ? '...' : 'Next'}
+                        </button>
+                    </div>
+                </form>
+            );
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

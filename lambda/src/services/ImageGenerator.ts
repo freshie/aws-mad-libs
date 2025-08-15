@@ -16,25 +16,15 @@ export class ImageGenerator {
   private bucketName: string
 
   private constructor() {
-    this.bucketName = process.env.S3_BUCKET_NAME || 'ai-mad-libs-media'
+    this.bucketName = process.env.IMAGES_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'ai-mad-libs-media'
     
-    // Check for required AWS credentials
-    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-      throw new Error(
-        'AWS credentials are required for image generation. Please configure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.'
-      )
-    }
-    
-    console.log('ImageGenerator constructor - using AWS Bedrock for image generation')
+    console.log('ImageGenerator constructor - using AWS Bedrock for image generation with IAM role')
 
     const region = process.env.AWS_REGION || 'us-east-1'
-    const credentials = {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    }
-
-    this.bedrockClient = new BedrockRuntimeClient({ region, credentials })
-    this.s3Client = new S3Client({ region, credentials })
+    
+    // Use IAM role credentials (no explicit credentials needed in Lambda)
+    this.bedrockClient = new BedrockRuntimeClient({ region })
+    this.s3Client = new S3Client({ region })
   }
 
   public static getInstance(): ImageGenerator {
@@ -229,13 +219,10 @@ export class ImageGenerator {
 
     await this.s3Client.send(command)
 
-    // Generate signed URL for access
-    const getCommand = new GetObjectCommand({
-      Bucket: this.bucketName,
-      Key: key
-    })
-
-    return await getSignedUrl(this.s3Client, getCommand, { expiresIn: 7 * 24 * 60 * 60 }) // 7 days
+    // Return CloudFront URL instead of signed S3 URL
+    // Use the known CloudFront domain from deployment
+    const cloudfrontDomain = 'd1657msoon2g7h.cloudfront.net' // From deployment outputs
+    return `https://${cloudfrontDomain}/${key}`
   }
 
   private enhancePrompt(prompt: string, style: ImageStyle): string {

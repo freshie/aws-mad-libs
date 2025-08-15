@@ -1,28 +1,18 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { ImageGenerator } from './services/ImageGenerator';
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log('Image Generation Lambda invoked:', JSON.stringify(event, null, 2));
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  console.log('Image generation request:', JSON.stringify(event, null, 2));
 
   try {
     // Parse request body
-    if (!event.body) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        },
-        body: JSON.stringify({ error: 'Request body is required' }),
-      };
-    }
-
-    const { prompt, style } = JSON.parse(event.body);
+    const body = event.body ? JSON.parse(event.body) : {};
+    const { prompt, style = 'photographic' } = body;
 
     // Validate input
-    if (!prompt) {
+    if (!prompt || typeof prompt !== 'string') {
       return {
         statusCode: 400,
         headers: {
@@ -31,16 +21,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
           'Access-Control-Allow-Headers': 'Content-Type',
           'Access-Control-Allow-Methods': 'POST, OPTIONS',
         },
-        body: JSON.stringify({ error: 'Prompt is required' }),
+        body: JSON.stringify({
+          error: 'Invalid request. Prompt is required.',
+        }),
       };
     }
 
-    console.log('🎨 Lambda: Generating image with prompt:', prompt);
-
+    // Generate image
     const imageGenerator = ImageGenerator.getInstance();
-    const result = await imageGenerator.generateImage(prompt, style || { style: 'cartoon', colorScheme: 'vibrant' });
-
-    console.log('✅ Lambda: Image generated successfully:', result.url);
+    const result = await imageGenerator.generateImage(prompt, style);
 
     return {
       statusCode: 200,
@@ -50,10 +39,43 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
-      body: JSON.stringify({ image: result }),
+      body: JSON.stringify({
+        success: true,
+        result,
+      }),
     };
   } catch (error) {
-    console.error('❌ Lambda: Image generation failed:', error);
+    console.error('Error generating image:', error);
+
+    // Check if debug mode is enabled
+    const isDebugMode = process.env.DEBUG_ERRORS === 'true';
+    
+    let errorResponse: any = {
+      error: 'Failed to generate image',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    };
+
+    // Add detailed error information in debug mode
+    if (isDebugMode) {
+      errorResponse.debug = {
+        name: (error as any).name,
+        code: (error as any).code,
+        statusCode: (error as any).$metadata?.httpStatusCode,
+        requestId: (error as any).$metadata?.requestId,
+        retryable: (error as any).$retryable,
+        fault: (error as any).$fault,
+        stack: error instanceof Error ? error.stack : undefined,
+        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
+      };
+      
+      if ((error as any).$response) {
+        errorResponse.debug.httpResponse = {
+          statusCode: (error as any).$response.statusCode,
+          statusMessage: (error as any).$response.statusMessage,
+          headers: (error as any).$response.headers
+        };
+      }
+    }
 
     return {
       statusCode: 500,
@@ -63,10 +85,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
-      body: JSON.stringify({
-        error: 'Failed to generate image',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      }),
+      body: JSON.stringify(errorResponse),
     };
   }
 };

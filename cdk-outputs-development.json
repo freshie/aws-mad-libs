@@ -1,0 +1,18 @@
+{
+  "MadLibsServerless-development": {
+    "DynamoDBTableArn": "arn:aws:dynamodb:us-east-1:553368239051:table/MadLibsServerless-development-GameDataTable1D572DEE-1AA4MZCAY4WJT",
+    "MadLibsApiEndpoint9B9662E4": "https://zxp4er3qjk.execute-api.us-east-1.amazonaws.com/prod/",
+    "CloudFrontDistributionId": "E25MXAA5Z3Z2D3",
+    "WebsiteUrl": "https://d1657msoon2g7h.cloudfront.net",
+    "StoryGenerationFunctionArn": "arn:aws:lambda:us-east-1:553368239051:function:MadLibsServerless-development-StoryGeneration",
+    "ImageGenerationFunctionArn": "arn:aws:lambda:us-east-1:553368239051:function:MadLibsServerless-development-ImageGeneration",
+    "CloudFrontDomainName": "d1657msoon2g7h.cloudfront.net",
+    "ApiGatewayUrl": "https://zxp4er3qjk.execute-api.us-east-1.amazonaws.com/prod/",
+    "ImagesBucketName": "madlibsserverless-development-images-553368239051",
+    "WebsiteBucketName": "madlibsserverless-development-website-553368239051",
+    "DynamoDBTableName": "MadLibsServerless-development-GameDataTable1D572DEE-1AA4MZCAY4WJT",
+    "ApiGatewayId": "zxp4er3qjk",
+    "Region": "us-east-1",
+    "StackName": "MadLibsServerless-development"
+  }
+}

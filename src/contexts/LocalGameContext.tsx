@@ -271,13 +271,13 @@ function createFallbackTemplateWithTheme(theme: string, playerCount: number): St
     }
   }
   
-  const selectedTemplate = templates[theme] || templates.adventure
+  const selectedTemplate = templates[theme as keyof typeof templates] || templates.adventure
   
   let globalPosition = 0
   
   const paragraphs = selectedTemplate.paragraphs.map((p, paragraphIndex) => {
     // Create word blanks based on the actual placeholders in the text
-    const wordBlanks = []
+    const wordBlanks: any[] = []
     
     // Extract word types from the text placeholders
     const placeholders = p.text.match(/\{(\w+)\}/g) || []
@@ -285,7 +285,7 @@ function createFallbackTemplateWithTheme(theme: string, playerCount: number): St
     console.log(`Template creation - Found placeholders:`, placeholders)
     
     placeholders.forEach((placeholder, placeholderIndex) => {
-      const wordType = placeholder.replace(/[{}]/g)
+      const wordType = placeholder.replace(/[{}]/g, '')
       let enumType
       
       console.log(`🔍 Template Debug: Processing placeholder "${placeholder}", extracted wordType: "${wordType}"`)
@@ -711,24 +711,33 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         try {
           console.log(`🎨 Background: Generating image ${i + 1}/${template.paragraphs.length}`)
           
+          // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               prompt: templateParagraph.imagePrompt,
-              style: { style: 'cartoon', colorScheme: 'vibrant' }
+              style: 'cartoon' // Lambda expects just the style string, not an object
             })
           })
           
           if (response.ok) {
-            const { image } = await response.json()
-            console.log(`✅ Background image ${i + 1} generated: ${image.url}`)
+            const responseData = await response.json()
+            console.log(`🔍 Background image ${i + 1} full response:`, JSON.stringify(responseData, null, 2))
             
-            // Update the story with the new image
-            dispatch({ 
-              type: 'UPDATE_PARAGRAPH_IMAGE', 
-              payload: { paragraphIndex: i, imageUrl: image.url } 
-            })
+            // Lambda returns { success: true, result: ImageResult }
+            if (responseData.success && responseData.result && responseData.result.url) {
+              const imageUrl = responseData.result.url
+              console.log(`✅ Background image ${i + 1} URL: ${imageUrl}`)
+              
+              // Update the story with the new image
+              dispatch({ 
+                type: 'UPDATE_PARAGRAPH_IMAGE', 
+                payload: { paragraphIndex: i, imageUrl: imageUrl } 
+              })
+            } else {
+              console.error(`❌ Background image ${i + 1} missing URL. Response:`, responseData)
+            }
             
           } else {
             const error = await response.json()
@@ -796,19 +805,25 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         try {
           console.log('🎨 Generating first image:', template.paragraphs[0].imagePrompt)
           
+          // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               prompt: template.paragraphs[0].imagePrompt,
-              style: { style: 'cartoon', colorScheme: 'vibrant' }
+              style: 'cartoon' // Lambda expects just the style string, not an object
             })
           })
           
           if (response.ok) {
-            const { image } = await response.json()
-            filledParagraphs[0].imageUrl = image.url
-            console.log('✅ First image generated:', image.url)
+            const responseData = await response.json()
+            // Lambda returns { success: true, result: ImageResult }
+            if (responseData.success && responseData.result && responseData.result.url) {
+              filledParagraphs[0].imageUrl = responseData.result.url
+              console.log('✅ First image generated:', responseData.result.url)
+            } else {
+              console.error('❌ First image missing URL. Response:', responseData)
+            }
           } else {
             const error = await response.json()
             console.error('❌ Failed to generate first image:', error)

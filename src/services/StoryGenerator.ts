@@ -17,19 +17,31 @@ export class StoryGenerator {
     this.mockGenerator = new MockStoryGenerator()
 
     // Use mock only when AWS credentials are not available
-    this.useMock = !process.env.AWS_ACCESS_KEY_ID ||
-      !process.env.AWS_SECRET_ACCESS_KEY
-
-    console.log('StoryGenerator constructor - useMock:', this.useMock)
-
-    if (!this.useMock) {
+    const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+    
+    if (isLambda) {
+      // Lambda environment - use IAM role
+      this.useMock = false;
       this.bedrockClient = new BedrockRuntimeClient({
-        region: process.env.AWS_REGION || 'us-east-1',
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-        },
-      })
+        region: process.env.AWS_REGION || 'us-east-1'
+      });
+      console.log('StoryGenerator using Lambda IAM role');
+    } else {
+      // Local development - check for credentials
+      this.useMock = !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY;
+      
+      if (!this.useMock) {
+        this.bedrockClient = new BedrockRuntimeClient({
+          region: process.env.AWS_REGION || 'us-east-1',
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+          },
+        });
+        console.log('StoryGenerator using environment credentials');
+      } else {
+        console.log('StoryGenerator using mock (no AWS credentials)');
+      }
     }
   }
 
@@ -47,18 +59,18 @@ export class StoryGenerator {
 
   async generateTemplate(theme?: string, playerCount: number = 4): Promise<StoryTemplate> {
     if (this.useMock) {
-      return this.mockGenerator.generateTemplate(theme, playerCount)
+      return await this.mockGenerator.generateTemplate(theme, playerCount)
     }
 
     try {
       const prompt = this.createTemplatePrompt(theme, playerCount)
       const response = await this.invokeBedrockModel(prompt)
 
-      return this.parseTemplateResponse(response, theme, playerCount)
+      return await this.parseTemplateResponse(response, theme, playerCount)
     } catch (error) {
       console.error('Error generating story template with Bedrock, falling back to mock:', error)
       // Fall back to mock generator
-      return this.mockGenerator.generateTemplate(theme, playerCount)
+      return await this.mockGenerator.generateTemplate(theme, playerCount)
     }
   }
 
@@ -220,7 +232,7 @@ Format your response as JSON:
 Make it creative and funny!`
   }
 
-  private parseTemplateResponse(response: string, theme?: string, playerCount: number = 4): StoryTemplate {
+  private async parseTemplateResponse(response: string, theme?: string, playerCount: number = 4): Promise<StoryTemplate> {
     try {
       // Clean up the response - remove markdown code blocks if present
       let cleanResponse = response.trim()
@@ -267,7 +279,7 @@ Make it creative and funny!`
       if (totalWordBlanks !== 16) {
         console.log(`AI generated ${totalWordBlanks} words (expected 16), falling back to mock template`)
         console.log('🔧 StoryGenerator: Calling mockGenerator.generateTemplate with theme:', theme, 'playerCount:', playerCount)
-        return this.mockGenerator.generateTemplate(theme, playerCount)
+        return await this.mockGenerator.generateTemplate(theme, playerCount)
       }
 
       return {
@@ -363,48 +375,60 @@ Make it creative and funny!`
       case WordType.NUMBER: return 'number'
       case WordType.PLACE: return 'place'
       case WordType.PERSON: return 'person'
-      default: return wordType.toLowerCase()
+      default: return (wordType as string).toLowerCase()
     }
   }
 
   private createContextualImagePrompt(filledText: string, originalPrompt: string): string {
+    console.log('🎨 Creating contextual prompt from:', filledText)
+    console.log('🎭 Original template prompt:', originalPrompt)
+
     // Clean the text and extract key visual elements
-    const cleanText = filledText.replace(/[{}]/g, '')
+    const cleanText = filledText.replace(/[{}]/g, '').trim()
 
-    // Check if the filled text makes visual sense or is too chaotic
+    // Extract user inputs by looking for patterns like "Tyler | Adjective" or standalone unusual words
+    const userInputPattern = /(\w+)\s*\|\s*\w+/g
+    const userInputs: string[] = []
+    let match
+    while ((match = userInputPattern.exec(cleanText)) !== null) {
+      userInputs.push(match[1])
+    }
+
+    console.log('🔍 Extracted user inputs:', userInputs)
+
+    // Also extract other meaningful words that aren't common words
     const words = cleanText.toLowerCase().split(/\s+/)
-    const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']
-    const meaningfulWords = words.filter(w => !commonWords.includes(w) && w.length > 2)
+    const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'was', 'were', 'is', 'are', 'he', 'she', 'it', 'they', 'his', 'her', 'their', 'one', 'day', 'found', 'showed', 'location']
+    const meaningfulWords = words.filter(w => 
+      !commonWords.includes(w) && 
+      w.length > 2 && 
+      !w.includes('|') && // Skip the template markers
+      !/^\d+$/.test(w) // Skip pure numbers
+    )
 
-    // If the text is too short or chaotic, use the original prompt
-    if (meaningfulWords.length < 3) {
-      return `${originalPrompt}. Style: modern cartoon illustration, family-friendly, vibrant colors, clear composition, whimsical and fun atmosphere.`
+    console.log('🔍 Meaningful words from text:', meaningfulWords)
+
+    // If we have user inputs or meaningful content, create a contextual prompt
+    if (userInputs.length > 0 || meaningfulWords.length >= 3) {
+      // Start with the base scene from the original prompt
+      let contextualPrompt = originalPrompt
+
+      // Add specific elements from the user's story
+      const allElements = [...userInputs, ...meaningfulWords.slice(0, 5)] // Limit to avoid too long prompts
+      
+      if (allElements.length > 0) {
+        // Replace generic elements with specific ones from the story
+        const uniqueElements = allElements.filter((item, index) => allElements.indexOf(item) === index).slice(0, 4) // Remove duplicates and limit
+        contextualPrompt += ` featuring ${uniqueElements.join(', ')}`
+      }
+
+      console.log('✨ Generated contextual prompt:', contextualPrompt)
+      return contextualPrompt
     }
 
-    // Look for visual elements (colors, places, objects, actions)
-    const colors = words.filter(w => ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'black', 'white', 'brown', 'gray', 'silver', 'gold'].includes(w))
-    const places = words.filter(w => ['castle', 'forest', 'mountain', 'beach', 'city', 'park', 'school', 'house', 'kitchen', 'garden', 'space', 'ocean', 'room', 'yard', 'street'].includes(w))
-    const characters = words.filter(w => ['hero', 'princess', 'knight', 'wizard', 'dragon', 'cat', 'dog', 'bird', 'person', 'child', 'teacher', 'student'].includes(w))
-
-    // Create a balanced prompt that uses both the original scene and specific elements
-    let enhancedPrompt = originalPrompt
-
-    // Add specific visual elements if found
-    if (characters.length > 0) {
-      enhancedPrompt += ` featuring a ${characters[0]}`
-    }
-    if (places.length > 0) {
-      enhancedPrompt += ` in a ${places[0]}`
-    }
-    if (colors.length > 0) {
-      enhancedPrompt += ` with ${colors[0]} elements`
-    }
-
-    // Add style and quality modifiers
-    enhancedPrompt += '. Style: modern cartoon illustration, family-friendly, vibrant colors, clear composition, whimsical and fun atmosphere.'
-
-    console.log('Enhanced image prompt:', enhancedPrompt)
-    return enhancedPrompt
+    // Fallback to original prompt if we can't extract meaningful content
+    console.log('⚠️ Using fallback original prompt')
+    return originalPrompt
   }
 
   private async generateFirstImage(story: Story, template: StoryTemplate): Promise<void> {
@@ -412,7 +436,7 @@ Make it creative and funny!`
       console.log('Generating first image for story:', story.id)
 
       const { ImageGenerator } = await import('./ImageGenerator')
-      const imageGenerator = new ImageGenerator()
+      const imageGenerator = ImageGenerator.getInstance()
 
       const firstParagraph = story.paragraphs[0]
       const firstTemplateParagraph = template.paragraphs[0]
@@ -427,8 +451,12 @@ Make it creative and funny!`
       )
 
       // Update the first paragraph with the generated image
-      firstParagraph.imageUrl = imageResult.url
-      console.log('First image generated:', imageResult.url)
+      if (imageResult && imageResult.url) {
+        firstParagraph.imageUrl = imageResult.url
+        console.log('First image generated:', imageResult.url)
+      } else {
+        console.error('❌ First image result is missing URL:', imageResult)
+      }
 
     } catch (error) {
       console.error('Failed to generate first image:', error)
@@ -441,7 +469,7 @@ Make it creative and funny!`
     setTimeout(async () => {
       try {
         const { ImageGenerator } = await import('./ImageGenerator')
-        const imageGenerator = new ImageGenerator()
+        const imageGenerator = ImageGenerator.getInstance()
 
         // Generate images for paragraphs 2-4 (skip first one)
         for (let i = 1; i < story.paragraphs.length; i++) {
@@ -449,24 +477,57 @@ Make it creative and funny!`
             const paragraph = story.paragraphs[i]
             const templateParagraph = template.paragraphs[i]
 
+            console.log(`🎨 Starting background image generation for paragraph ${i + 1}`)
+            console.log(`📝 Paragraph text:`, paragraph.text)
+            console.log(`🎭 Template image prompt:`, templateParagraph.imagePrompt)
+
             // Create image prompt based on the actual filled story content
             const contextualPrompt = this.createContextualImagePrompt(paragraph.text, templateParagraph.imagePrompt)
+            console.log(`🎨 Generated contextual prompt for paragraph ${i + 1}:`, contextualPrompt)
+            
+            let imageResult
+            try {
+              console.log(`🚀 Calling imageGenerator.generateImage for paragraph ${i + 1}`)
+              imageResult = await imageGenerator.generateImage(
+                contextualPrompt,
+                { style: 'cartoon', colorScheme: 'vibrant' }
+              )
+              console.log(`✅ imageGenerator.generateImage returned for paragraph ${i + 1}:`, imageResult)
+            } catch (generateError) {
+              console.error(`❌ imageGenerator.generateImage threw error for paragraph ${i + 1}:`, generateError)
+              throw generateError
+            }
 
-            const imageResult = await imageGenerator.generateImage(
-              contextualPrompt,
-              { style: 'cartoon', colorScheme: 'vibrant' }
-            )
+            // Check if imageResult is defined and has url property
+            console.log(`🔍 Checking imageResult for paragraph ${i + 1}:`)
+            console.log(`   - imageResult:`, imageResult)
+            console.log(`   - typeof imageResult:`, typeof imageResult)
+            console.log(`   - imageResult?.url:`, imageResult?.url)
+            console.log(`   - typeof imageResult?.url:`, typeof imageResult?.url)
 
             // Update the paragraph with the generated image
-            paragraph.imageUrl = imageResult.url
+            if (imageResult && imageResult.url) {
+              paragraph.imageUrl = imageResult.url
+              console.log(`📸 Successfully updated paragraph ${i + 1} with image URL:`, imageResult.url)
+            } else {
+              console.error(`❌ Image result is missing URL for paragraph ${i + 1}:`)
+              console.error(`   - imageResult:`, imageResult)
+              console.error(`   - imageResult?.url:`, imageResult?.url)
+            }
 
             // Add a small delay between images to avoid rate limiting
             if (i < story.paragraphs.length - 1) {
+              console.log(`⏳ Waiting 3 seconds before next image...`)
               await new Promise(resolve => setTimeout(resolve, 3000))
             }
 
           } catch (error) {
-            console.error(`Failed to generate background image for paragraph ${i + 1}:`, error)
+            console.error(`❌ Failed to generate background image for paragraph ${i + 1}:`, error)
+            console.error(`❌ Error details:`, {
+              name: error instanceof Error ? error.name : 'Unknown',
+              message: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : 'No stack trace'
+            })
             // Continue with other paragraphs
           }
         }

@@ -17,7 +17,7 @@ export async function GET() {
     console.log('StoryGenerator using mock:', storyUseMock)
     
     // Test ImageGenerator
-    const imageGenerator = new ImageGenerator()
+    const imageGenerator = ImageGenerator.getInstance()
     const imageUseMock = (imageGenerator as any).useMock
     console.log('ImageGenerator using mock:', imageUseMock)
     
@@ -37,7 +37,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error in AWS test:', error)
     return NextResponse.json(
-      { error: 'Test failed', message: error.message },
+      { error: 'Test failed', message: (error as Error).message },
       { status: 500 }
     )
   }

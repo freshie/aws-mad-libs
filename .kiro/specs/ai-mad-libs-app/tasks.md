@@ -10,6 +10,9 @@
   - Configure ESLint, Prettier, and testing framework (Jest)
 
 
+
+
+
   - _Requirements: 1.1, 2.1_
 
 - [ ] 2. Implement basic game session management
@@ -94,6 +97,9 @@
   - Set up AWS Elemental MediaConvert for video processing
   - Create VideoCreator service that combines story text, images, and credits
   - Implement video scene creation with timing and transitions
+
+
+
   - Add progress tracking for video generation process
   - Configure S3 storage for video files with CloudFront distribution
   - Create video preview functionality while processing

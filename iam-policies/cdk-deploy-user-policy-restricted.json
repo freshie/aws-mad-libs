@@ -2,58 +2,50 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "CDKBootstrapAccess",
+            "Sid": "CloudFormationAccess",
             "Effect": "Allow",
             "Action": [
-                "cloudformation:CreateStack",
-                "cloudformation:UpdateStack",
-                "cloudformation:DeleteStack",
-                "cloudformation:DescribeStacks",
-                "cloudformation:DescribeStackEvents",
-                "cloudformation:DescribeStackResources",
-                "cloudformation:GetTemplate",
-                "cloudformation:ValidateTemplate",
-                "cloudformation:CreateChangeSet",
-                "cloudformation:DescribeChangeSet",
-                "cloudformation:ExecuteChangeSet",
-                "cloudformation:DeleteChangeSet",
-                "cloudformation:ListStacks"
+                "cloudformation:*"
             ],
             "Resource": [
-                "arn:aws:cloudformation:*:*:stack/CDKToolkit/*",
-                "arn:aws:cloudformation:*:*:stack/MadLibsServerlessStack/*"
+                "arn:aws:cloudformation:*:*:stack/CDKToolkit*/*",
+                "arn:aws:cloudformation:*:*:stack/MadLibsServerless-*/*",
+                "arn:aws:cloudformation:*:*:changeset/*"
             ]
         },
         {
-            "Sid": "CDKAssetsBucketAccess",
+            "Sid": "CloudFormationGlobal",
             "Effect": "Allow",
             "Action": [
-                "s3:CreateBucket",
-                "s3:DeleteBucket",
-                "s3:GetBucketLocation",
-                "s3:GetBucketPolicy",
-                "s3:PutBucketPolicy",
-                "s3:DeleteBucketPolicy",
-                "s3:GetBucketVersioning",
-                "s3:PutBucketVersioning",
-                "s3:GetBucketPublicAccessBlock",
-                "s3:PutBucketPublicAccessBlock",
-                "s3:ListBucket",
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject",
-                "s3:GetObjectVersion",
-                "s3:DeleteObjectVersion"
+                "cloudformation:DescribeStacks",
+                "cloudformation:ListStacks"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3Management",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
             ],
             "Resource": [
                 "arn:aws:s3:::cdk-*",
                 "arn:aws:s3:::cdk-*/*",
-                "arn:aws:s3:::ai-mad-libs-*",
-                "arn:aws:s3:::ai-mad-libs-*/*"
+                "arn:aws:s3:::madlibsserverless-*",
+                "arn:aws:s3:::madlibsserverless-*/*"
             ]
         },
         {
-            "Sid": "IAMRoleManagement",
+            "Sid": "S3Global",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "IAMManagement",
             "Effect": "Allow",
             "Action": [
                 "iam:CreateRole",
@@ -65,122 +57,89 @@
                 "iam:PutRolePolicy",
                 "iam:DeleteRolePolicy",
                 "iam:GetRolePolicy",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
                 "iam:TagRole",
-                "iam:UntagRole"
+                "iam:UntagRole",
+                "iam:UpdateRole",
+                "iam:UpdateAssumeRolePolicy"
             ],
             "Resource": [
-                "arn:aws:iam::*:role/MadLibsServerlessStack-*",
+                "arn:aws:iam::*:role/MadLibsServerless-*",
                 "arn:aws:iam::*:role/cdk-*"
             ]
         },
         {
-            "Sid": "LambdaFunctionManagement",
+            "Sid": "LambdaManagement",
             "Effect": "Allow",
             "Action": [
-                "lambda:CreateFunction",
-                "lambda:DeleteFunction",
-                "lambda:GetFunction",
-                "lambda:UpdateFunctionCode",
-                "lambda:UpdateFunctionConfiguration",
-                "lambda:ListFunctions",
-                "lambda:TagResource",
-                "lambda:UntagResource",
-                "lambda:AddPermission",
-                "lambda:RemovePermission",
-                "lambda:GetPolicy"
+                "lambda:*"
             ],
-            "Resource": "arn:aws:lambda:*:*:function:MadLibsServerlessStack-*"
+            "Resource": [
+                "arn:aws:lambda:*:*:function:MadLibsServerless-*",
+                "arn:aws:lambda:*:*:function:cdk-*"
+            ]
         },
         {
             "Sid": "APIGatewayManagement",
             "Effect": "Allow",
             "Action": [
-                "apigateway:GET",
-                "apigateway:POST",
-                "apigateway:PUT",
-                "apigateway:DELETE",
-                "apigateway:PATCH"
+                "apigateway:*"
             ],
             "Resource": "arn:aws:apigateway:*::/restapis*"
         },
         {
-            "Sid": "DynamoDBTableManagement",
+            "Sid": "DynamoDBManagement",
             "Effect": "Allow",
             "Action": [
-                "dynamodb:CreateTable",
-                "dynamodb:DeleteTable",
-                "dynamodb:DescribeTable",
-                "dynamodb:UpdateTable",
-                "dynamodb:ListTables",
-                "dynamodb:TagResource",
-                "dynamodb:UntagResource",
-                "dynamodb:DescribeTimeToLive",
-                "dynamodb:UpdateTimeToLive"
+                "dynamodb:*"
             ],
-            "Resource": "arn:aws:dynamodb:*:*:table/MadLibsServerlessStack-*"
+            "Resource": [
+                "arn:aws:dynamodb:*:*:table/MadLibsServerless-*",
+                "arn:aws:dynamodb:*:*:table/MadLibsServerless-*/index/*"
+            ]
         },
         {
-            "Sid": "CloudFrontDistributionManagement",
+            "Sid": "CloudFrontManagement",
             "Effect": "Allow",
             "Action": [
-                "cloudfront:CreateDistribution",
-                "cloudfront:DeleteDistribution",
-                "cloudfront:GetDistribution",
-                "cloudfront:UpdateDistribution",
-                "cloudfront:ListDistributions",
-                "cloudfront:TagResource",
-                "cloudfront:UntagResource",
-                "cloudfront:CreateOriginAccessControl",
-                "cloudfront:DeleteOriginAccessControl",
-                "cloudfront:GetOriginAccessControl",
-                "cloudfront:UpdateOriginAccessControl"
+                "cloudfront:*"
             ],
             "Resource": "*"
         },
         {
-            "Sid": "CloudWatchLogsManagement",
+            "Sid": "LogsManagement",
             "Effect": "Allow",
             "Action": [
-                "logs:CreateLogGroup",
-                "logs:DeleteLogGroup",
-                "logs:DescribeLogGroups",
-                "logs:PutRetentionPolicy",
-                "logs:TagLogGroup",
-                "logs:UntagLogGroup"
+                "logs:*"
             ],
-            "Resource": "arn:aws:logs:*:*:log-group:/aws/lambda/MadLibsServerlessStack-*"
+            "Resource": [
+                "arn:aws:logs:*:*:log-group:/aws/lambda/MadLibsServerless-*",
+                "arn:aws:logs:*:*:log-group:/aws/apigateway/*",
+                "arn:aws:logs:*:*:log-group:/aws/cloudfront/*"
+            ]
         },
         {
-            "Sid": "SSMParameterAccess",
+            "Sid": "SSMAccess",
             "Effect": "Allow",
             "Action": [
                 "ssm:GetParameter",
                 "ssm:PutParameter",
-                "ssm:DeleteParameter",
-                "ssm:GetParameters"
+                "ssm:DeleteParameter"
             ],
-            "Resource": [
-                "arn:aws:ssm:*:*:parameter/cdk-bootstrap/*",
-                "arn:aws:ssm:*:*:parameter/mad-libs/*"
-            ]
+            "Resource": "arn:aws:ssm:*:*:parameter/cdk-bootstrap/*"
         },
         {
-            "Sid": "SecretsManagerAccess",
+            "Sid": "STSAccess",
             "Effect": "Allow",
             "Action": [
-                "secretsmanager:CreateSecret",
-                "secretsmanager:DeleteSecret",
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:UpdateSecret",
-                "secretsmanager:TagResource",
-                "secretsmanager:UntagResource"
+                "sts:AssumeRole",
+                "sts:GetCallerIdentity"
             ],
-            "Resource": "arn:aws:secretsmanager:*:*:secret:mad-libs/*"
+            "Resource": "*"
         },
         {
-            "Sid": "BedrockModelAccess",
+            "Sid": "BedrockAccess",
             "Effect": "Allow",
             "Action": [
                 "bedrock:InvokeModel",

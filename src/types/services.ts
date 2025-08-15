@@ -1,4 +1,4 @@
-import { GameSession, Player, Story, StoryTemplate, WordSubmission, ImageResult, VideoResult } from './game'
+import { GameSession, Player, Story, StoryTemplate, WordSubmission, ImageResult, VideoResult, VideoFormat, GameEvent } from './game'
 
 export interface GameManager {
   createGame(hostId: string): Promise<GameSession>
@@ -47,13 +47,5 @@ export interface VideoScene {
   transition: 'fade' | 'slide' | 'zoom'
 }
 
-export enum VideoFormat {
-  MP4 = 'mp4',
-  WEBM = 'webm'
-}
+// VideoFormat is defined in game.ts
 
-export interface GameEvent {
-  type: string
-  payload: any
-  timestamp: Date
-}

@@ -81,7 +81,7 @@ export class MockStoryGenerator {
 
     // Select a random template or one matching the theme
     let selectedTemplate = this.mockTemplates[Math.floor(Math.random() * this.mockTemplates.length)]
-    
+
     if (theme) {
       const themeMatch = this.mockTemplates.find(t => t.theme.toLowerCase().includes(theme.toLowerCase()))
       if (themeMatch) {
@@ -93,19 +93,19 @@ export class MockStoryGenerator {
     const paragraphs: Paragraph[] = selectedTemplate.paragraphs.map(p => {
       const wordBlanks: WordBlank[] = []
       let position = 0
-      
+
       // Extract word blanks from text
       const regex = /\{(\w+)\}/g
       let match
       // Processing paragraph for word blanks
-      
+
       // Reset regex lastIndex to ensure we start from the beginning
       regex.lastIndex = 0
-      
+
       while ((match = regex.exec(p.text)) !== null) {
         const extractedType = match[1]
         const wordType = this.normalizeWordType(extractedType)
-        
+
         if (wordType) {
           const wordBlank = {
             id: uuidv4(),
@@ -117,7 +117,7 @@ export class MockStoryGenerator {
           // Word blank created
         }
       }
-      
+
       // Word blanks created for paragraph
 
       return {
@@ -141,13 +141,13 @@ export class MockStoryGenerator {
   async fillTemplate(template: StoryTemplate, words: WordSubmission[]): Promise<Story> {
     // Simulate processing delay
     await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000))
-    
+
     // MockStoryGenerator filling template
 
     // Create word mapping for easy lookup
     const wordMap = new Map<string, WordSubmission>()
     words.forEach(word => wordMap.set(word.wordBlankId, word))
-    
+
     // Create global debug object
     const debugInfo = {
       totalSubmissions: words.length,
@@ -157,158 +157,117 @@ export class MockStoryGenerator {
       paragraphDetails: [],
       finalResults: []
     }
-    
+
     // Processing word submissions
 
     // Fill in the template with submitted words (text only, images later)
     const completedParagraphs: CompletedParagraph[] = template.paragraphs.map((paragraph) => {
-        let filledText = paragraph.text
-        const replacements: Array<{ word: string; playerUsername: string; wordType: string }> = []
+      let filledText = paragraph.text
+      const replacements: Array<{ word: string; playerUsername: string; wordType: string }> = []
 
-        // Sort word blanks by position to process them in order
-        const sortedBlanks = [...paragraph.wordBlanks].sort((a, b) => a.position - b.position)
-        const paragraphDebug: any = {
-          originalText: paragraph.text,
-          wordBlanks: sortedBlanks.map(b => ({ id: b.id, type: b.type, position: b.position })),
-          availableSubmissions: Array.from(wordMap.keys()),
-          submissionDetails: Array.from(wordMap.entries()).map(([id, sub]) => ({ id, word: sub.word, type: sub.wordType })),
-          replacements: []
-        }
-        
-        console.log('=== PROCESSING PARAGRAPH ===')
-        console.log('Original text:', paragraph.text)
-        console.log('Word blanks for this paragraph:', sortedBlanks.map(b => ({ id: b.id, type: b.type, position: b.position })))
-        console.log('Available word submissions:', Array.from(wordMap.keys()))
-        console.log('Word submissions details:', Array.from(wordMap.entries()).map(([id, sub]) => ({ id, word: sub.word, type: sub.wordType })))
-        
-        // Check if all word blanks have corresponding submissions
-        const missingSubmissions = sortedBlanks.filter(blank => !wordMap.has(blank.id))
-        if (missingSubmissions.length > 0) {
-          console.error('❌ Missing word submissions for blanks:', missingSubmissions.map(b => ({ id: b.id, type: b.type, position: b.position })))
+      // Sort word blanks by position to process them in order
+      const sortedBlanks = [...paragraph.wordBlanks].sort((a, b) => a.position - b.position)
+      const paragraphDebug: any = {
+        originalText: paragraph.text,
+        wordBlanks: sortedBlanks.map(b => ({ id: b.id, type: b.type, position: b.position })),
+        availableSubmissions: Array.from(wordMap.keys()),
+        submissionDetails: Array.from(wordMap.entries()).map(([id, sub]) => ({ id, word: sub.word, type: sub.wordType })),
+        replacements: []
+      }
+
+      // Check if all word blanks have corresponding submissions
+      const missingSubmissions = sortedBlanks.filter(blank => !wordMap.has(blank.id))
+      if (missingSubmissions.length > 0) {
+        console.warn('Missing word submissions for blanks:', missingSubmissions.map(b => ({ id: b.id, type: b.type, position: b.position })))
+      }
+
+      // Process only word submissions that belong to this paragraph's word blanks
+      const paragraphWordSubmissions = sortedBlanks
+        .map(blank => wordMap.get(blank.id))
+        .filter(submission => submission !== undefined)
+
+
+
+      paragraphWordSubmissions.forEach((submission, index) => {
+        // Convert WordType enum to lowercase placeholder format
+        const placeholder = `{${this.wordTypeToPlaceholder(submission.wordType)}}`
+
+
+
+        // Find and replace the first occurrence of this placeholder
+        const wordIndex = filledText.indexOf(placeholder)
+        if (wordIndex !== -1) {
+          // Replace the first occurrence
+          filledText = filledText.replace(placeholder, submission.word)
+
+          // Track this replacement for highlight creation
+          replacements.push({
+            word: submission.word,
+            playerUsername: submission.playerUsername,
+            wordType: submission.wordType
+          })
+
+
+
         } else {
-          console.log('✅ All word blanks have corresponding submissions')
-        }
-        
-        // Show all placeholders in the text for debugging
-        const allPlaceholders = filledText.match(/\{(\w+)\}/g) || []
-        console.log('🔍 All placeholders found in text:', allPlaceholders)
-        
-        // Process only word submissions that belong to this paragraph's word blanks
-        const paragraphWordSubmissions = sortedBlanks
-          .map(blank => wordMap.get(blank.id))
-          .filter(submission => submission !== undefined)
-        
-        console.log(`🚨 MockStoryGenerator: Processing ${paragraphWordSubmissions.length} word submissions for this paragraph`)
-        
-        paragraphWordSubmissions.forEach((submission, index) => {
-          // Convert WordType enum to lowercase placeholder format
-          const placeholder = `{${this.wordTypeToPlaceholder(submission.wordType)}}`
-          
-          console.log(`🔄 Processing word ${index + 1}/${paragraphWordSubmissions.length}: "${submission.word}" for placeholder "${placeholder}"`)
-          console.log(`📝 Text before: "${filledText}"`)
-          
-          // Find and replace the first occurrence of this placeholder
-          const wordIndex = filledText.indexOf(placeholder)
-          if (wordIndex !== -1) {
-            // Replace the first occurrence
-            filledText = filledText.replace(placeholder, submission.word)
-
-            // Track this replacement for highlight creation
-            replacements.push({
-              word: submission.word,
-              playerUsername: submission.playerUsername,
-              wordType: submission.wordType
-            })
-            
-            console.log(`✅ Replaced "${placeholder}" with "${submission.word}"`)
-            console.log(`📄 Text after: "${filledText}"`)
-
-          } else {
-            console.error(`❌ Could not find placeholder "${placeholder}" in text: "${filledText}"`)
-          }
-        })
-
-        // Third pass: create highlights by tracking exact positions during replacement
-        const wordHighlights: WordHighlight[] = []
-        
-        // Re-process the text to track exact positions
-        let trackingText = paragraph.text
-        
-        sortedBlanks.forEach(blank => {
-          const submission = wordMap.get(blank.id)
-          if (submission) {
-            const placeholder = `{${this.wordTypeToPlaceholder(blank.type)}}`
-            const placeholderIndex = trackingText.indexOf(placeholder)
-            
-            if (placeholderIndex !== -1) {
-              // Record the highlight at this exact position
-              wordHighlights.push({
-                word: submission.word,
-                playerUsername: submission.playerUsername,
-                wordType: submission.wordType,
-                startIndex: placeholderIndex,
-                endIndex: placeholderIndex + submission.word.length
-              })
-              
-              // Replace the placeholder with the word for the next iteration
-              trackingText = trackingText.substring(0, placeholderIndex) + 
-                           submission.word + 
-                           trackingText.substring(placeholderIndex + placeholder.length)
-            }
-          }
-        })
-        
-        // Sort highlights by position to ensure correct rendering
-        wordHighlights.sort((a, b) => a.startIndex - b.startIndex)
-        
-        console.log('🎯 Created highlights:', wordHighlights.map(h => ({ word: h.word, start: h.startIndex, end: h.endIndex })))
-
-        paragraphDebug.finalText = filledText
-        paragraphDebug.highlightsCreated = wordHighlights.length
-        debugInfo.paragraphDetails.push(paragraphDebug)
-        
-        console.log('=== FINAL RESULT ===')
-        console.log('Final text:', filledText)
-        console.log('Word highlights created:', wordHighlights.length)
-        console.log('=== END PARAGRAPH ===')
-
-        return {
-          id: paragraph.id,
-          text: filledText,
-          imageUrl: null, // Images will be generated in background
-          wordHighlights
+          console.error(`❌ Could not find placeholder "${placeholder}" in text: "${filledText}"`)
         }
       })
+
+      // Third pass: create highlights by tracking exact positions during replacement
+      const wordHighlights: WordHighlight[] = []
+
+      // Re-process the text to track exact positions
+      let trackingText = paragraph.text
+
+      sortedBlanks.forEach(blank => {
+        const submission = wordMap.get(blank.id)
+        if (submission) {
+          const placeholder = `{${this.wordTypeToPlaceholder(blank.type)}}`
+          const placeholderIndex = trackingText.indexOf(placeholder)
+
+          if (placeholderIndex !== -1) {
+            // Record the highlight at this exact position
+            wordHighlights.push({
+              word: submission.word,
+              playerUsername: submission.playerUsername,
+              wordType: submission.wordType,
+              startIndex: placeholderIndex,
+              endIndex: placeholderIndex + submission.word.length
+            })
+
+            // Replace the placeholder with the word for the next iteration
+            trackingText = trackingText.substring(0, placeholderIndex) +
+              submission.word +
+              trackingText.substring(placeholderIndex + placeholder.length)
+          }
+        }
+      })
+
+      // Sort highlights by position to ensure correct rendering
+      wordHighlights.sort((a, b) => a.startIndex - b.startIndex)
+
+
+
+      paragraphDebug.finalText = filledText
+      paragraphDebug.highlightsCreated = wordHighlights.length as any
+      (debugInfo.paragraphDetails as any[]).push(paragraphDebug)
+
+
+
+      return {
+        id: paragraph.id,
+        text: filledText,
+        imageUrl: null, // Images will be generated in background
+        wordHighlights
+      }
+    })
 
     // Create player contributions summary
     const playerContributions = this.createPlayerContributions(words)
 
-    const story: Story = {
-      id: uuidv4(),
-      title: template.title,
-      theme: template.theme,
-      paragraphs: completedParagraphs,
-      playerContributions,
-      createdAt: new Date()
-    }
-
-    // Store debug info and story reference globally
-    if (typeof window !== 'undefined') {
-      (window as any).debugStory = story
-      (window as any).debugInfo = debugInfo
-      console.log('MockStoryGenerator: Debug info stored in window.debugInfo')
-      console.log('MockStoryGenerator: Story stored in window.debugStory')
-    }
-
-
-
-    // Generate the first image before returning (for loading screen)
-    await this.generateFirstImage(story, template)
-
-    // Generate remaining images in background (don't await)
-    this.generateRemainingImagesInBackground(story, template)
-
-    return story
+    // Create and return the story object directly to avoid variable naming conflicts
+    return this.createStoryObject(template, completedParagraphs, playerContributions, debugInfo)
   }
 
   validateTemplate(template: StoryTemplate): boolean {
@@ -340,7 +299,7 @@ export class MockStoryGenerator {
 
   private normalizeWordType(type: string): WordType | null {
     const normalized = type.toLowerCase().replace(/[_\s]/g, '_')
-    
+
     const typeMap: Record<string, WordType> = {
       'noun': WordType.NOUN,
       'verb': WordType.VERB,
@@ -372,62 +331,71 @@ export class MockStoryGenerator {
       case WordType.NUMBER: return 'number'
       case WordType.PLACE: return 'place'
       case WordType.PERSON: return 'person'
-      default: return wordType.toLowerCase()
+      default: return (wordType as string).toLowerCase()
     }
   }
 
-  private async generateFirstImage(story: Story, template: StoryTemplate): Promise<void> {
+  private async generateFirstImage(storyInput: Story, template: StoryTemplate): Promise<void> {
     try {
-      console.log('Generating first image for story:', story.id)
-      
+      console.log('Generating first image for story:', storyInput.id)
+
       const { MockImageGenerator } = await import('./MockImageGenerator')
       const imageGenerator = new MockImageGenerator()
-      
-      const firstParagraph = story.paragraphs[0]
+
+      const firstParagraph = storyInput.paragraphs[0]
       const firstTemplateParagraph = template.paragraphs[0]
-      
+
       console.log('Generating first image with prompt:', firstTemplateParagraph.imagePrompt)
-      
+
       const imageResult = await imageGenerator.generateImage(
-        firstTemplateParagraph.imagePrompt, 
+        firstTemplateParagraph.imagePrompt,
         { style: 'cartoon', colorScheme: 'vibrant' }
       )
-      
+
       // Update the first paragraph with the generated image
-      firstParagraph.imageUrl = imageResult.url
-      console.log('First image generated:', imageResult.url)
-      
+      if (imageResult && imageResult.url) {
+        firstParagraph.imageUrl = imageResult.url
+        console.log('First image generated:', imageResult.url)
+      } else {
+        console.error('❌ First image result is missing URL:', imageResult)
+      }
+
     } catch (error) {
       console.error('Failed to generate first image:', error)
       // Continue without first image
     }
   }
 
-  private generateRemainingImagesInBackground(story: Story, template: StoryTemplate): void {
+  private generateRemainingImagesInBackground(storyInput: Story, template: StoryTemplate): void {
     setTimeout(async () => {
       try {
         const { MockImageGenerator } = await import('./MockImageGenerator')
         const imageGenerator = new MockImageGenerator()
-        
+
         // Generate images for paragraphs 2-4 (skip first one)
-        for (let i = 1; i < story.paragraphs.length; i++) {
+        for (let i = 1; i < storyInput.paragraphs.length; i++) {
           try {
-            const paragraph = story.paragraphs[i]
+            const paragraph = storyInput.paragraphs[i]
             const templateParagraph = template.paragraphs[i]
-            
+
             const imageResult = await imageGenerator.generateImage(
-              templateParagraph.imagePrompt, 
+              templateParagraph.imagePrompt,
               { style: 'cartoon', colorScheme: 'vibrant' }
             )
-            
+
             // Update the paragraph with the generated image
-            paragraph.imageUrl = imageResult.url
-            
+            if (imageResult && imageResult.url) {
+              paragraph.imageUrl = imageResult.url
+              console.log(`📸 Successfully updated paragraph ${i + 1} with image URL:`, imageResult.url)
+            } else {
+              console.error(`❌ Image result is missing URL for paragraph ${i + 1}:`, imageResult)
+            }
+
             // Add a small delay between images
-            if (i < story.paragraphs.length - 1) {
+            if (i < storyInput.paragraphs.length - 1) {
               await new Promise(resolve => setTimeout(resolve, 2000))
             }
-            
+
           } catch (error) {
             console.error(`Failed to generate background image for paragraph ${i + 1}:`, error)
             // Continue with other paragraphs
@@ -437,6 +405,37 @@ export class MockStoryGenerator {
         console.error('Background image generation failed:', error)
       }
     }, 1000) // Start after 1 second delay to ensure story is fully set up
+  }
+
+  private async createStoryObject(
+    template: StoryTemplate,
+    completedParagraphs: CompletedParagraph[],
+    playerContributions: PlayerContribution[],
+    debugInfo: any
+  ): Promise<Story> {
+    // Create story object directly to avoid JavaScript engine bug
+    const generatedStory = {
+      id: uuidv4(),
+      title: template.title,
+      theme: template.theme,
+      paragraphs: completedParagraphs,
+      playerContributions,
+      createdAt: new Date()
+    } as Story
+
+    // Store debug info globally (avoid storing story reference to prevent JS engine bug)
+    if (typeof window !== 'undefined') {
+      (window as any).debugInfo = debugInfo
+      console.log('MockStoryGenerator: Debug info stored in window.debugInfo')
+    }
+
+    // Generate the first image before returning (for loading screen)
+    await this.generateFirstImage(generatedStory, template)
+
+    // Generate remaining images in background (don't await)
+    this.generateRemainingImagesInBackground(generatedStory, template)
+
+    return generatedStory
   }
 
   private createPlayerContributions(words: WordSubmission[]): PlayerContribution[] {
@@ -450,7 +449,7 @@ export class MockStoryGenerator {
           wordsContributed: []
         })
       }
-      
+
       contributionMap.get(word.playerId)!.wordsContributed.push(word.word)
     })
 

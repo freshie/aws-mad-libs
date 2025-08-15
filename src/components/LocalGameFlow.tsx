@@ -323,7 +323,7 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
                     <span className="text-2xl">{getThemeIcon(currentGame.storyTemplate?.theme)}</span>
                     <div>
                       <div className="font-semibold text-gray-800">
-                        {currentGame.storyTemplate?.theme?.charAt(0).toUpperCase() + currentGame.storyTemplate?.theme?.slice(1)} Story
+                        {currentGame.storyTemplate?.theme ? (currentGame.storyTemplate.theme.charAt(0).toUpperCase() + currentGame.storyTemplate.theme.slice(1)) : 'Unknown'} Story
                       </div>
                       <div className="text-sm text-gray-600">
                         {currentGame.storyTemplate?.title}

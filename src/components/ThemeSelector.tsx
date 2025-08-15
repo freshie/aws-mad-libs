@@ -279,7 +279,7 @@ export function ThemeSelector({ themes, onComplete, isVisible, playerCount }: Th
       }
     }
     
-    return templates[theme] || templates.adventure
+    return templates[theme as keyof typeof templates] || templates.adventure
   }
 
   const themeEmojis: Record<string, string> = {

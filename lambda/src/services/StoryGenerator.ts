@@ -8,21 +8,15 @@ export class StoryGenerator {
   private useMock: boolean
 
   private constructor() {
-    // Use mock only when AWS credentials are not available
-    this.useMock = !process.env.AWS_ACCESS_KEY_ID ||
-      !process.env.AWS_SECRET_ACCESS_KEY
+    // In Lambda, always use IAM role (never use mock)
+    this.useMock = false
 
-    console.log('StoryGenerator constructor - useMock:', this.useMock)
+    console.log('StoryGenerator constructor - using IAM role credentials')
 
-    if (!this.useMock) {
-      this.bedrockClient = new BedrockRuntimeClient({
-        region: process.env.AWS_REGION || 'us-east-1',
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-        },
-      })
-    }
+    this.bedrockClient = new BedrockRuntimeClient({
+      region: process.env.AWS_REGION || 'us-east-1',
+      // No explicit credentials - use IAM role
+    })
   }
 
   public static getInstance(): StoryGenerator {

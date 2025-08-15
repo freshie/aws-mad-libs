@@ -38,7 +38,7 @@ export class S3Manager {
       await this.s3Client.send(new CreateBucketCommand({
         Bucket: this.bucketName,
         CreateBucketConfiguration: {
-          LocationConstraint: process.env.AWS_REGION !== 'us-east-1' ? process.env.AWS_REGION : undefined
+          LocationConstraint: process.env.AWS_REGION !== 'us-east-1' ? process.env.AWS_REGION as any : undefined
         }
       }))
 
