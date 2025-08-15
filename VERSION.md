@@ -1,6 +1,6 @@
 # AI Mad Libs Game - Version History
 
-## Version 1.1.0 - Documentation & Mobile UX Improvements
+## Version 2.2.0 - Documentation & Mobile UX Improvements
 **Date:** August 15, 2025
 
 ### New Features & Improvements
@@ -23,8 +23,48 @@
 - Updated mobile typography for better cross-device compatibility
 - Enhanced legend and service descriptions in architecture documentation
 
+## Version 2.1.0 - Character Consistency with Nova Canvas
+**Date:** August 14, 2025
+
+### New Features
+- ✅ **Character Consistency** - Added IMAGE_VARIATION mode for consistent character appearance
+- ✅ **Enhanced Image Generation** - Improved character continuity across story scenes
+- ✅ **User Word Emphasis** - Images now emphasize the actual words users contributed
+
+### Technical Improvements
+- Updated Nova Canvas integration with IMAGE_VARIATION support
+- Enhanced image prompts to maintain character consistency
+- Improved user word integration in image generation
+
+## Version 2.0.1 - User Word Emphasis Fix
+**Date:** August 14, 2025
+
+### Bug Fixes
+- ✅ **Fixed Image Generation** - Images now use user's actual words instead of template text
+- ✅ **Enhanced Word Integration** - Better incorporation of player contributions in images
+
+## Version 2.0.0 - Full Serverless Architecture
+**Date:** August 14, 2025
+
+### Major Architecture Change
+- ✅ **AWS Serverless Migration** - Complete migration from Next.js API routes to AWS Lambda
+- ✅ **CDK Infrastructure** - Infrastructure as Code with AWS CDK
+- ✅ **DynamoDB Integration** - Serverless database for game data
+- ✅ **S3 Media Storage** - Scalable storage for AI-generated content
+- ✅ **CloudFront CDN** - Global content delivery network
+- ✅ **API Gateway** - Managed API endpoints
+
+### Technical Stack
+- **Compute:** AWS Lambda Functions
+- **Database:** Amazon DynamoDB
+- **Storage:** Amazon S3
+- **CDN:** Amazon CloudFront
+- **API:** Amazon API Gateway
+- **AI Services:** Amazon Bedrock (Nova Lite, Nova Canvas)
+- **Infrastructure:** AWS CDK
+
 ## Version 1.0.0 - Initial Release
-**Date:** January 11, 2025
+**Date:** August 10, 2025
 
 ### Features Implemented
 - ✅ Local multiplayer Mad Libs game
