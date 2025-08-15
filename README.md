@@ -138,12 +138,14 @@ npm run cdk:deploy
 # Build Next.js static site
 npm run build
 
-# Deploy to S3 (outputs will show the S3 bucket name)
-aws s3 sync out/ s3://YOUR-WEBSITE-BUCKET-NAME --delete
+# Deploy to S3 (using actual deployed bucket name)
+aws s3 sync out/ s3://madlibsserverless-development-website-553368239051 --delete
 
-# Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id YOUR-DISTRIBUTION-ID --paths "/*"
+# Invalidate CloudFront cache (using actual distribution ID)
+aws cloudfront create-invalidation --distribution-id E25MXAA5Z3Z2D3 --paths "/*"
 ```
+
+**🌐 Live Application:** https://d1657msoon2g7h.cloudfront.net
 
 ### 🚀 Deployment Scripts
 - `npm run deploy:serverless` - Full automated deployment
@@ -173,11 +175,13 @@ aws cloudfront create-invalidation --distribution-id YOUR-DISTRIBUTION-ID --path
 
 The serverless API provides the following endpoints:
 
-- `POST /api/story/generate-template` - Generate a new Mad Libs template
-- `POST /api/story/fill-template` - Fill template with player words
-- `POST /api/image/generate` - Generate images for story paragraphs
-- `POST /api/video/generate` - Create shareable video content
-- `GET /api/test-aws` - Test AWS service connectivity
+- `POST /api/story/generate-template` - Generate a new Mad Libs template using Bedrock Nova Lite
+- `POST /api/story/fill-template` - Fill template with player words and create complete story
+- `POST /api/image/generate` - Generate images for story paragraphs using Nova Canvas
+- `POST /api/video/generate` - Create shareable video content using Nova Reel
+- `GET /api/test-aws` - Test AWS service connectivity and Bedrock access
+
+**Live API Base URL:** `https://zxp4er3qjk.execute-api.us-east-1.amazonaws.com/prod/`
 
 ## Game Flow
 
