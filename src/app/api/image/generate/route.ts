@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     console.log('🎨 API: Generating image with prompt:', prompt)
     
     // Call the Lambda function directly via API Gateway
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://zxp4er3qjk.execute-api.us-east-1.amazonaws.com/prod'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://your-api-gateway-url.execute-api.us-east-1.amazonaws.com/prod'
     
     const response = await fetch(`${apiUrl}/image/generate`, {
       method: 'POST',

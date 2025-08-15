@@ -25,7 +25,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Build failed. Deploying simplified version instead..." -ForegroundColor Red
     
     # Deploy the working simplified version as fallback
-    $bucketName = "madlibsserverless-$Environment-website-553368239051"
+    $bucketName = "madlibsserverless-$Environment-website-YOUR_ACCOUNT_ID"
     aws s3 cp static-frontend/index.html s3://$bucketName/index.html --profile $Profile
     
     # Invalidate CloudFront cache
@@ -33,7 +33,7 @@ if ($LASTEXITCODE -ne 0) {
     aws cloudfront create-invalidation --distribution-id $distributionId --paths "/*" --profile $Profile
     
     Write-Host "[INFO] Simplified version deployed as fallback" -ForegroundColor Yellow
-    Write-Host "[INFO] Website URL: https://d1slt0acx6hx96.cloudfront.net/" -ForegroundColor Blue
+    Write-Host "[INFO] Website URL: Check CDK outputs for CloudFront URL" -ForegroundColor Blue
     exit 0
 }
 
@@ -42,7 +42,7 @@ if (Test-Path "out") {
     Write-Host "[SUCCESS] Static export successful!" -ForegroundColor Green
     
     # Deploy to S3
-    $bucketName = "madlibsserverless-$Environment-website-553368239051"
+    $bucketName = "madlibsserverless-$Environment-website-YOUR_ACCOUNT_ID"
     Write-Host "[INFO] Uploading to S3 bucket: $bucketName" -ForegroundColor Blue
     
     aws s3 sync out s3://$bucketName --profile $Profile --delete
@@ -53,7 +53,7 @@ if (Test-Path "out") {
     aws cloudfront create-invalidation --distribution-id $distributionId --paths "/*" --profile $Profile
     
     Write-Host "[SUCCESS] Full React app deployed successfully!" -ForegroundColor Green
-    Write-Host "[INFO] Website URL: https://d1slt0acx6hx96.cloudfront.net/" -ForegroundColor Blue
+    Write-Host "[INFO] Website URL: Check CDK outputs for CloudFront URL" -ForegroundColor Blue
 } else {
     Write-Host "[ERROR] Static export failed. Keeping current deployment." -ForegroundColor Red
     exit 1

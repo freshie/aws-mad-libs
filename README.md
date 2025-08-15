@@ -157,14 +157,14 @@ npm run cdk:deploy
 # Build Next.js static site
 npm run build
 
-# Deploy to S3 (using actual deployed bucket name)
-aws s3 sync out/ s3://madlibsserverless-development-website-553368239051 --delete
+# Deploy to S3 (CDK outputs will show the bucket name)
+aws s3 sync out/ s3://YOUR-WEBSITE-BUCKET-NAME --delete
 
-# Invalidate CloudFront cache (using actual distribution ID)
-aws cloudfront create-invalidation --distribution-id E25MXAA5Z3Z2D3 --paths "/*"
+# Invalidate CloudFront cache (CDK outputs will show the distribution ID)
+aws cloudfront create-invalidation --distribution-id YOUR-DISTRIBUTION-ID --paths "/*"
 ```
 
-**🌐 Live Application:** https://d1657msoon2g7h.cloudfront.net
+**🌐 Live Application:** Available after deployment (see CDK outputs for URL)
 
 ### 🚀 Deployment Scripts
 - `npm run deploy:serverless` - Full automated deployment
@@ -202,7 +202,7 @@ The serverless API provides the following endpoints:
 - `POST /api/video/generate` - Create shareable video content using Nova Reel
 - `GET /api/test-aws` - Test AWS service connectivity and Bedrock access
 
-**Live API Base URL:** `https://zxp4er3qjk.execute-api.us-east-1.amazonaws.com/prod/`
+**Live API Base URL:** Available after deployment (see CDK outputs for URL)
 
 ## Game Flow
 

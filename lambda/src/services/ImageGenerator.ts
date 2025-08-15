@@ -251,8 +251,8 @@ export class ImageGenerator {
     await this.s3Client.send(command)
 
     // Return CloudFront URL instead of signed S3 URL
-    // Use the known CloudFront domain from deployment
-    const cloudfrontDomain = 'd1657msoon2g7h.cloudfront.net' // From deployment outputs
+    // Use the CloudFront domain from environment variable
+    const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN || 'your-cloudfront-domain.cloudfront.net'
     return `https://${cloudfrontDomain}/${key}`
   }
 

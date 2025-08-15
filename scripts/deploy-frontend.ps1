@@ -22,7 +22,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Get the S3 bucket name from CDK outputs
-$bucketName = "madlibsserverless-$Environment-website-553368239051"
+$bucketName = "madlibsserverless-$Environment-website-YOUR_ACCOUNT_ID"
 
 Write-Host "[INFO] Deploying to S3 bucket: $bucketName" -ForegroundColor Blue
 
@@ -157,5 +157,5 @@ Write-Host "[INFO] Invalidating CloudFront cache..." -ForegroundColor Blue
 aws cloudfront create-invalidation --distribution-id $distributionId --paths "/*" --profile $Profile
 
 Write-Host "[SUCCESS] Frontend deployed successfully!" -ForegroundColor Green
-Write-Host "[INFO] Website URL: https://d1slt0acx6hx96.cloudfront.net/" -ForegroundColor Blue
-Write-Host "[INFO] API URL: https://ae38g4kioc.execute-api.us-east-1.amazonaws.com/prod/" -ForegroundColor Blue
+Write-Host "[INFO] Website URL: Check CDK outputs for CloudFront URL" -ForegroundColor Blue
+Write-Host "[INFO] API URL: Check CDK outputs for API Gateway URL" -ForegroundColor Blue
