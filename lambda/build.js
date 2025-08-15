@@ -13,6 +13,7 @@ const entryPoints = {
   'story-generation': './src/story-generation.ts',
   'story-fill': './src/story-fill.ts',
   'image-generation': './src/image-generation.ts',
+  'video-generation': './src/video-generation.ts',
   'test-aws': './src/test-aws.ts',
 };
 

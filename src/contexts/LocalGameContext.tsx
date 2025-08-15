@@ -356,6 +356,7 @@ type LocalGameAction =
   | { type: 'SET_STORY_TEMPLATE'; payload: StoryTemplate }
   | { type: 'SET_COMPLETED_STORY'; payload: Story }
   | { type: 'UPDATE_PARAGRAPH_IMAGE'; payload: { paragraphIndex: number; imageUrl: string } }
+  | { type: 'UPDATE_STORY_VIDEO'; payload: { videoUrl: string } }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_LOADING_MESSAGE'; payload: string }
   | { type: 'SET_ERROR'; payload: string | null }
@@ -471,6 +472,20 @@ function localGameReducer(state: LocalGameState, action: LocalGameAction): Local
           completedStory: {
             ...state.currentGame.completedStory,
             paragraphs: updatedParagraphs
+          }
+        }
+      }
+
+    case 'UPDATE_STORY_VIDEO':
+      if (!state.currentGame?.completedStory) return state
+
+      return {
+        ...state,
+        currentGame: {
+          ...state.currentGame,
+          completedStory: {
+            ...state.currentGame.completedStory,
+            videoUrl: action.payload.videoUrl
           }
         }
       }
@@ -734,6 +749,62 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     return imagePrompt
   }
 
+  const generateStoryVideo = async (story: any) => {
+    console.log('🎬 Starting story video generation...')
+    
+    try {
+      // Prepare story input for video generation
+      const storyVideoInput = {
+        images: story.paragraphs.map((paragraph: any, index: number) => ({
+          url: paragraph.imageUrl,
+          text: paragraph.text,
+          duration: 4 // 4 seconds per scene
+        })).filter((img: any) => img.url), // Only include paragraphs with images
+        title: story.title,
+        overallNarrative: story.paragraphs.map((p: any) => p.text).join(' ')
+      }
+
+      console.log('🎬 Video input prepared:', {
+        title: storyVideoInput.title,
+        imageCount: storyVideoInput.images.length,
+        narrativeLength: storyVideoInput.overallNarrative.length
+      })
+
+      // Call video generation API
+      const response = await fetch('/api/video/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storyInput: storyVideoInput
+        })
+      })
+
+      if (response.ok) {
+        const responseData = await response.json()
+        console.log('🎬 Video generation response:', responseData)
+        
+        if (responseData.success && responseData.result && responseData.result.url) {
+          console.log('✅ Story video generated:', responseData.result.url)
+          
+          // Update story with video URL
+          dispatch({
+            type: 'UPDATE_STORY_VIDEO',
+            payload: { videoUrl: responseData.result.url }
+          })
+          
+          return responseData.result
+        } else {
+          console.error('❌ Video generation failed:', responseData)
+        }
+      } else {
+        const error = await response.json()
+        console.error('❌ Video generation API error:', error)
+      }
+    } catch (error) {
+      console.error('❌ Failed to generate story video:', error)
+    }
+  }
+
   const generateRemainingImagesInBackground = async (story: any, template: any) => {
     console.log('🎨 Starting background generation for remaining images...')
 
@@ -800,6 +871,10 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     }
 
     console.log('🎨 Background image generation completed')
+    
+    // Generate story video after all images are complete
+    console.log('🎬 Starting story video generation...')
+    await generateStoryVideo(story)
   }
 
   const generateStory = async (): Promise<void> => {

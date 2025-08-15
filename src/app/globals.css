@@ -4,21 +4,59 @@
 
 @layer base {
   html {
-    font-family: 'Comic Sans MS', cursive, system-ui, sans-serif;
+    /* Use a more mobile-friendly font stack */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    /* Improve text rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Ensure good readability on all screen sizes */
+  body {
+    font-size: 16px; /* Base font size for good mobile readability */
+    line-height: 1.6; /* Better line spacing for readability */
+  }
+  
+  /* Responsive font scaling */
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px; /* Slightly smaller base size on mobile */
+    }
+    
+    h1 {
+      font-size: 2.5rem !important; /* Scale down large headings on mobile */
+    }
+    
+    h2 {
+      font-size: 1.75rem !important;
+    }
+    
+    h3 {
+      font-size: 1.5rem !important;
+    }
   }
 }
 
 @layer components {
   .btn-primary {
     @apply bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500 disabled:hover:shadow-lg;
+    /* Ensure good touch targets on mobile */
+    min-height: 44px;
+    font-size: 16px; /* Prevent zoom on iOS */
   }
   
   .btn-secondary {
     @apply bg-secondary-500 hover:bg-secondary-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-secondary-500 disabled:hover:shadow-lg;
+    /* Ensure good touch targets on mobile */
+    min-height: 44px;
+    font-size: 16px; /* Prevent zoom on iOS */
   }
   
   .card {
     @apply bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100;
+    /* Improve touch targets on mobile */
+    min-height: 44px; /* iOS recommended minimum touch target */
   }
   
   .game-container {
@@ -86,7 +124,10 @@
   }
   
   .room-code {
-    @apply text-4xl sm:text-5xl font-mono font-bold text-primary-600 bg-primary-50 px-4 sm:px-6 py-2 sm:py-3 rounded-lg border-2 border-primary-200;
+    @apply text-2xl sm:text-4xl md:text-5xl font-mono font-bold text-primary-600 bg-primary-50 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg border-2 border-primary-200;
+    /* Ensure good contrast and readability */
+    letter-spacing: 0.1em;
+    font-weight: 700;
   }
   
   .loading-dots {

@@ -102,6 +102,7 @@ export interface Story {
   theme?: string
   paragraphs: CompletedParagraph[]
   playerContributions: PlayerContribution[]
+  videoUrl?: string
   createdAt: Date
 }
 

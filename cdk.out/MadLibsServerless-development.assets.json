@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "5b6e0c2011a62e4a0b3e93d18d06cdbaefb913dca955bb1751de258687726909": {
+    "d76efc1fdccca74e04c0ee4a4f8383cf515c522e6f65689fa382e945401cbc51": {
       "displayName": "StoryGenerationFunction/Code",
       "source": {
-        "path": "asset.5b6e0c2011a62e4a0b3e93d18d06cdbaefb913dca955bb1751de258687726909",
+        "path": "asset.d76efc1fdccca74e04c0ee4a4f8383cf515c522e6f65689fa382e945401cbc51",
         "packaging": "zip"
       },
       "destinations": {
-        "553368239051-us-east-1-33846bc2": {
+        "553368239051-us-east-1-e8062007": {
           "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
-          "objectKey": "5b6e0c2011a62e4a0b3e93d18d06cdbaefb913dca955bb1751de258687726909.zip",
+          "objectKey": "d76efc1fdccca74e04c0ee4a4f8383cf515c522e6f65689fa382e945401cbc51.zip",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
         }
@@ -31,16 +31,16 @@
         }
       }
     },
-    "05870023b42d4403a4d9ed9311dd784adeff7841fe41b468f4cbe5244c6efee7": {
+    "3a867799b8f3f4c6fac1f5f56362348e536f4cd1ae130b03afb9b2cb9bc12b37": {
       "displayName": "MadLibsServerless-development Template",
       "source": {
         "path": "MadLibsServerless-development.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "553368239051-us-east-1-10a5ef5f": {
+        "553368239051-us-east-1-8cbcd890": {
           "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
-          "objectKey": "05870023b42d4403a4d9ed9311dd784adeff7841fe41b468f4cbe5244c6efee7.json",
+          "objectKey": "3a867799b8f3f4c6fac1f5f56362348e536f4cd1ae130b03afb9b2cb9bc12b37.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
         }

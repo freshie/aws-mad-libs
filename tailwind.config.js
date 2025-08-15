@@ -34,7 +34,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        'game': ['Comic Sans MS', 'cursive'],
+        'game': ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        'display': ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       }
     },
   },

@@ -79,7 +79,8 @@ export default function HomePage() {
   }
 
   const handleOnlinePlay = () => {
-    setGameMode('online')
+    // Show coming soon message instead of navigating to online mode
+    alert('🚧 Online multiplayer mode is coming soon! 🚧\n\nFor now, enjoy the Local Play mode with friends on the same device.')
   }
 
   const handleBackToMenu = () => {
@@ -116,10 +117,10 @@ export default function HomePage() {
     <div className="game-container">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold text-primary-700 mb-4">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary-700 mb-4">
             AI Mad Libs
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-lg sm:text-xl text-gray-600">
             Create hilarious stories with friends using AI magic! ✨
           </p>
         </div>
@@ -140,16 +141,19 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div className="card text-center">
+          <div className="card text-center bg-blue-50 border-2 border-dashed border-blue-300">
             <h2 className="text-2xl font-bold text-primary-600 mb-4">🌐 Online Play</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-4">
               Host or join online games with friends on different devices!
             </p>
+            <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-3 mb-4">
+              <p className="text-sm text-yellow-800 font-medium">🚧 Coming Soon! 🚧</p>
+            </div>
             <button 
-              className="btn-primary w-full"
+              className="bg-gray-400 text-white font-bold py-3 px-6 rounded-lg w-full cursor-not-allowed opacity-75"
               onClick={handleOnlinePlay}
             >
-              Online Mode
+              Online Mode (Preview)
             </button>
           </div>
           
@@ -168,13 +172,13 @@ export default function HomePage() {
         
         <div className="text-center mt-12">
           <div className="card max-w-md mx-auto">
-            <h3 className="text-lg font-bold text-gray-700 mb-2">How to Play</h3>
+            <h3 className="text-lg font-bold text-gray-700 mb-2">How to Play (Local Mode)</h3>
             <ol className="text-left text-gray-600 space-y-1">
-              <li>1. Host creates a game room</li>
-              <li>2. Players join with room code</li>
-              <li>3. Take turns adding words</li>
+              <li>1. Start a local game</li>
+              <li>2. Add players on the same device</li>
+              <li>3. Take turns entering words</li>
               <li>4. AI creates your story with images</li>
-              <li>5. Share your hilarious creation!</li>
+              <li>5. Create videos of your stories!</li>
             </ol>
           </div>
         </div>

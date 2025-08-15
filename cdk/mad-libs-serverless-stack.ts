@@ -173,6 +173,18 @@ export class MadLibsServerlessStack extends cdk.Stack {
       description: 'Generates images using AWS Bedrock Nova Canvas - Parsed API key',
     });
 
+    // Video Generation Lambda
+    const videoGenerationFunction = new lambda.Function(this, 'VideoGenerationFunction', {
+      functionName: `${this.stackName}-VideoGeneration`,
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'video-generation.handler',
+      code: lambda.Code.fromAsset('lambda/dist'),
+      timeout: cdk.Duration.seconds(300), // 5 minutes for video generation
+      memorySize: 2048, // More memory for video processing
+      environment: commonEnvironment,
+      description: 'Generates videos using AWS Bedrock Nova Reel from story images and text - Fixed',
+    });
+
     // Test AWS Lambda
     const testAwsFunction = new lambda.Function(this, 'TestAwsFunction', {
       functionName: `${this.stackName}-TestAws`,
@@ -189,6 +201,7 @@ export class MadLibsServerlessStack extends cdk.Stack {
     table.grantReadWriteData(storyGenerationFunction);
     table.grantReadWriteData(storyFillFunction);
     table.grantReadData(imageGenerationFunction);
+    table.grantReadData(videoGenerationFunction);
     table.grantReadData(testAwsFunction);
 
     // Grant Bedrock permissions
@@ -214,11 +227,12 @@ export class MadLibsServerlessStack extends cdk.Stack {
     storyGenerationFunction.addToRolePolicy(bedrockPolicy);
     storyFillFunction.addToRolePolicy(bedrockPolicy);
     imageGenerationFunction.addToRolePolicy(bedrockPolicy);
+    videoGenerationFunction.addToRolePolicy(bedrockPolicy);
 
     // S3 permissions will be granted later when buckets are created
 
     // Apply tags to all Lambda functions
-    const functions = [storyGenerationFunction, storyFillFunction, imageGenerationFunction, testAwsFunction];
+    const functions = [storyGenerationFunction, storyFillFunction, imageGenerationFunction, videoGenerationFunction, testAwsFunction];
     functions.forEach(func => {
       cdk.Tags.of(func).add('Project', 'MadLibsGame');
       cdk.Tags.of(func).add('Environment', process.env.NODE_ENV || 'development');
@@ -238,10 +252,17 @@ export class MadLibsServerlessStack extends cdk.Stack {
       exportName: `${this.stackName}-ImageGenerationFunctionArn`,
     });
 
+    new cdk.CfnOutput(this, 'VideoGenerationFunctionArn', {
+      value: videoGenerationFunction.functionArn,
+      description: 'ARN of the Video Generation Lambda function',
+      exportName: `${this.stackName}-VideoGenerationFunctionArn`,
+    });
+
     return {
       storyGeneration: storyGenerationFunction,
       storyFill: storyFillFunction,
       imageGeneration: imageGenerationFunction,
+      videoGeneration: videoGenerationFunction,
       testAws: testAwsFunction,
     };
   }
@@ -350,6 +371,15 @@ export class MadLibsServerlessStack extends cdk.Stack {
     // /api/image/generate
     const generateImageResource = imageResource.addResource('generate');
     generateImageResource.addMethod('POST', new apigateway.LambdaIntegration(functions.imageGeneration, {
+      requestTemplates: { 'application/json': '{ "statusCode": "200" }' },
+    }));
+
+    // Create /api/video resource and methods
+    const videoResource = apiResource.addResource('video');
+    
+    // /api/video/generate
+    const generateVideoResource = videoResource.addResource('generate');
+    generateVideoResource.addMethod('POST', new apigateway.LambdaIntegration(functions.videoGeneration, {
       requestTemplates: { 'application/json': '{ "statusCode": "200" }' },
     }));
 

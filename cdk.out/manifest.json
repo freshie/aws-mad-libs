@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-deploy-role-553368239051-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-cfn-exec-role-553368239051-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-madlibs25-assets-553368239051-us-east-1/05870023b42d4403a4d9ed9311dd784adeff7841fe41b468f4cbe5244c6efee7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-madlibs25-assets-553368239051-us-east-1/3a867799b8f3f4c6fac1f5f56362348e536f4cd1ae130b03afb9b2cb9bc12b37.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/madlibs25/version",
         "additionalDependencies": [
@@ -130,6 +130,24 @@
             "data": "ImageGenerationFunction64C380B8"
           }
         ],
+        "/MadLibsServerless-development/VideoGenerationFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VideoGenerationFunctionServiceRole6A69F247"
+          }
+        ],
+        "/MadLibsServerless-development/VideoGenerationFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VideoGenerationFunctionServiceRoleDefaultPolicy8F07962E"
+          }
+        ],
+        "/MadLibsServerless-development/VideoGenerationFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VideoGenerationFunction17AE4F30"
+          }
+        ],
         "/MadLibsServerless-development/TestAwsFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -158,6 +176,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageGenerationFunctionArn"
+          }
+        ],
+        "/MadLibsServerless-development/VideoGenerationFunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VideoGenerationFunctionArn"
           }
         ],
         "/MadLibsServerless-development/WebsiteBucket/Resource": [
@@ -247,7 +271,7 @@
         "/MadLibsServerless-development/MadLibsApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MadLibsApiDeployment81F8C04817380e4ca01527611d511ddbf57ee141"
+            "data": "MadLibsApiDeployment81F8C0489a305f7059718eb6dda83e7fc0e07873"
           }
         ],
         "/MadLibsServerless-development/MadLibsApi/DeploymentStage.prod/Resource": [
@@ -392,6 +416,48 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MadLibsApiapiimagegeneratePOST8FE85C56"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideo67CF9BDA"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideoOPTIONSA0D10455"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/generate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideogenerate29059A90"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/generate/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideogenerateOPTIONS7EC221B7"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/generate/POST/ApiPermission.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.video.generate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideogeneratePOSTApiPermissionMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapivideogenerate85FA3F7D"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/generate/POST/ApiPermission.Test.MadLibsServerlessdevelopmentMadLibsApi5A1A8DB2.POST..api.video.generate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideogeneratePOSTApiPermissionTestMadLibsServerlessdevelopmentMadLibsApi5A1A8DB2POSTapivideogenerate4BAEED28"
+          }
+        ],
+        "/MadLibsServerless-development/MadLibsApi/Default/api/video/generate/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MadLibsApiapivideogeneratePOST1CBE1FB6"
           }
         ],
         "/MadLibsServerless-development/MadLibsApi/Default/api/test-aws/Resource": [
