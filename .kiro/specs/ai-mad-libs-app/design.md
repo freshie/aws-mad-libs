@@ -853,31 +853,76 @@ chore(deps): update AWS SDK to latest version
 
 **Last Security Review:** August 15, 2025 (v2.3.2)
 
-## 📋 GitHub Push Policy
+## 📋 Git Branching Strategy
 
-### IMPORTANT: Version-Based Push Strategy
+### IMPORTANT: Branch-Based Development Workflow
 
-**✅ DO push to GitHub when:**
-- Creating a new version number (e.g., v2.3.2 → v2.3.3)
-- Version bump includes multiple accumulated changes
-- Ready for a complete release with documentation updates
+**Branch Structure:**
+- **`main`** - Stable, production-ready code with version releases only
+- **`develop`** - Integration branch for ongoing development work
+- **`feature/*`** - Individual feature development branches
+- **`hotfix/*`** - Critical bug fixes for production
 
-**❌ DO NOT push to GitHub for:**
-- Individual small changes or fixes
-- Work-in-progress commits
-- Experimental code or temporary changes
-- Single-feature commits without version bump
+### ✅ **Push to GitHub:**
 
-### Workflow Guidelines
-1. **Local Development**: Make commits locally as needed
-2. **Accumulate Changes**: Build up multiple improvements/fixes
-3. **Version Bump**: Update package.json and VERSION.md when ready
-4. **Single Push**: Push all accumulated changes with the version bump
+**Main Branch:**
+- Only push when creating new version releases
+- Must include version bump (package.json + VERSION.md)
+- Complete, tested, and documented changes
+- Professional release with comprehensive changelog
 
-### Benefits
-- **Cleaner Git History**: Fewer commits in public repository
-- **Professional Releases**: Each push represents a meaningful version
-- **Better Documentation**: Version bumps include comprehensive release notes
-- **Controlled Exposure**: Only push polished, tested changes
+**Develop Branch:**
+- Push work-in-progress commits regularly
+- Accumulate features and improvements
+- Merge completed features from feature branches
+- Continuous backup and collaboration point
+
+**Feature Branches:**
+- Push individual features and experiments
+- Safe space for trying new approaches
+- Easy to abandon or merge when complete
+- Clear feature-specific commit history
+
+### 🔄 **Workflow Process:**
+
+1. **Feature Development:**
+   ```bash
+   git checkout develop
+   git checkout -b feature/video-generation-fix
+   # Make changes and commits
+   git push origin feature/video-generation-fix
+   ```
+
+2. **Feature Completion:**
+   ```bash
+   git checkout develop
+   git merge feature/video-generation-fix
+   git push origin develop
+   git branch -d feature/video-generation-fix
+   ```
+
+3. **Version Release:**
+   ```bash
+   git checkout main
+   git merge develop
+   # Update package.json and VERSION.md
+   git commit -m "chore: Bump version to 2.3.3"
+   git push origin main
+   git tag v2.3.3
+   git push origin v2.3.3
+   ```
+
+### 🎯 **Benefits:**
+- **Stable Main**: Main branch always represents latest stable release
+- **Continuous Backup**: Develop branch provides regular GitHub backup
+- **Feature Isolation**: Feature branches allow experimentation
+- **Professional Releases**: Main branch has clean, meaningful commits
+- **Collaboration Ready**: Team members can work on separate features
+- **Easy Rollback**: Can revert to any stable version easily
+
+### 🏷️ **Tagging Strategy:**
+- **Version Tags**: `v2.3.3` for each release on main
+- **Pre-release Tags**: `v2.3.3-beta.1` for testing versions
+- **Hotfix Tags**: `v2.3.3-hotfix.1` for critical fixes
 
 **Last Updated:** August 15, 2025
