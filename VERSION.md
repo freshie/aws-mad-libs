@@ -1,5 +1,29 @@
 # AI Mad Libs Game - Version History
 
+## Version 2.3.1 - Development Roadmap & Documentation Accuracy
+**Date:** August 15, 2025
+
+### New Features & Improvements
+- ✅ **Comprehensive Development Roadmap** - Added ROADMAP.md with 5-phase development plan
+- ✅ **Future Vision Documentation** - Card-based game mode, cross-device multiplayer, user management
+- ✅ **Technical Architecture Evolution** - Detailed progression from current to target architecture
+- ✅ **Documentation Accuracy Fixes** - Corrected local multiplayer descriptions and cleaned dependencies
+- ✅ **Live Deployment Information** - Added actual URLs and deployment details
+
+### Documentation Improvements
+- Added 17-month development timeline with phases and milestones
+- Documented new "Story Cards" game mode with AI-generated card economy
+- Outlined monetization strategy and premium features
+- Added success metrics and team requirements for each phase
+- Fixed package.json dependencies to match actual serverless architecture
+- Corrected README to accurately describe local multiplayer (1-8 players)
+
+### Technical Cleanup
+- Removed unused Redis and Socket.io dependencies
+- Removed unused MediaConvert dependency (Nova Reel handles video)
+- Added live application and API URLs for immediate access
+- Enhanced API endpoint descriptions with actual functionality
+
 ## Version 2.3.0 - GitHub Publication & Enhanced Documentation
 **Date:** August 15, 2025
 
