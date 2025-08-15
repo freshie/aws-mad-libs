@@ -27,6 +27,11 @@ yarn-error.log*
 # Local env files
 .env*.local
 .env
+.env.production
+
+# AWS CDK
+cdk.out/
+cdk-outputs-*.json
 
 # Vercel
 .vercel

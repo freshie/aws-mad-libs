@@ -194,7 +194,7 @@ export class VideoGenerator {
         console.log('⚠️ All Nova Reel models failed, creating mock video response')
         return this.createMockVideoResponse(storyInput)
         */
-    }
+    
 
     private createMockVideoResponse(storyInput: StoryVideoInput): Uint8Array {
         // Create a simple text-based "video" file that explains the feature isn't available yet
@@ -242,7 +242,7 @@ This is a placeholder response. The video feature will be enabled once Nova Reel
         await this.s3Client.send(command)
 
         // Return CloudFront URL
-        const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN || 'd1657msoon2g7h.cloudfront.net'
+        const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN || 'your-cloudfront-domain.cloudfront.net'
         return `https://${cloudfrontDomain}/${key}`
     }
 
