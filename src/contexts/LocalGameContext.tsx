@@ -15,7 +15,7 @@ function createFallbackTemplate(playerCount: number): StoryTemplate {
 }
 
 function createFallbackTemplateWithTheme(theme: string, playerCount: number): StoryTemplate {
-  
+
   const templates = {
     adventure: {
       title: "A Simple Adventure",
@@ -270,27 +270,27 @@ function createFallbackTemplateWithTheme(theme: string, playerCount: number): St
       ]
     }
   }
-  
+
   const selectedTemplate = templates[theme as keyof typeof templates] || templates.adventure
-  
+
   let globalPosition = 0
-  
+
   const paragraphs = selectedTemplate.paragraphs.map((p, paragraphIndex) => {
     // Create word blanks based on the actual placeholders in the text
     const wordBlanks: any[] = []
-    
+
     // Extract word types from the text placeholders
     const placeholders = p.text.match(/\{(\w+)\}/g) || []
     console.log(`Template creation - Paragraph ${paragraphIndex + 1}:`, p.text)
     console.log(`Template creation - Found placeholders:`, placeholders)
-    
+
     placeholders.forEach((placeholder, placeholderIndex) => {
       const wordType = placeholder.replace(/[{}]/g, '')
       let enumType
-      
+
       console.log(`🔍 Template Debug: Processing placeholder "${placeholder}", extracted wordType: "${wordType}"`)
-      
-      switch(wordType) {
+
+      switch (wordType) {
         case 'adjective': enumType = WordType.ADJECTIVE; break
         case 'noun': enumType = WordType.NOUN; break
         case 'verb': enumType = WordType.VERB; break
@@ -301,24 +301,24 @@ function createFallbackTemplateWithTheme(theme: string, playerCount: number): St
         case 'number': enumType = WordType.NUMBER; break
         case 'place': enumType = WordType.PLACE; break
         case 'person': enumType = WordType.PERSON; break
-        default: 
+        default:
           console.warn(`🚨 Unknown word type: "${wordType}", defaulting to NOUN`)
           enumType = WordType.NOUN
       }
-      
+
       console.log(`🔍 Template Debug: Mapped "${wordType}" to enum:`, enumType)
-      
+
       const wordBlank = {
         id: uuidv4(),
         type: enumType,
         position: globalPosition++, // Use continuous position counter
         assignedPlayerId: null
       }
-      
+
       wordBlanks.push(wordBlank)
       console.log(`Template creation - Created word blank:`, { placeholder, type: enumType, position: wordBlank.position, id: wordBlank.id })
     })
-    
+
     return {
       id: uuidv4(),
       text: p.text,
@@ -406,7 +406,7 @@ function localGameReducer(state: LocalGameState, action: LocalGameAction): Local
 
     case 'SUBMIT_WORD':
       if (!state.currentGame || !state.currentPlayer) return state
-      
+
       const newSubmission: WordSubmission = {
         id: uuidv4(),
         wordBlankId: action.payload.wordBlankId,
@@ -416,14 +416,14 @@ function localGameReducer(state: LocalGameState, action: LocalGameAction): Local
         wordType: action.payload.wordType,
         submittedAt: new Date()
       }
-      
+
       console.log('Word submission created:', newSubmission)
 
       const updatedGame = {
         ...state.currentGame,
         wordSubmissions: [...state.currentGame.wordSubmissions, newSubmission],
-        players: state.currentGame.players.map(p => 
-          p.id === state.currentPlayer!.id 
+        players: state.currentGame.players.map(p =>
+          p.id === state.currentPlayer!.id
             ? { ...p, wordsContributed: p.wordsContributed + 1 }
             : p
         )
@@ -457,13 +457,13 @@ function localGameReducer(state: LocalGameState, action: LocalGameAction): Local
 
     case 'UPDATE_PARAGRAPH_IMAGE':
       if (!state.currentGame?.completedStory) return state
-      
+
       const updatedParagraphs = [...state.currentGame.completedStory.paragraphs]
       updatedParagraphs[action.payload.paragraphIndex] = {
         ...updatedParagraphs[action.payload.paragraphIndex],
         imageUrl: action.payload.imageUrl
       }
-      
+
       return {
         ...state,
         currentGame: {
@@ -527,16 +527,16 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
 
   // Watch for when all words are collected and trigger story generation
   useEffect(() => {
-    if (state.currentGame && 
-        state.currentGame.storyTemplate && 
-        state.currentGame.gameState === GameState.COLLECTING_WORDS) {
-      
+    if (state.currentGame &&
+      state.currentGame.storyTemplate &&
+      state.currentGame.gameState === GameState.COLLECTING_WORDS) {
+
       const template = state.currentGame.storyTemplate
       const totalNeeded = template.paragraphs.flatMap(p => p.wordBlanks).length
       const currentCount = state.currentGame.wordSubmissions.length
-      
+
       console.log('Word collection check:', { currentCount, totalNeeded })
-      
+
       if (currentCount >= totalNeeded) {
         console.log('All words collected! Generating story...')
         generateStory()
@@ -563,7 +563,7 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         console.log('📝 Using fallback template with selected theme:', selectedTheme)
         templateToUse = createFallbackTemplateWithTheme(selectedTheme, players.length)
       }
-      
+
       dispatch({ type: 'SET_STORY_TEMPLATE', payload: templateToUse })
       dispatch({ type: 'SET_GAME_STATE', payload: GameState.COLLECTING_WORDS })
     } catch (error) {
@@ -586,12 +586,12 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
 
     // Combine all paragraph texts to find the first unfilled placeholder
     const fullStoryText = template.paragraphs.map(p => p.text).join(' ')
-    
+
     // Find all placeholders in the story
     const placeholderRegex = /\{(\w+)\}/g
     const placeholders: Array<{ match: string; type: string; index: number }> = []
     let match
-    
+
     while ((match = placeholderRegex.exec(fullStoryText)) !== null) {
       placeholders.push({
         match: match[0], // e.g., "{adjective}"
@@ -599,16 +599,16 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         index: match.index
       })
     }
-    
+
     // Removed verbose logging
-    
+
     if (submittedWords.length >= placeholders.length) {
       return null // All words collected
     }
-    
+
     // Get the next unfilled placeholder
     const nextPlaceholder = placeholders[submittedWords.length]
-    
+
     // Convert string type to WordType enum
     const wordTypeMap: Record<string, WordType> = {
       'noun': WordType.NOUN,
@@ -622,11 +622,11 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
       'place': WordType.PLACE,
       'person': WordType.PERSON
     }
-    
+
     const wordType = wordTypeMap[nextPlaceholder.type] || WordType.NOUN
-    
+
     // Next word prompt ready
-    
+
     return {
       wordType,
       playerName: state.currentPlayer.username,
@@ -639,11 +639,13 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     const prompt = getCurrentWordPrompt()
     if (!prompt) return
 
-    dispatch({ type: 'SUBMIT_WORD', payload: { 
-      word, 
-      wordType: prompt.wordType,
-      wordBlankId: prompt.wordBlankId 
-    } })
+    dispatch({
+      type: 'SUBMIT_WORD', payload: {
+        word,
+        wordType: prompt.wordType,
+        wordBlankId: prompt.wordBlankId
+      }
+    })
 
     // Move to next player
     if (state.currentGame) {
@@ -656,24 +658,24 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     // Simple approach: split by approximate word count
     const words = filledText.split(/\s+/)
     let wordIndex = 0
-    
+
     return originalTexts.map((originalText, paragraphIndex) => {
       const originalWordCount = originalText.split(/\s+/).length
       const paragraphWords = words.slice(wordIndex, wordIndex + originalWordCount)
       const paragraphText = paragraphWords.join(' ')
-      
+
       // Calculate highlights for this paragraph
       const paragraphStart = words.slice(0, wordIndex).join(' ').length + (wordIndex > 0 ? 1 : 0)
-      const paragraphHighlights = highlights.filter(h => 
+      const paragraphHighlights = highlights.filter(h =>
         h.startIndex >= paragraphStart && h.startIndex < paragraphStart + paragraphText.length
       ).map(h => ({
         ...h,
         startIndex: h.startIndex - paragraphStart,
         endIndex: h.endIndex - paragraphStart
       }))
-      
+
       wordIndex += originalWordCount
-      
+
       return {
         id: `paragraph-${paragraphIndex}`,
         text: paragraphText,
@@ -682,10 +684,10 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
       }
     })
   }
-  
+
   const createPlayerContributions = (wordSubmissions: any[]) => {
     const contributionMap = new Map()
-    
+
     wordSubmissions.forEach(submission => {
       if (!contributionMap.has(submission.playerId)) {
         contributionMap.set(submission.playerId, {
@@ -696,65 +698,85 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
       }
       contributionMap.get(submission.playerId).wordsContributed.push(submission.word)
     })
-    
+
     return Array.from(contributionMap.values())
   }
-  
+
+  const createImagePromptFromText = (filledText: string): string => {
+    console.log('🎨 Creating image prompt from filled text:', filledText)
+    
+    // Clean up the text and create a simple, direct prompt
+    const cleanText = filledText
+      .replace(/[{}]/g, '') // Remove any remaining template markers
+      .trim()
+    
+    // Create a simple prompt that describes the scene from the text
+    const imagePrompt = `A scene showing: ${cleanText}`
+    
+    console.log('✨ Generated image prompt:', imagePrompt)
+    return imagePrompt
+  }
+
   const generateRemainingImagesInBackground = async (story: any, template: any) => {
     console.log('🎨 Starting background generation for remaining images...')
-    
+
     // Generate images for paragraphs 2, 3, 4, etc. (skip the first one)
     for (let i = 1; i < template.paragraphs.length; i++) {
       const templateParagraph = template.paragraphs[i]
-      
+
       if (templateParagraph?.imagePrompt) {
         try {
           console.log(`🎨 Background: Generating image ${i + 1}/${template.paragraphs.length}`)
-          
+
+          // Use the actual filled paragraph text as the image prompt
+          const storyParagraph = story.paragraphs[i]
+          const imagePrompt = createImagePromptFromText(storyParagraph.text)
+          console.log(`🎭 Using paragraph text as prompt: ${imagePrompt}`)
+
           // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              prompt: templateParagraph.imagePrompt,
+              prompt: imagePrompt,
               style: 'cartoon' // Lambda expects just the style string, not an object
             })
           })
-          
+
           if (response.ok) {
             const responseData = await response.json()
             console.log(`🔍 Background image ${i + 1} full response:`, JSON.stringify(responseData, null, 2))
-            
+
             // Lambda returns { success: true, result: ImageResult }
             if (responseData.success && responseData.result && responseData.result.url) {
               const imageUrl = responseData.result.url
               console.log(`✅ Background image ${i + 1} URL: ${imageUrl}`)
-              
+
               // Update the story with the new image
-              dispatch({ 
-                type: 'UPDATE_PARAGRAPH_IMAGE', 
-                payload: { paragraphIndex: i, imageUrl: imageUrl } 
+              dispatch({
+                type: 'UPDATE_PARAGRAPH_IMAGE',
+                payload: { paragraphIndex: i, imageUrl: imageUrl }
               })
             } else {
               console.error(`❌ Background image ${i + 1} missing URL. Response:`, responseData)
             }
-            
+
           } else {
             const error = await response.json()
             console.error(`❌ Failed to generate background image ${i + 1}:`, error)
           }
-          
+
           // Add delay between background images to avoid overwhelming AWS
           if (i < template.paragraphs.length - 1) {
             await new Promise(resolve => setTimeout(resolve, 2000))
           }
-          
+
         } catch (error) {
           console.error(`❌ Failed to generate background image ${i + 1}:`, error)
         }
       }
     }
-    
+
     console.log('🎨 Background image generation completed')
   }
 
@@ -767,19 +789,19 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
     try {
       const template = state.currentGame.storyTemplate
       const wordSubmissions = state.currentGame.wordSubmissions
-      
+
       // Step 1: Generate story text
       console.log('📝 Generating story text...')
       let fullStoryText = template.paragraphs.map(p => p.text).join(' ')
       const wordHighlights: Array<{ word: string; playerUsername: string; wordType: string; startIndex: number; endIndex: number }> = []
-      
+
       // Replace placeholders with submitted words
       wordSubmissions.forEach((submission) => {
         const placeholderMatch = fullStoryText.match(/\{(\w+)\}/)
         if (placeholderMatch) {
           const placeholder = placeholderMatch[0]
           const startIndex = fullStoryText.indexOf(placeholder)
-          
+
           wordHighlights.push({
             word: submission.word,
             playerUsername: submission.playerUsername,
@@ -787,34 +809,38 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
             startIndex,
             endIndex: startIndex + submission.word.length
           })
-          
+
           fullStoryText = fullStoryText.replace(placeholder, submission.word)
         }
       })
-      
+
       // Split back into paragraphs
       const originalTexts = template.paragraphs.map(p => p.text)
       const filledParagraphs = splitFilledTextIntoParagraphs(fullStoryText, originalTexts, wordHighlights)
-      
+
       // Step 2: Generate ONLY the first image before showing story
       console.log('🎨 Generating first image for immediate display...')
       dispatch({ type: 'SET_LOADING_MESSAGE', payload: 'Generating first image...' })
-      
+
       // Generate only the first paragraph image
       if (template.paragraphs[0]?.imagePrompt) {
         try {
           console.log('🎨 Generating first image:', template.paragraphs[0].imagePrompt)
-          
+
+          // Use the actual filled paragraph text as the image prompt
+          const imagePrompt = createImagePromptFromText(filledParagraphs[0].text)
+          console.log(`🎭 Using paragraph text as prompt for first image: ${imagePrompt}`)
+
           // Call API through CloudFront to avoid CORS issues
           const response = await fetch('/api/image/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              prompt: template.paragraphs[0].imagePrompt,
+              prompt: imagePrompt,
               style: 'cartoon' // Lambda expects just the style string, not an object
             })
           })
-          
+
           if (response.ok) {
             const responseData = await response.json()
             // Lambda returns { success: true, result: ImageResult }
@@ -828,12 +854,12 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
             const error = await response.json()
             console.error('❌ Failed to generate first image:', error)
           }
-          
+
         } catch (error) {
           console.error('❌ Failed to generate first image:', error)
         }
       }
-      
+
       // Step 3: Create final story object
       const story = {
         id: `story-${Date.now()}`,
@@ -843,13 +869,13 @@ export function LocalGameProvider({ children }: LocalGameProviderProps) {
         playerContributions: createPlayerContributions(wordSubmissions),
         createdAt: new Date()
       }
-      
+
       console.log('✅ Story and first image generated successfully!')
       dispatch({ type: 'SET_COMPLETED_STORY', payload: story })
-      
+
       // Generate remaining images in background after story is displayed
       generateRemainingImagesInBackground(story, template)
-      
+
     } catch (error) {
       console.error('Error generating story:', error)
       dispatch({ type: 'SET_ERROR', payload: 'Failed to generate story' })

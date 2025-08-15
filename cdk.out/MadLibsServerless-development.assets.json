@@ -31,16 +31,16 @@
         }
       }
     },
-    "5438f6377f45a02500a66b1c7c284106ae53309c2d2d1c05ae242174060168b3": {
+    "a1ae6cb7e5261d4067e107388032811f2f50b6dc4e3ab411a9aff41cca43520c": {
       "displayName": "MadLibsServerless-development Template",
       "source": {
         "path": "MadLibsServerless-development.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "553368239051-us-east-1-503cd037": {
+        "553368239051-us-east-1-59fdcb34": {
           "bucketName": "cdk-madlibs25-assets-553368239051-us-east-1",
-          "objectKey": "5438f6377f45a02500a66b1c7c284106ae53309c2d2d1c05ae242174060168b3.json",
+          "objectKey": "a1ae6cb7e5261d4067e107388032811f2f50b6dc4e3ab411a9aff41cca43520c.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::553368239051:role/cdk-madlibs25-file-publishing-role-553368239051-us-east-1"
         }
