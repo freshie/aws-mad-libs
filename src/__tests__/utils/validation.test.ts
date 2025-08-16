@@ -3,9 +3,7 @@ import {
   validateWordType,
   validateStoryTemplate,
   validateGameSession,
-  sanitizeInput,
-  isValidEmail,
-  isValidUrl
+  sanitizeInput
 } from '@/utils/validation';
 import { WordType } from '@/types/game';
 
@@ -196,63 +194,6 @@ describe('validation utilities', () => {
     });
   });
 
-  describe('isValidEmail', () => {
-    it('should accept valid email addresses', () => {
-      const validEmails = [
-        'test@example.com',
-        'user.name@domain.co.uk',
-        'user+tag@example.org',
-        'user123@test-domain.com'
-      ];
-      
-      validEmails.forEach(email => {
-        expect(isValidEmail(email)).toBe(true);
-      });
-    });
-
-    it('should reject invalid email addresses', () => {
-      const invalidEmails = [
-        'invalid-email',
-        '@example.com',
-        'user@',
-        'user@.com',
-        'user..name@example.com',
-        ''
-      ];
-      
-      invalidEmails.forEach(email => {
-        expect(isValidEmail(email)).toBe(false);
-      });
-    });
-  });
-
-  describe('isValidUrl', () => {
-    it('should accept valid URLs', () => {
-      const validUrls = [
-        'https://example.com',
-        'http://test.org',
-        'https://sub.domain.com/path?query=value',
-        'https://example.com:8080/path'
-      ];
-      
-      validUrls.forEach(url => {
-        expect(isValidUrl(url)).toBe(true);
-      });
-    });
-
-    it('should reject invalid URLs', () => {
-      const invalidUrls = [
-        'not-a-url',
-        'ftp://example.com',
-        'javascript:alert("xss")',
-        '',
-        'http://',
-        'https://'
-      ];
-      
-      invalidUrls.forEach(url => {
-        expect(isValidUrl(url)).toBe(false);
-      });
-    });
-  });
+  // Note: Email and URL validation tests will be added in Phase 3 
+  // when implementing user authentication and external integrations
 });

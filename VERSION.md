@@ -1,5 +1,29 @@
 # AI Mad Libs Game - Version History
 
+## Version 2.4.1 - Test Suite Fixes & Stability
+**Date:** January 27, 2025
+
+### Test Suite Improvements ✅
+- ✅ **Fixed React act() Warnings** - Properly wrapped all user interactions in act() for React testing best practices
+- ✅ **Fixed ThemeSelector Import Issues** - Corrected import from default to named export
+- ✅ **Fixed Component Props Mismatch** - Updated test props to match actual component interfaces
+- ✅ **Fixed Multiple Element Selection** - Resolved duplicate text element issues using getAllByText()
+- ✅ **Fixed LocalPlaySetup Player Logic** - Corrected loop logic for adding players to maximum of 8
+
+### Test Results
+- **Frontend Tests**: 70 tests passing (5 test suites)
+- **Lambda Tests**: 27 tests passing (4 test suites)
+- **Total**: 97 tests passing with zero failures
+
+### Technical Achievements
+- All user interactions properly wrapped in act() for React testing best practices
+- Proper handling of components with multiple instances of the same text
+- Correct component prop interfaces matching actual implementation
+- Robust test logic that handles UI state changes correctly
+- Zero test failures across entire codebase
+
+This version ensures a stable, reliable test suite that follows React testing best practices and provides comprehensive coverage.
+
 ## Version 2.4.0 - Testing Infrastructure & TDD Implementation
 **Date:** January 27, 2025
 

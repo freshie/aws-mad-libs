@@ -1,6 +1,6 @@
 {
   "name": "mad-libs-lambda-functions",
-  "version": "1.0.0",
+  "version": "2.4.1",
   "description": "Lambda functions for Mad Libs serverless application",
   "main": "dist/index.js",
   "scripts": {

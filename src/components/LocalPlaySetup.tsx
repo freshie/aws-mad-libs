@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Player } from '@/types'
-import { validateUsername } from '@/utils/validation'
+import { validatePlayerName } from '@/utils/validation'
 import { v4 as uuidv4 } from 'uuid'
 
 interface LocalPlaySetupProps {
@@ -86,7 +86,7 @@ export function LocalPlaySetup({ onStartGame, onBack }: LocalPlaySetupProps) {
       
       if (!trimmedName) {
         newErrors[player.id] = 'Name is required'
-      } else if (!validateUsername(trimmedName)) {
+      } else if (!validatePlayerName(trimmedName)) {
         newErrors[player.id] = 'Name must be 2-20 characters (letters, numbers, spaces only)'
       } else if (usernames.has(trimmedName.toLowerCase())) {
         newErrors[player.id] = 'Name must be unique'

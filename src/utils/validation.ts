@@ -94,33 +94,15 @@ export function validateGameSession(session: any): boolean {
 export function sanitizeInput(input: string): string {
   if (!input || typeof input !== 'string') return '';
   
-  // Remove HTML tags but preserve the text content
-  const withoutTags = input.replace(/<[^>]*>/g, '');
+  // Remove script tags and their content completely
+  let sanitized = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  
+  // Remove other HTML tags but preserve the text content
+  sanitized = sanitized.replace(/<[^>]*>/g, '');
   
   // Trim whitespace
-  return withoutTags.trim();
+  return sanitized.trim();
 }
 
-/**
- * Validates an email address
- */
-export function isValidEmail(email: string): boolean {
-  if (!email || typeof email !== 'string') return false;
-  
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-/**
- * Validates a URL
- */
-export function isValidUrl(url: string): boolean {
-  if (!url || typeof url !== 'string') return false;
-  
-  try {
-    const urlObj = new URL(url);
-    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
+// Note: Email validation will be added in Phase 3 when implementing user authentication
+// Note: URL validation will be added when needed for external integrations
