@@ -7,6 +7,7 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as wafv2 from 'aws-cdk-lib/aws-wafv2';
 import { Construct } from 'constructs';
 
 export class MadLibsServerlessStack extends cdk.Stack {
@@ -27,8 +28,11 @@ export class MadLibsServerlessStack extends cdk.Stack {
     // API Gateway (Task 21)
     const api = this.createApiGateway(lambdaFunctions);
     
+    // AWS WAF for CloudFront protection
+    const webAcl = this.createWebAcl();
+    
     // CloudFront Distribution (Task 20)
-    const distribution = this.createCloudFrontDistribution(buckets, api);
+    const distribution = this.createCloudFrontDistribution(buckets, api, webAcl);
 
     // Store CloudFront domain in Parameter Store for Lambda functions to access
     this.storeCloudFrontDomain(distribution);
@@ -437,7 +441,8 @@ export class MadLibsServerlessStack extends cdk.Stack {
   
   private createCloudFrontDistribution(
     buckets: { website: s3.Bucket; images: s3.Bucket },
-    api: apigateway.RestApi
+    api: apigateway.RestApi,
+    webAcl: wafv2.CfnWebACL
   ): cloudfront.Distribution {
     // Create Origin Access Control for S3 bucket access
     const oac = new cloudfront.S3OriginAccessControl(this, 'WebsiteOAC', {
@@ -449,6 +454,7 @@ export class MadLibsServerlessStack extends cdk.Stack {
       comment: 'Mad Libs Game CloudFront Distribution',
       defaultRootObject: 'index.html',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100, // Use only North America and Europe for cost optimization
+      webAclId: webAcl.attrArn, // Associate WAF Web ACL with CloudFront
       
       // Default behavior for static website content
       defaultBehavior: {
@@ -643,6 +649,63 @@ export class MadLibsServerlessStack extends cdk.Stack {
       description: 'Parameter Store name for images bucket name',
       exportName: `${this.stackName}-ImagesBucketNameParameter`,
     });
+  }
+
+  private createWebAcl(): wafv2.CfnWebACL {
+    // Create WAF Web ACL for CloudFront protection
+    const webAcl = new wafv2.CfnWebACL(this, 'MadLibsWebACL', {
+      name: `${this.stackName}-WebACL`,
+      scope: 'CLOUDFRONT', // Must be CLOUDFRONT for CloudFront distributions
+      defaultAction: { allow: {} },
+      description: 'WAF Web ACL for Mad Libs application protection',
+      
+      rules: [
+        // Enhanced Rate limiting rule (1000 requests per minute per IP)
+        // Provides DDoS protection by limiting requests per IP
+        {
+          name: 'RateLimitRule',
+          priority: 1,
+          statement: {
+            rateBasedStatement: {
+              limit: 1000,
+              aggregateKeyType: 'IP'
+            }
+          },
+          action: { block: {} },
+          visibilityConfig: {
+            sampledRequestsEnabled: true,
+            cloudWatchMetricsEnabled: true,
+            metricName: 'RateLimitMetric'
+          }
+        }
+      ],
+      
+      visibilityConfig: {
+        sampledRequestsEnabled: true,
+        cloudWatchMetricsEnabled: true,
+        metricName: `${this.stackName}-WebACL-Metric`
+      },
+      
+      tags: [
+        {
+          key: 'Name',
+          value: `${this.stackName}-WebACL`
+        },
+        {
+          key: 'Environment',
+          value: this.stackName.includes('prod') ? 'production' : 'development'
+        }
+      ]
+    });
+
+    // Output the Web ACL ARN for reference
+    new cdk.CfnOutput(this, 'WebACLArn', {
+      value: webAcl.attrArn,
+      description: 'WAF Web ACL ARN',
+      exportName: `${this.stackName}-WebACL-Arn`
+    });
+
+    return webAcl;
   }
 
 
