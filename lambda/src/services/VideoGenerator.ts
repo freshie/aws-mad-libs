@@ -76,6 +76,11 @@ export class VideoGenerator {
         console.log('🎬 Generating story video with Nova Reel:', storyInput.title)
         console.log('📸 Number of images:', storyInput.images.length)
 
+        // Validate that story doesn't have unfilled placeholders
+        if (this.hasUnfilledPlaceholders(storyInput)) {
+            throw new Error('Story contains unfilled placeholders. Please ensure all word blanks are filled before generating video.')
+        }
+
         try {
             // Create video prompt combining all story elements
             const videoPrompt = this.createVideoPrompt(storyInput)
@@ -140,7 +145,7 @@ export class VideoGenerator {
 
     private async invokeNovaReelModel(prompt: string, images: string[], storyInput: StoryVideoInput): Promise<Uint8Array> {
         console.log('🚀 Nova Reel is available! Attempting video generation...')
-        
+
         if (!this.bedrockClient) {
             throw new Error('Bedrock client not initialized')
         }
@@ -187,7 +192,7 @@ export class VideoGenerator {
             }
 
             console.log('📡 Starting Nova Reel async job...')
-            
+
             // Use the correct Bedrock Runtime client method for async invocation
             const startAsyncCommand = {
                 modelId,
@@ -250,12 +255,12 @@ export class VideoGenerator {
         try {
             const { SSMClient, GetParameterCommand } = await import('@aws-sdk/client-ssm')
             const ssmClient = new SSMClient({ region: process.env.AWS_REGION || 'us-east-1' })
-            
+
             const command = new GetParameterCommand({
                 Name: parameterName,
                 WithDecryption: false
             })
-            
+
             const response = await ssmClient.send(command)
             return response.Parameter?.Value || ''
         } catch (error) {
@@ -263,6 +268,30 @@ export class VideoGenerator {
             // Fallback to environment variable or default
             return process.env.IMAGES_BUCKET_NAME || 'madlibsserverless-development-images-553368239051'
         }
+    }
+
+    public hasUnfilledPlaceholders(storyInput: StoryVideoInput): boolean {
+        // Check for placeholder patterns like {word_type}
+        const placeholderPattern = /\{[^}]+\}/g;
+        
+        // Check overall narrative
+        const narrativePlaceholders = storyInput.overallNarrative.match(placeholderPattern);
+        if (narrativePlaceholders) {
+            console.log('🔍 Found placeholders in narrative:', narrativePlaceholders);
+            return true;
+        }
+        
+        // Check each image text
+        for (let i = 0; i < storyInput.images.length; i++) {
+            const imagePlaceholders = storyInput.images[i].text.match(placeholderPattern);
+            if (imagePlaceholders) {
+                console.log(`🔍 Found placeholders in image ${i + 1}:`, imagePlaceholders);
+                return true;
+            }
+        }
+        
+        console.log('✅ No unfilled placeholders found in story');
+        return false;
     }
 
     private createMockVideoResponse(storyInput: StoryVideoInput): Uint8Array {
