@@ -1,5 +1,26 @@
 # AI Mad Libs Game - Version History
 
+## Version 2.5.1 - Documentation & Licensing Update
+**Date:** August 16, 2025
+
+### Documentation Improvements ✅
+- ✅ **README Cleanup** - Removed references to unimplemented video features
+- ✅ **Accurate Feature List** - Updated documentation to reflect current functionality
+- ✅ **API Documentation** - Removed `/api/video/generate` endpoint references
+- ✅ **Game Flow Update** - Corrected game flow to show current story + image generation
+
+### Open Source Licensing ✅
+- ✅ **MIT License Added** - Proper open source license allowing use, modification, and distribution
+- ✅ **Attribution Required** - License ensures original author credit is maintained
+- ✅ **Package.json License** - Added license field to package.json for npm compatibility
+- ✅ **Legal Compliance** - Resolved README reference to missing LICENSE file
+
+### Technical Details
+- **License Type**: MIT License (most permissive open source license)
+- **Copyright Holder**: freshie
+- **Permissions**: Commercial use, modification, distribution, private use, patent use
+- **Requirements**: License and copyright notice, attribution to original author
+
 ## Version 2.5.0 - Enterprise Security with AWS WAF
 **Date:** August 16, 2025
 
