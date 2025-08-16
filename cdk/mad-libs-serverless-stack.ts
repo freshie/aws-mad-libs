@@ -6,6 +6,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 export class MadLibsServerlessStack extends cdk.Stack {
@@ -28,6 +29,9 @@ export class MadLibsServerlessStack extends cdk.Stack {
     
     // CloudFront Distribution (Task 20)
     const distribution = this.createCloudFrontDistribution(buckets, api);
+
+    // Store CloudFront domain in Parameter Store for Lambda functions to access
+    this.storeCloudFrontDomain(distribution);
 
     // Update Lambda functions with S3 bucket permissions
     this.updateLambdaS3Permissions(lambdaFunctions, buckets);
@@ -135,6 +139,7 @@ export class MadLibsServerlessStack extends cdk.Stack {
       TABLE_NAME: table.tableName,
       NODE_ENV: process.env.NODE_ENV || 'production',
       DEBUG_ERRORS: 'true', // Enable detailed error responses
+      STACK_NAME: this.stackName, // For Parameter Store access
     };
 
     // Story Generation Lambda
@@ -228,6 +233,23 @@ export class MadLibsServerlessStack extends cdk.Stack {
     storyFillFunction.addToRolePolicy(bedrockPolicy);
     imageGenerationFunction.addToRolePolicy(bedrockPolicy);
     videoGenerationFunction.addToRolePolicy(bedrockPolicy);
+
+    // Grant Parameter Store read permissions for CloudFront domain
+    const parameterStorePolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'ssm:GetParameter',
+        'ssm:GetParameters',
+      ],
+      resources: [
+        `arn:aws:ssm:${this.region}:${this.account}:parameter/madlibs/${this.stackName.toLowerCase()}/*`,
+      ],
+    });
+
+    imageGenerationFunction.addToRolePolicy(parameterStorePolicy);
+    videoGenerationFunction.addToRolePolicy(parameterStorePolicy);
+    storyGenerationFunction.addToRolePolicy(parameterStorePolicy);
+    storyFillFunction.addToRolePolicy(parameterStorePolicy);
 
     // S3 permissions will be granted later when buckets are created
 
@@ -564,6 +586,31 @@ export class MadLibsServerlessStack extends cdk.Stack {
     functions.storyFill.addEnvironment('IMAGES_BUCKET_NAME', buckets.images.bucketName);
     
     // Lambda functions will use their execution roles for AWS service access
+  }
+
+  private storeCloudFrontDomain(distribution: cloudfront.Distribution): void {
+    // Store CloudFront domain in Parameter Store for Lambda functions to access
+    new ssm.StringParameter(this, 'CloudFrontDomainParameter', {
+      parameterName: `/madlibs/${this.stackName.toLowerCase()}/cloudfront-domain`,
+      stringValue: distribution.distributionDomainName,
+      description: 'CloudFront distribution domain name for Mad Libs application',
+      tier: ssm.ParameterTier.STANDARD,
+    });
+
+    // Also store the distribution ID for cache invalidation
+    new ssm.StringParameter(this, 'CloudFrontDistributionIdParameter', {
+      parameterName: `/madlibs/${this.stackName.toLowerCase()}/cloudfront-distribution-id`,
+      stringValue: distribution.distributionId,
+      description: 'CloudFront distribution ID for Mad Libs application',
+      tier: ssm.ParameterTier.STANDARD,
+    });
+
+    // Output the parameter names for reference
+    new cdk.CfnOutput(this, 'CloudFrontDomainParameterName', {
+      value: `/madlibs/${this.stackName.toLowerCase()}/cloudfront-domain`,
+      description: 'Parameter Store name for CloudFront domain',
+      exportName: `${this.stackName}-CloudFrontDomainParameter`,
+    });
   }
 
 

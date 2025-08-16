@@ -19,8 +19,8 @@ export function validatePlayerName(name: string): boolean {
  */
 export function validateWordType(type: string): boolean {
   const validTypes: WordType[] = [
-    'noun', 'verb', 'adjective', 'adverb', 'plural_noun',
-    'past_tense_verb', 'color', 'number', 'place', 'person'
+    WordType.NOUN, WordType.VERB, WordType.ADJECTIVE, WordType.ADVERB, WordType.PLURAL_NOUN,
+    WordType.PAST_TENSE_VERB, WordType.COLOR, WordType.NUMBER, WordType.PLACE, WordType.PERSON
   ];
   
   return validTypes.includes(type as WordType);
@@ -102,6 +102,48 @@ export function sanitizeInput(input: string): string {
   
   // Trim whitespace
   return sanitized.trim();
+}
+
+/**
+ * Validates a room code
+ */
+export function validateRoomCode(roomCode: string): boolean {
+  if (!roomCode || typeof roomCode !== 'string') return false;
+  
+  const trimmed = roomCode.trim().toUpperCase();
+  if (trimmed.length !== 6) return false;
+  
+  // Allow letters and numbers only
+  const validPattern = /^[A-Z0-9]{6}$/;
+  return validPattern.test(trimmed);
+}
+
+/**
+ * Validates a username
+ */
+export function validateUsername(username: string): boolean {
+  return validatePlayerName(username);
+}
+
+/**
+ * Validates a word submission
+ */
+export function validateWord(word: string, wordType?: WordType): boolean {
+  if (!word || typeof word !== 'string') return false;
+  
+  const trimmed = word.trim();
+  if (trimmed.length === 0 || trimmed.length > 50) return false;
+  
+  // Basic validation - no HTML tags, reasonable characters
+  const validPattern = /^[a-zA-Z0-9\s\-'À-ÿ]+$/;
+  if (!validPattern.test(trimmed)) return false;
+  
+  // Type-specific validation
+  if (wordType === WordType.NUMBER) {
+    return /^\d+$/.test(trimmed);
+  }
+  
+  return true;
 }
 
 // Note: Email validation will be added in Phase 3 when implementing user authentication

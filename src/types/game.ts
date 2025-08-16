@@ -130,6 +130,13 @@ export enum VideoFormat {
   WEBM = 'webm'
 }
 
+export interface WordPrompt {
+  wordBlankId: string
+  wordType: WordType
+  position: number
+  playerName: string
+}
+
 export interface GameEvent {
   type: string
   payload: any

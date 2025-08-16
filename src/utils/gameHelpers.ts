@@ -155,3 +155,19 @@ export function getRandomTheme(): string {
 export function isGameComplete(gameState: GameState): boolean {
   return gameState === 'completed';
 }
+
+/**
+ * Gets a display-friendly version of the game state
+ */
+export function getGameStateDisplay(gameState: GameState): string {
+  const stateDisplayMap: Record<GameState, string> = {
+    'waiting_for_players': 'Waiting for Players',
+    'collecting_words': 'Collecting Words',
+    'generating_story': 'Generating Story',
+    'displaying_story': 'Story Ready',
+    'creating_video': 'Creating Video',
+    'completed': 'Game Complete'
+  };
+  
+  return stateDisplayMap[gameState] || 'Unknown State';
+}

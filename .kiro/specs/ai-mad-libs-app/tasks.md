@@ -163,7 +163,9 @@
 
 ## Serverless Migration Tasks
 
-- [ ] 16. Set up AWS CDK infrastructure foundation
+- [x] 16. Set up AWS CDK infrastructure foundation
+
+
   - Initialize new CDK project with TypeScript
   - Create main CDK stack class for Mad Libs serverless architecture
   - Configure CDK app entry point and stack instantiation
@@ -171,6 +173,7 @@
   - Install required CDK construct libraries (@aws-cdk/aws-lambda, @aws-cdk/aws-dynamodb, etc.)
   - Create basic CDK stack structure with placeholder resources
   - _Requirements: Serverless infrastructure foundation_
+
 
 - [ ] 17. Create DynamoDB table with CDK
   - Define DynamoDB table construct with single-table design
@@ -180,6 +183,7 @@
   - Configure billing mode as PAY_PER_REQUEST for cost optimization
   - Add DynamoDB table permissions and IAM roles
   - Create unit tests for DynamoDB table configuration
+
   - _Requirements: Persistent game state storage_
 
 - [ ] 18. Convert Next.js API routes to Lambda functions
@@ -199,6 +203,7 @@
   - Create data transformation utilities for DynamoDB item format
   - Implement error handling and retry logic for DynamoDB operations
   - Add connection pooling and performance optimizations
+
   - Write comprehensive unit tests for DynamoDB service layer
   - _Requirements: Database persistence layer_
 
@@ -208,6 +213,7 @@
   - Create additional S3 bucket for AI-generated image storage
   - Set up CloudFront distribution with S3 origin for static assets
   - Configure CloudFront behaviors for API Gateway integration
+
   - Add CloudFront cache policies for optimal performance
   - Set up Origin Access Control (OAC) for secure S3 access
   - _Requirements: Static hosting and CDN distribution_
@@ -217,6 +223,7 @@
   - Set up API Gateway resources and methods for all endpoints
   - Configure Lambda proxy integration for all API routes
   - Add CORS configuration for cross-origin requests
+
   - Set up API Gateway request/response transformations
   - Configure API Gateway throttling and rate limiting
   - Add API Gateway logging and monitoring
@@ -226,6 +233,8 @@
   - Configure Next.js for static export (next export)
   - Update API calls to use API Gateway endpoints instead of relative paths
   - Modify environment variable handling for static deployment
+
+
   - Update build scripts for static asset generation
   - Configure asset optimization and minification
   - Test static build locally before deployment

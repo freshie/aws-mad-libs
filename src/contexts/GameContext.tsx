@@ -218,7 +218,7 @@ export function GameProvider({ children }: GameProviderProps) {
       if (response.success && response.game) {
         dispatch({ type: 'SET_GAME', payload: response.game })
         // Set current player as the host
-        const hostPlayer = response.game.players.find(p => p.isHost)
+        const hostPlayer = response.game.players.find((p: any) => p.isHost)
         if (hostPlayer) {
           dispatch({ type: 'SET_PLAYER', payload: hostPlayer })
         }
@@ -241,7 +241,7 @@ export function GameProvider({ children }: GameProviderProps) {
       if (response.success && response.game) {
         dispatch({ type: 'SET_GAME', payload: response.game })
         // Find and set current player
-        const currentPlayer = response.game.players.find(p => p.username === username)
+        const currentPlayer = response.game.players.find((p: any) => p.username === username)
         if (currentPlayer) {
           dispatch({ type: 'SET_PLAYER', payload: currentPlayer })
         }

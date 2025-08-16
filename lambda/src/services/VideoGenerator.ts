@@ -242,7 +242,9 @@ This is a placeholder response. The video feature will be enabled once Nova Reel
         await this.s3Client.send(command)
 
         // Return CloudFront URL
-        const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN || 'your-cloudfront-domain.cloudfront.net'
+        // Get the CloudFront domain from Parameter Store
+        const { getCloudFrontDomain } = await import('../utils/config');
+        const cloudfrontDomain = await getCloudFrontDomain();
         return `https://${cloudfrontDomain}/${key}`
     }
 
