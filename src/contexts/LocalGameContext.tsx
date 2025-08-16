@@ -181,35 +181,7 @@ export function LocalGameProvider({ children }: { children: React.ReactNode }) {
       try {
         // Fill the story template on the frontend - no API call needed!
         const { fillStoryTemplate } = await import('../utils/storyFiller');
-        
-        // Debug: Log word submissions and template data
-        console.log('🔧 Story filling debug:', {
-          templateId: currentGame.storyTemplate.id,
-          totalWordBlanks: currentGame.storyTemplate.totalWordBlanks,
-          wordBlanks: currentGame.storyTemplate.paragraphs.flatMap(p => 
-            p.wordBlanks.map(wb => ({ id: wb.id, type: wb.type, assignedTo: wb.assignedPlayerId }))
-          ),
-          submissionsCount: updatedSubmissions.length,
-          submissions: updatedSubmissions.map(s => ({ 
-            id: s.id, 
-            wordBlankId: s.wordBlankId, 
-            word: s.word, 
-            type: s.wordType,
-            player: s.playerUsername
-          }))
-        });
-        
         const completedStory: Story = fillStoryTemplate(currentGame.storyTemplate, updatedSubmissions);
-
-        // Debug: Check if story was filled correctly
-        const allStoryText = completedStory.paragraphs.map(p => p.text).join(' ');
-        const remainingPlaceholders = allStoryText.match(/\{[^}]+\}/g);
-        if (remainingPlaceholders) {
-          console.error('🚨 Story filling failed! Remaining placeholders:', remainingPlaceholders);
-          console.error('📊 Completed story paragraphs:', completedStory.paragraphs.map(p => p.text));
-        } else {
-          console.log('✅ Story filled successfully - no placeholders remaining');
-        }
 
         // Generate the first image before showing the story
         setLoadingMessage('Generating your story images...');
