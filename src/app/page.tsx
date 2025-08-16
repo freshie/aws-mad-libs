@@ -178,7 +178,7 @@ export default function HomePage() {
               <li>2. Add players on the same device</li>
               <li>3. Take turns entering words</li>
               <li>4. AI creates your story with images</li>
-              <li>5. Create videos of your stories!</li>
+              <li>5. Share your hilarious stories!</li>
             </ol>
           </div>
         </div>

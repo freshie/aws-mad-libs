@@ -28,7 +28,6 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
     completeThemeSelection,
     isSelectingTheme,
     submitWord, 
-    createVideo,
     resetGame,
     getCurrentWordPrompt 
   } = useLocalGame()
@@ -126,7 +125,6 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
         return (
           <StoryDisplay
             story={currentGame.completedStory}
-            onCreateVideo={createVideo}
             onPlayAgain={() => {
               resetGame()
             }}
@@ -437,7 +435,6 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
       <StoryDisplay
         story={currentGame.completedStory}
         players={currentGame.players}
-        onCreateVideo={createVideo}
         onPlayAgain={() => {
           resetGame()
         }}

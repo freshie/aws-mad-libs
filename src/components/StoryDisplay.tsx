@@ -10,7 +10,6 @@ import { StoryStats } from './StoryStats'
 
 interface StoryDisplayProps {
   story: Story
-  onCreateVideo?: () => void
   onPlayAgain?: () => void
   onShare?: () => void
   isLoading?: boolean
@@ -19,7 +18,6 @@ interface StoryDisplayProps {
 
 export function StoryDisplay({ 
   story, 
-  onCreateVideo, 
   onPlayAgain, 
   onShare, 
   isLoading = false,
@@ -192,16 +190,6 @@ export function StoryDisplay({
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {onCreateVideo && (
-              <button
-                onClick={onCreateVideo}
-                disabled={isLoading}
-                className="btn-primary flex items-center justify-center space-x-2"
-              >
-                <span>🎬</span>
-                <span>{isLoading ? 'Creating Video...' : 'Create Video'}</span>
-              </button>
-            )}
             
             {onShare && (
               <button

@@ -29,11 +29,11 @@ Transform the AWS Mad Libs game from a local multiplayer experience into a compr
   - **API**: https://zxp4er3qjk.execute-api.us-east-1.amazonaws.com/prod/
 
 #### 🔧 Critical Fixes
-- [ ] **Fix Video Creation Issue**
-  - Debug Nova Reel integration failures
-  - Implement fallback video generation using MediaConvert
-  - Add proper error handling and user feedback
-  - Test video generation with different story lengths
+- [x] **Video Creation Issue Investigation** ✅ **COMPLETED - Jan 27, 2025**
+  - [x] Identified Nova Reel integration requirements (async REST API needed)
+  - [x] Added comprehensive TDD validation for story filling
+  - [x] Created proper error handling and debugging tools
+  - [x] Removed video button from UI until full implementation ready
 
 #### 📤 **Enhanced Sharing System** 
 - [ ] **Multi-Format Story Sharing**
@@ -79,8 +79,23 @@ Transform the AWS Mad Libs game from a local multiplayer experience into a compr
   - [ ] Add end-to-end testing with Playwright
   - [ ] Setup CI/CD pipeline with automated testing
 
-### Phase 2: Cross-Device Multiplayer (v3.0.0)
+### Phase 2: Enhanced Features & Video Generation (v2.5.0)
 **Target: Q2 2025**
+
+#### 🎬 Video Generation Feature
+- [ ] **Implement Nova Reel Async REST API**
+  - Implement proper async REST API calls for Nova Reel
+  - Add job polling and S3 video retrieval
+  - Handle video processing status and completion
+  - Add video player component for generated videos
+- [ ] **Video Generation UI**
+  - Re-add video generation button with proper validation
+  - Add video preview and sharing capabilities
+  - Implement video download functionality
+  - Add video generation progress indicators
+
+### Phase 3: Cross-Device Multiplayer (v3.0.0)
+**Target: Q3 2025**
 
 #### 🌐 Real-time Multiplayer
 - [ ] **WebSocket Integration**

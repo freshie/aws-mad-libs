@@ -12,7 +12,6 @@ interface LocalGameContextValue {
   startThemeSelection: (players: Player[]) => void;
   completeThemeSelection: (theme: string, players: Player[], template?: any) => Promise<void>;
   submitWord: (word: string) => Promise<void>;
-  createVideo: () => Promise<void>;
   resetGame: () => void;
   getCurrentWordPrompt: () => WordPrompt | null;
 }
@@ -182,7 +181,35 @@ export function LocalGameProvider({ children }: { children: React.ReactNode }) {
       try {
         // Fill the story template on the frontend - no API call needed!
         const { fillStoryTemplate } = await import('../utils/storyFiller');
+        
+        // Debug: Log word submissions and template data
+        console.log('🔧 Story filling debug:', {
+          templateId: currentGame.storyTemplate.id,
+          totalWordBlanks: currentGame.storyTemplate.totalWordBlanks,
+          wordBlanks: currentGame.storyTemplate.paragraphs.flatMap(p => 
+            p.wordBlanks.map(wb => ({ id: wb.id, type: wb.type, assignedTo: wb.assignedPlayerId }))
+          ),
+          submissionsCount: updatedSubmissions.length,
+          submissions: updatedSubmissions.map(s => ({ 
+            id: s.id, 
+            wordBlankId: s.wordBlankId, 
+            word: s.word, 
+            type: s.wordType,
+            player: s.playerUsername
+          }))
+        });
+        
         const completedStory: Story = fillStoryTemplate(currentGame.storyTemplate, updatedSubmissions);
+
+        // Debug: Check if story was filled correctly
+        const allStoryText = completedStory.paragraphs.map(p => p.text).join(' ');
+        const remainingPlaceholders = allStoryText.match(/\{[^}]+\}/g);
+        if (remainingPlaceholders) {
+          console.error('🚨 Story filling failed! Remaining placeholders:', remainingPlaceholders);
+          console.error('📊 Completed story paragraphs:', completedStory.paragraphs.map(p => p.text));
+        } else {
+          console.log('✅ Story filled successfully - no placeholders remaining');
+        }
 
         // Generate the first image before showing the story
         setLoadingMessage('Generating your story images...');
@@ -327,78 +354,6 @@ export function LocalGameProvider({ children }: { children: React.ReactNode }) {
     setIsSelectingTheme(false);
   }, []);
 
-  const createVideo = useCallback(async () => {
-    if (!currentGame?.completedStory) return;
-
-    setIsLoading(true);
-    setLoadingMessage('Creating your story video...');
-    setError(null);
-
-    try {
-      // Prepare story input for video generation
-      const storyVideoInput = {
-        images: currentGame.completedStory.paragraphs.map((paragraph, index) => ({
-          url: paragraph.imageUrl || '', // Include all paragraphs, even without images
-          text: paragraph.text,
-          duration: 5 // 5 seconds per scene
-        })), // Include all paragraphs for complete story
-        title: currentGame.completedStory.title,
-        overallNarrative: currentGame.completedStory.paragraphs.map(p => p.text).join(' ')
-      };
-
-      // Debug: Check for unfilled placeholders before sending to video generation
-      const allText = storyVideoInput.overallNarrative + ' ' + storyVideoInput.images.map(i => i.text).join(' ');
-      const placeholderMatches = allText.match(/\{[^}]+\}/g);
-      if (placeholderMatches) {
-        console.error('🚨 Found unfilled placeholders in story before video generation:', placeholderMatches);
-        console.error('📊 Story data:', {
-          title: storyVideoInput.title,
-          narrative: storyVideoInput.overallNarrative,
-          imageTexts: storyVideoInput.images.map(i => i.text)
-        });
-        throw new Error(`Story contains unfilled placeholders: ${placeholderMatches.join(', ')}. Please complete all word blanks before creating video.`);
-      }
-
-      // Call video generation API
-      const response = await fetch('/api/video/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          storyInput: storyVideoInput
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to generate video');
-      }
-
-      const data = await response.json();
-      
-      if (data.success && data.result?.url) {
-        // Update the story with the video URL
-        setCurrentGame(prev => prev ? {
-          ...prev,
-          completedStory: prev.completedStory ? {
-            ...prev.completedStory,
-            videoUrl: data.result.url
-          } : prev.completedStory,
-          updatedAt: new Date()
-        } : null);
-      } else {
-        throw new Error('Video generation failed');
-      }
-    } catch (err) {
-      setError('Failed to create video. Please try again.');
-      console.error('Video creation error:', err);
-    } finally {
-      setIsLoading(false);
-      setLoadingMessage('');
-    }
-  }, [currentGame]);
-
   const value: LocalGameContextValue = {
     currentGame,
     currentPlayer,
@@ -410,7 +365,6 @@ export function LocalGameProvider({ children }: { children: React.ReactNode }) {
     startThemeSelection,
     completeThemeSelection,
     submitWord,
-    createVideo,
     resetGame,
     getCurrentWordPrompt,
   };

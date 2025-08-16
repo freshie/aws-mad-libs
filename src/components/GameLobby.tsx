@@ -26,10 +26,6 @@ export function GameLobby() {
     return (
       <StoryDisplay
         story={currentGame.completedStory}
-        onCreateVideo={() => {
-          // Will be implemented in task 9
-          console.log('Creating video...')
-        }}
         onPlayAgain={() => {
           // Reset game state
           window.location.reload()
