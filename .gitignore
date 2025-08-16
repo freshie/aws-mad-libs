@@ -1,6 +1,7 @@
 # Dependencies
 /node_modules
 /lambda/node_modules
+/cdk/node_modules
 /lambda/dist
 /.pnp
 .pnp.js

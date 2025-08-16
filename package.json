@@ -1,6 +1,6 @@
 {
   "name": "ai-mad-libs",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "private": true,
   "scripts": {
     "dev": "echo '⚠️  LOCAL DEVELOPMENT DISABLED - This app runs on AWS only. Use: npm run deploy' && exit 1",
