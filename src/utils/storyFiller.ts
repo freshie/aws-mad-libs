@@ -5,13 +5,6 @@ import { StoryTemplate, WordSubmission, Story, WordHighlight, WordType, PlayerCo
  * This replaces the need for a backend API call
  */
 export function fillStoryTemplate(template: StoryTemplate, wordSubmissions: WordSubmission[]): Story {
-  console.log('🔧 Filling story template with submissions:', {
-    templateId: template.id,
-    totalWordBlanks: template.totalWordBlanks,
-    submissionsCount: wordSubmissions.length,
-    submissions: wordSubmissions.map(s => ({ id: s.wordBlankId, word: s.word, type: s.wordType }))
-  })
-  
   const wordHighlights: WordHighlight[] = []
   
   // Process each paragraph
@@ -26,15 +19,6 @@ export function fillStoryTemplate(template: StoryTemplate, wordSubmissions: Word
       // Find the corresponding word submission
       const submission = wordSubmissions.find(ws => ws.wordBlankId === wordBlank.id)
       const placeholder = `{${wordTypeToPlaceholder(wordBlank.type)}}`
-      
-      console.log('🔧 Processing word blank:', {
-        wordBlankId: wordBlank.id,
-        wordType: wordBlank.type,
-        placeholder,
-        hasSubmission: !!submission,
-        submissionWord: submission?.word,
-        textBefore: filledText.substring(0, 100) + '...'
-      })
       
       if (submission) {
         const placeholderIndex = filledText.indexOf(placeholder)
@@ -55,12 +39,7 @@ export function fillStoryTemplate(template: StoryTemplate, wordSubmissions: Word
           
           // Replace the placeholder with the submitted word
           filledText = filledText.replace(placeholder, submission.word)
-          console.log('✅ Replaced placeholder:', { placeholder, word: submission.word })
-        } else {
-          console.log('❌ Placeholder not found in text:', { placeholder, textLength: filledText.length })
         }
-      } else {
-        console.log('❌ No submission found for word blank:', { wordBlankId: wordBlank.id, placeholder })
       }
     })
     

@@ -346,6 +346,19 @@ export function LocalGameProvider({ children }: { children: React.ReactNode }) {
         overallNarrative: currentGame.completedStory.paragraphs.map(p => p.text).join(' ')
       };
 
+      // Debug: Check for unfilled placeholders before sending to video generation
+      const allText = storyVideoInput.overallNarrative + ' ' + storyVideoInput.images.map(i => i.text).join(' ');
+      const placeholderMatches = allText.match(/\{[^}]+\}/g);
+      if (placeholderMatches) {
+        console.error('🚨 Found unfilled placeholders in story before video generation:', placeholderMatches);
+        console.error('📊 Story data:', {
+          title: storyVideoInput.title,
+          narrative: storyVideoInput.overallNarrative,
+          imageTexts: storyVideoInput.images.map(i => i.text)
+        });
+        throw new Error(`Story contains unfilled placeholders: ${placeholderMatches.join(', ')}. Please complete all word blanks before creating video.`);
+      }
+
       // Call video generation API
       const response = await fetch('/api/video/generate', {
         method: 'POST',

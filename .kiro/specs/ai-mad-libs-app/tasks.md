@@ -4,6 +4,9 @@
 
 
 
+
+
+
   - Create Next.js project with TypeScript configuration
   - Set up folder structure for components, services, types, and utilities
   - Define core TypeScript interfaces for GameSession, Player, StoryTemplate, and WordSubmission

@@ -273,14 +273,14 @@ export class VideoGenerator {
     public hasUnfilledPlaceholders(storyInput: StoryVideoInput): boolean {
         // Check for placeholder patterns like {word_type}
         const placeholderPattern = /\{[^}]+\}/g;
-        
+
         // Check overall narrative
         const narrativePlaceholders = storyInput.overallNarrative.match(placeholderPattern);
         if (narrativePlaceholders) {
             console.log('🔍 Found placeholders in narrative:', narrativePlaceholders);
             return true;
         }
-        
+
         // Check each image text
         for (let i = 0; i < storyInput.images.length; i++) {
             const imagePlaceholders = storyInput.images[i].text.match(placeholderPattern);
@@ -289,7 +289,7 @@ export class VideoGenerator {
                 return true;
             }
         }
-        
+
         console.log('✅ No unfilled placeholders found in story');
         return false;
     }
