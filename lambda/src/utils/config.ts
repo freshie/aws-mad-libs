@@ -86,6 +86,49 @@ export async function getCloudFrontDistributionId(): Promise<string> {
 }
 
 /**
+ * Get S3 images bucket name from Parameter Store
+ */
+export async function getImagesBucketName(): Promise<string> {
+  const cacheKey = 'images-bucket-name';
+  
+  // Check cache first
+  if (configCache.has(cacheKey)) {
+    return configCache.get(cacheKey)!;
+  }
+
+  try {
+    // Determine the parameter name based on the stack name
+    const stackName = process.env.STACK_NAME || 'madlibsserverless-development';
+    const parameterName = `/madlibs/${stackName.toLowerCase()}/images-bucket-name`;
+
+    const command = new GetParameterCommand({
+      Name: parameterName,
+      WithDecryption: false,
+    });
+
+    const response = await ssmClient.send(command);
+    
+    if (!response.Parameter?.Value) {
+      throw new Error(`Images bucket name parameter not found: ${parameterName}`);
+    }
+
+    const bucketName = response.Parameter.Value;
+    
+    // Cache the value
+    configCache.set(cacheKey, bucketName);
+    
+    return bucketName;
+  } catch (error) {
+    console.error('Failed to get images bucket name from Parameter Store:', error);
+    // Fallback to the known bucket name for this environment
+    const fallbackBucket = 'madlibsserverless-development-images-553368239051';
+    console.log(`Using fallback bucket name: ${fallbackBucket}`);
+    configCache.set(cacheKey, fallbackBucket);
+    return fallbackBucket;
+  }
+}
+
+/**
  * Clear the configuration cache (useful for testing)
  */
 export function clearConfigCache(): void {

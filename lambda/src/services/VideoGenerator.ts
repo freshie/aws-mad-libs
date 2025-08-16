@@ -26,10 +26,10 @@ export class VideoGenerator {
     private static instance: VideoGenerator | null = null
     private bedrockClient: BedrockRuntimeClient | null = null
     private s3Client: S3Client | null = null
-    private bucketName: string
+    private bucketName: string | null = null
 
     private constructor() {
-        this.bucketName = process.env.IMAGES_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'ai-mad-libs-media'
+        // Bucket name will be loaded from Parameter Store when needed
 
         console.log('VideoGenerator constructor - using AWS Bedrock Nova Reel for video generation')
 
@@ -49,6 +49,23 @@ export class VideoGenerator {
 
     public static resetInstance(): void {
         VideoGenerator.instance = null
+    }
+
+    private async getBucketName(): Promise<string> {
+        if (this.bucketName) {
+            return this.bucketName;
+        }
+
+        try {
+            const { getImagesBucketName } = await import('../utils/config');
+            this.bucketName = await getImagesBucketName();
+            return this.bucketName;
+        } catch (error) {
+            console.error('Failed to get bucket name from Parameter Store:', error);
+            // Fallback to environment variables or default
+            this.bucketName = process.env.IMAGES_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'madlibsserverless-development-images-553368239051';
+            return this.bucketName;
+        }
     }
 
     async generateStoryVideo(storyInput: StoryVideoInput): Promise<VideoResult> {
@@ -122,12 +139,9 @@ export class VideoGenerator {
     }
 
     private async invokeNovaReelModel(prompt: string, images: string[], storyInput: StoryVideoInput): Promise<Uint8Array> {
-        // Nova Reel is not yet generally available - return mock response immediately
-        console.log('⚠️ Nova Reel is not yet available in this region, creating mock video response')
-        return this.createMockVideoResponse(storyInput)
+        console.log('🚀 Nova Reel is available! Attempting video generation...')
 
-        // TODO: Uncomment this code once Nova Reel becomes available
-        /*
+        // Try Nova Reel first, fall back to mock if it fails
         if (!this.bedrockClient) {
             throw new Error('Bedrock client not initialized')
         }
@@ -146,17 +160,14 @@ export class VideoGenerator {
             try {
                 console.log(`🎬 Trying Nova Reel model: ${modelId}`)
 
-                // Nova Reel payload format - simplified for text-to-video
+                // Nova Reel payload format - try different formats
                 const payload = {
-                    taskType: "TEXT_VIDEO",
-                    textToVideoParams: {
-                        text: prompt,
-                        durationSeconds: this.calculateVideoDuration(storyInput),
-                        fps: 24,
-                        dimension: "1024x576",
-                        motionStrength: 0.6,
-                        seed: Math.floor(Math.random() * 1000000)
-                    }
+                    text: prompt,
+                    durationSeconds: this.calculateVideoDuration(storyInput),
+                    fps: 24,
+                    dimension: "1024x576",
+                    motionStrength: 0.6,
+                    seed: Math.floor(Math.random() * 1000000)
                 }
 
                 const command = new InvokeModelCommand({
@@ -193,7 +204,6 @@ export class VideoGenerator {
         // If all model IDs failed, create a mock video response for now
         console.log('⚠️ All Nova Reel models failed, creating mock video response')
         return this.createMockVideoResponse(storyInput)
-        */
     }
 
     private createMockVideoResponse(storyInput: StoryVideoInput): Uint8Array {
@@ -219,6 +229,9 @@ This is a placeholder response. The video feature will be enabled once Nova Reel
             throw new Error('S3 client not initialized')
         }
 
+        // Get bucket name from Parameter Store
+        const bucketName = await this.getBucketName();
+
         // Check if this is a mock response (text content)
         const isMockResponse = videoData.length < 10000 &&
             new TextDecoder().decode(videoData).includes('Mad Libs Video Feature')
@@ -228,7 +241,7 @@ This is a placeholder response. The video feature will be enabled once Nova Reel
         const key = `videos/${uuidv4()}-${title.replace(/[^a-zA-Z0-9]/g, '-')}.${fileExtension}`
 
         const command = new PutObjectCommand({
-            Bucket: this.bucketName,
+            Bucket: bucketName,
             Key: key,
             Body: videoData,
             ContentType: contentType,

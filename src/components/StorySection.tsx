@@ -93,14 +93,7 @@ export function StorySection({ paragraph, index, isActive, onInView, players = [
       }
 
       const playerColor = getPlayerColor(highlight.playerUsername)
-      console.log('Rendering highlight:', highlight.word, 'wordType:', highlight.wordType)
-      
-      // Debug: show the actual text and highlight positions
-      if (highlightIndex === 0) {
-        console.log('🔍 DEBUG: Full paragraph text:', text)
-        console.log('🔍 DEBUG: All highlights:', highlights.map(h => ({ word: h.word, start: h.startIndex, end: h.endIndex })))
-        console.log('🔍 DEBUG: Text contains placeholders:', text.match(/\{[^}]+\}/g) || 'none')
-      }
+
       
       result.push(
         <span

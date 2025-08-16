@@ -246,12 +246,7 @@ export function WordPrompt({
   return (
     <div className="card max-w-md mx-auto">
       <div className="text-center mb-6">
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <div className="w-8 h-8 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center font-bold text-sm">
-            {position}
-          </div>
-          <span className="text-sm text-gray-500">of {totalWords}</span>
-        </div>
+
         
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           {playerName}'s Turn

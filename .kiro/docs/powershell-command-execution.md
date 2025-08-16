@@ -81,6 +81,10 @@ aws s3 ls s3://my-bucket --recursive --no-cli-pager
 
 # ✅ Alternative
 aws s3 ls s3://my-bucket --recursive | Out-String
+
+# ✅ Quiet output (minimal text)
+aws s3 sync out/ s3://bucket --delete --output text | Out-Null
+aws cloudfront create-invalidation --distribution-id ID --paths "/*" --output text --query 'Invalidation.Id'
 ```
 
 ### NPM/Node Commands

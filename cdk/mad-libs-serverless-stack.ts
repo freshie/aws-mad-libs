@@ -33,6 +33,9 @@ export class MadLibsServerlessStack extends cdk.Stack {
     // Store CloudFront domain in Parameter Store for Lambda functions to access
     this.storeCloudFrontDomain(distribution);
 
+    // Store S3 bucket names in Parameter Store for Lambda functions to access
+    this.storeS3BucketNames(buckets);
+
     // Update Lambda functions with S3 bucket permissions
     this.updateLambdaS3Permissions(lambdaFunctions, buckets);
     
@@ -576,12 +579,16 @@ export class MadLibsServerlessStack extends cdk.Stack {
     // Grant image generation Lambda access to images bucket
     buckets.images.grantReadWrite(functions.imageGeneration);
     
+    // Grant video generation Lambda access to images bucket (for reading images and storing videos)
+    buckets.images.grantReadWrite(functions.videoGeneration);
+    
     // Grant other functions read access to images bucket for signed URL generation
     buckets.images.grantRead(functions.storyGeneration);
     buckets.images.grantRead(functions.storyFill);
     
     // Update environment variables with bucket names
     functions.imageGeneration.addEnvironment('IMAGES_BUCKET_NAME', buckets.images.bucketName);
+    functions.videoGeneration.addEnvironment('IMAGES_BUCKET_NAME', buckets.images.bucketName);
     functions.storyGeneration.addEnvironment('IMAGES_BUCKET_NAME', buckets.images.bucketName);
     functions.storyFill.addEnvironment('IMAGES_BUCKET_NAME', buckets.images.bucketName);
     
@@ -610,6 +617,31 @@ export class MadLibsServerlessStack extends cdk.Stack {
       value: `/madlibs/${this.stackName.toLowerCase()}/cloudfront-domain`,
       description: 'Parameter Store name for CloudFront domain',
       exportName: `${this.stackName}-CloudFrontDomainParameter`,
+    });
+  }
+
+  private storeS3BucketNames(buckets: { website: s3.Bucket; images: s3.Bucket }): void {
+    // Store images bucket name in Parameter Store for Lambda functions to access
+    new ssm.StringParameter(this, 'ImagesBucketNameParameter', {
+      parameterName: `/madlibs/${this.stackName.toLowerCase()}/images-bucket-name`,
+      stringValue: buckets.images.bucketName,
+      description: 'S3 bucket name for AI-generated images',
+      tier: ssm.ParameterTier.STANDARD,
+    });
+
+    // Store website bucket name in Parameter Store (for completeness)
+    new ssm.StringParameter(this, 'WebsiteBucketNameParameter', {
+      parameterName: `/madlibs/${this.stackName.toLowerCase()}/website-bucket-name`,
+      stringValue: buckets.website.bucketName,
+      description: 'S3 bucket name for static website hosting',
+      tier: ssm.ParameterTier.STANDARD,
+    });
+
+    // Output the parameter names for reference
+    new cdk.CfnOutput(this, 'ImagesBucketNameParameterName', {
+      value: `/madlibs/${this.stackName.toLowerCase()}/images-bucket-name`,
+      description: 'Parameter Store name for images bucket name',
+      exportName: `${this.stackName}-ImagesBucketNameParameter`,
     });
   }
 

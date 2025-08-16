@@ -17,6 +17,8 @@ const nextConfig = {
   trailingSlash: true, // Add trailing slashes for S3 compatibility
   distDir: 'out', // Output directory for static files
   
+
+  
   // Development-friendly settings for easier debugging
   swcMinify: false, // Disable SWC minification
   compiler: {

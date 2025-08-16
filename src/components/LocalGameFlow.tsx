@@ -28,7 +28,7 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
     completeThemeSelection,
     isSelectingTheme,
     submitWord, 
-    regenerateStory,
+    createVideo,
     resetGame,
     getCurrentWordPrompt 
   } = useLocalGame()
@@ -126,9 +126,7 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
         return (
           <StoryDisplay
             story={currentGame.completedStory}
-            onRegenerateStory={() => {
-              regenerateStory()
-            }}
+            onCreateVideo={createVideo}
             onPlayAgain={() => {
               resetGame()
             }}
@@ -297,7 +295,7 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
             
             <div className="mt-3 text-center">
               <p className="text-xs text-gray-500">
-                Need help? The game will automatically continue once all {currentGame.storyTemplate?.totalWordBlanks || 0} words are collected.
+                Need help? The game will automatically continue once all words are collected.
               </p>
             </div>
           </div>
@@ -439,9 +437,7 @@ export function LocalGameFlow({ onBack }: LocalGameFlowProps) {
       <StoryDisplay
         story={currentGame.completedStory}
         players={currentGame.players}
-        onRegenerateStory={() => {
-          regenerateStory()
-        }}
+        onCreateVideo={createVideo}
         onPlayAgain={() => {
           resetGame()
         }}

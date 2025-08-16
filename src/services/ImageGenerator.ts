@@ -27,7 +27,7 @@ export class ImageGenerator {
     ImageGenerator.instance = null
   }
 
-  async generateImage(prompt: string, style: ImageStyle = { style: 'cartoon', colorScheme: 'vibrant' }): Promise<ImageResult> {
+  async generateImage(prompt: string, style: ImageStyle = { style: 'cartoon', colorScheme: 'vibrant' }, referenceImageUrl?: string): Promise<ImageResult> {
     try {
       // Call the API endpoint instead of AWS directly
       const response = await fetch('/api/image/generate', {
@@ -37,7 +37,8 @@ export class ImageGenerator {
         },
         body: JSON.stringify({
           prompt,
-          style: style.style
+          style: style.style,
+          referenceImageUrl
         })
       })
 

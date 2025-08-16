@@ -13,7 +13,6 @@ interface StoryDisplayProps {
   onCreateVideo?: () => void
   onPlayAgain?: () => void
   onShare?: () => void
-  onRegenerateStory?: () => void
   isLoading?: boolean
   players?: Array<{ id: string; username: string }>
 }
@@ -23,7 +22,6 @@ export function StoryDisplay({
   onCreateVideo, 
   onPlayAgain, 
   onShare, 
-  onRegenerateStory,
   isLoading = false,
   players = []
 }: StoryDisplayProps) {
@@ -113,19 +111,7 @@ export function StoryDisplay({
     return (
       <div className="game-container">
         <div className="max-w-4xl mx-auto">
-          {/* Debug Regenerate Button - Top Left */}
-          {onRegenerateStory && (
-            <div className="mb-4">
-              <button
-                onClick={onRegenerateStory}
-                disabled={isLoading}
-                className="btn-primary flex items-center justify-center space-x-2 bg-orange-600 hover:bg-orange-700 text-sm px-4 py-2"
-              >
-                <span>🔄</span>
-                <span>{isLoading ? 'Regenerating...' : 'Regenerate Story'}</span>
-              </button>
-            </div>
-          )}
+
           
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-primary-700 mb-2">
@@ -146,6 +132,58 @@ export function StoryDisplay({
               />
             ))}
           </div>
+
+          {/* Story Video */}
+          {updatedStory.videoUrl && (
+            <div className="mb-8">
+              <div className="text-center mb-4">
+                <h2 className="text-2xl font-bold text-primary-700 mb-2">
+                  🎬 Your Story Video
+                </h2>
+                <p className="text-gray-600">Watch your Mad Libs story come to life!</p>
+              </div>
+              <div className="max-w-4xl mx-auto">
+                {updatedStory.videoUrl.endsWith('.txt') ? (
+                  // Mock video response - show informational message
+                  <div className="relative aspect-video bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg overflow-hidden shadow-lg flex items-center justify-center border-2 border-dashed border-primary-300">
+                    <div className="text-center p-8">
+                      <div className="text-6xl mb-4">🎬</div>
+                      <h3 className="text-xl font-bold text-primary-700 mb-2">Video Feature Preview</h3>
+                      <p className="text-primary-600 mb-4">
+                        Your story video is ready to be generated!
+                      </p>
+                      <p className="text-sm text-primary-500 mb-4">
+                        Amazon Nova Reel video generation is not yet available in this region.
+                        <br />
+                        Once available, this will create an animated video of your story.
+                      </p>
+                      <a
+                        href={updatedStory.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center space-x-2 text-primary-600 hover:text-primary-700 underline"
+                      >
+                        <span>📄</span>
+                        <span>View story details</span>
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  // Real video response - show video player
+                  <div className="relative aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
+                    <video
+                      controls
+                      className="w-full h-full"
+                      poster="/video-poster.jpg"
+                    >
+                      <source src={updatedStory.videoUrl} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Story Statistics */}
           <div className="mb-8">

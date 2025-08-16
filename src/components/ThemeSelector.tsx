@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { WordType } from '../types/game'
 
-// Global cache to prevent duplicate API calls
-const templateCache = new Map<string, { promise: Promise<any> | null; result: any | null }>()
+// Disable cache temporarily to test if it's causing issues
+// const templateCache = new Map<string, { promise: Promise<any> | null; result: any | null; timestamp: number }>()
 const getTemplateKey = (theme: string, playerCount: number) => `${theme}-${playerCount}`
 
 interface ThemeSelectorProps {
@@ -24,7 +25,7 @@ export function ThemeSelector({ themes, onComplete, isVisible, playerCount }: Th
 
   // Get fallback template to use as LLM guide
   const getFallbackTemplate = (theme: string) => {
-    const templates = {
+    const rawTemplates = {
       adventure: {
         title: "A Simple Adventure",
         paragraphs: [
@@ -279,7 +280,67 @@ export function ThemeSelector({ themes, onComplete, isVisible, playerCount }: Th
       }
     }
     
-    return templates[theme as keyof typeof templates] || templates.adventure
+    const rawTemplate = rawTemplates[theme as keyof typeof rawTemplates] || rawTemplates.adventure
+    
+    // Process the raw template to create proper wordBlanks structure
+    return processRawTemplate(rawTemplate, theme)
+  }
+
+  // Helper function to process raw templates and create proper wordBlanks
+  const processRawTemplate = (rawTemplate: any, theme: string) => {
+    const paragraphs = rawTemplate.paragraphs.map((p: any, index: number) => {
+      const wordBlanks: any[] = []
+      let position = 0
+      
+      // Extract word blanks from text using regex
+      const wordBlankRegex = /\{(\w+)\}/g
+      let match
+      while ((match = wordBlankRegex.exec(p.text)) !== null) {
+        const wordTypeStr = match[1].toLowerCase().replace('_', '-')
+        
+        // Map word types to valid WordType enum values
+        let wordType: WordType
+        switch (wordTypeStr) {
+          case 'adjective': wordType = WordType.ADJECTIVE; break
+          case 'noun': wordType = WordType.NOUN; break
+          case 'verb': wordType = WordType.VERB; break
+          case 'adverb': wordType = WordType.ADVERB; break
+          case 'plural-noun': wordType = WordType.PLURAL_NOUN; break
+          case 'past-tense-verb': wordType = WordType.PAST_TENSE_VERB; break
+          case 'color': wordType = WordType.COLOR; break
+          case 'place': wordType = WordType.PLACE; break
+          case 'person': wordType = WordType.PERSON; break
+          case 'number': wordType = WordType.NUMBER; break
+          default: wordType = WordType.NOUN; break // fallback
+        }
+        
+        wordBlanks.push({
+          id: `${theme}-p${index}-w${position}`,
+          type: wordType,
+          position: position,
+          assignedPlayerId: null
+        })
+        position++
+      }
+      
+      return {
+        id: `${theme}-p${index}`,
+        text: p.text,
+        wordBlanks: wordBlanks,
+        imagePrompt: p.imagePrompt
+      }
+    })
+    
+    const totalWordBlanks = paragraphs.reduce((sum: number, p: any) => sum + p.wordBlanks.length, 0)
+    
+    return {
+      id: `fallback-${theme}-${Date.now()}`,
+      title: rawTemplate.title,
+      paragraphs: paragraphs,
+      totalWordBlanks: totalWordBlanks,
+      theme: theme,
+      difficulty: 'easy' as const
+    }
   }
 
   const themeEmojis: Record<string, string> = {
@@ -324,43 +385,18 @@ export function ThemeSelector({ themes, onComplete, isVisible, playerCount }: Th
   }
 
   useEffect(() => {
-    console.log('🔍 ThemeSelector: useEffect triggered, isVisible:', isVisible)
     if (!isVisible) return
 
     // Pre-select the theme immediately (but don't show it yet)
     const selectedTheme = themes[Math.floor(Math.random() * themes.length)]
     const selectedIndex = themes.indexOf(selectedTheme)
-    console.log('🔍 ThemeSelector: Selected theme:', selectedTheme)
     setFinalTheme(selectedTheme)
 
     // Start generating AI template in background immediately
     const generateTemplate = async () => {
-      const cacheKey = getTemplateKey(selectedTheme, playerCount)
-      const cached = templateCache.get(cacheKey)
-      
-      // If we already have a result, use it
-      if (cached?.result) {
-        console.log('🔍 ThemeSelector: Using cached template for:', selectedTheme)
-        setGeneratedTemplate(cached.result)
-        setLoadingMessage('✨ AI template ready!')
-        return
-      }
-      
-      // If there's already a request in progress, wait for it
-      if (cached?.promise) {
-        console.log('🔍 ThemeSelector: Waiting for existing request for:', selectedTheme)
-        try {
-          const result = await cached.promise
-          setGeneratedTemplate(result)
-          setLoadingMessage('✨ AI template ready!')
-        } catch (error) {
-          setLoadingMessage('📝 Using fallback template')
-        }
-        return
-      }
+      // Cache disabled for testing - always make fresh API calls
       
       try {
-        console.log('🔍 ThemeSelector: Starting new template generation for theme:', selectedTheme)
         setLoadingMessage('🤖 Generating AI story template...')
         
         // Get the fallback template to use as a guide for the LLM
@@ -377,30 +413,22 @@ export function ThemeSelector({ themes, onComplete, isVisible, playerCount }: Th
           })
         }).then(async (response) => {
           if (response.ok) {
-            const { template } = await response.json()
-            return template
+            const responseData = await response.json()
+            // Lambda function returns { success: true, template }
+            return responseData.template || responseData
           } else {
             throw new Error('API request failed')
           }
         })
         
-        // Cache the promise
-        templateCache.set(cacheKey, { promise: apiPromise, result: null })
-        
-        console.log('🔍 ThemeSelector: Making API call to generate-template')
         const template = await apiPromise
-        
-        // Cache the result
-        templateCache.set(cacheKey, { promise: null, result: template })
         
         setGeneratedTemplate(template)
         setLoadingMessage('✨ AI template ready!')
         
       } catch (error) {
-        console.log('AI template generation failed:', error)
         setLoadingMessage('📝 Using fallback template')
-        // Remove failed request from cache
-        templateCache.delete(cacheKey)
+        // Cache disabled for testing
       }
     }
 
@@ -424,10 +452,27 @@ export function ThemeSelector({ themes, onComplete, isVisible, playerCount }: Th
       setTimeout(() => {
         setPhase('ready')
         
-        // Phase 3: Ready state (1.5 seconds) then complete
-        setTimeout(() => {
-          onComplete(selectedTheme, generatedTemplate)
-        }, 1500)
+        // Phase 3: Ready state - wait for template then complete
+        const completeWhenReady = async () => {
+          // Wait for the generated template (cache disabled for testing)
+          try {
+            if (generatedTemplate) {
+              onComplete(selectedTheme, generatedTemplate)
+            } else {
+              // Wait a bit for the template to be generated
+              await new Promise(resolve => setTimeout(resolve, 2000))
+              if (generatedTemplate) {
+                onComplete(selectedTheme, generatedTemplate)
+              } else {
+                throw new Error('No AI template available')
+              }
+            }
+          } catch (error) {
+            const fallbackTemplate = getFallbackTemplate(selectedTheme)
+            onComplete(selectedTheme, fallbackTemplate)
+          }
+        }
+        completeWhenReady().catch(console.error)
       }, 1500)
     }, 2000)
 

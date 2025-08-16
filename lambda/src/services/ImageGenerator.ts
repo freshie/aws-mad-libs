@@ -13,10 +13,10 @@ export class ImageGenerator {
   private static instance: ImageGenerator | null = null
   private bedrockClient: BedrockRuntimeClient | null = null
   private s3Client: S3Client | null = null
-  private bucketName: string
+  private bucketName: string | null = null
 
   private constructor() {
-    this.bucketName = process.env.IMAGES_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'ai-mad-libs-media'
+    // Bucket name will be loaded from Parameter Store when needed
     
     console.log('ImageGenerator constructor - using AWS Bedrock for image generation with IAM role')
 
@@ -37,6 +37,23 @@ export class ImageGenerator {
   // For testing purposes only
   public static resetInstance(): void {
     ImageGenerator.instance = null
+  }
+
+  private async getBucketName(): Promise<string> {
+    if (this.bucketName) {
+      return this.bucketName;
+    }
+
+    try {
+      const { getImagesBucketName } = await import('../utils/config');
+      this.bucketName = await getImagesBucketName();
+      return this.bucketName;
+    } catch (error) {
+      console.error('Failed to get bucket name from Parameter Store:', error);
+      // Fallback to environment variables or default
+      this.bucketName = process.env.IMAGES_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'madlibsserverless-development-images-553368239051';
+      return this.bucketName;
+    }
   }
 
   async generateImage(prompt: string, style: ImageStyle = { style: 'cartoon', colorScheme: 'vibrant' }, referenceImageUrl?: string): Promise<ImageResult> {
@@ -235,10 +252,13 @@ export class ImageGenerator {
       throw new Error('S3 client not initialized')
     }
 
+    // Get bucket name from Parameter Store
+    const bucketName = await this.getBucketName();
+
     const key = `images/${uuidv4()}.png`
     
     const command = new PutObjectCommand({
-      Bucket: this.bucketName,
+      Bucket: bucketName,
       Key: key,
       Body: imageData,
       ContentType: 'image/png',

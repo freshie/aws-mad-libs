@@ -9,7 +9,13 @@ export const handler = async (
   try {
     // Parse request body
     const body = event.body ? JSON.parse(event.body) : {};
-    const { theme, playerCount } = body;
+    const { theme, playerCount, exampleTemplate } = body;
+    
+    console.log('🔍 STORY-GENERATION: Request received:', {
+      theme,
+      playerCount,
+      hasExampleTemplate: !!exampleTemplate
+    });
 
     // Validate input
     if (!playerCount || playerCount < 1 || playerCount > 8) {
@@ -29,7 +35,30 @@ export const handler = async (
 
     // Generate story template
     const storyGenerator = StoryGenerator.getInstance();
-    const template = await storyGenerator.generateTemplate(theme, playerCount);
+    let template;
+    
+    let aiError = null;
+    try {
+      console.log('🔍 STORY-GENERATION: Attempting AI generation...');
+      template = await storyGenerator.generateTemplate(theme, playerCount);
+      console.log('🔍 STORY-GENERATION: AI generation successful:', { title: template.title });
+    } catch (error) {
+      aiError = {
+        name: (error as any).name,
+        message: (error as any).message,
+        code: (error as any).code || 'Unknown'
+      };
+      console.log('🔍 STORY-GENERATION: AI generation failed:', aiError);
+      console.log('🔍 STORY-GENERATION: Using exampleTemplate if available');
+      
+      if (exampleTemplate) {
+        console.log('🔍 STORY-GENERATION: Using provided exampleTemplate:', { title: exampleTemplate.title });
+        template = exampleTemplate;
+      } else {
+        console.log('🔍 STORY-GENERATION: No exampleTemplate, re-throwing error');
+        throw error;
+      }
+    }
 
     return {
       statusCode: 200,
@@ -42,6 +71,12 @@ export const handler = async (
       body: JSON.stringify({
         success: true,
         template,
+        debug: {
+          usedAI: !aiError,
+          usedExampleTemplate: !!aiError && !!exampleTemplate,
+          usedFallback: !!aiError && !exampleTemplate,
+          aiError: aiError
+        }
       }),
     };
   } catch (error) {

@@ -32,17 +32,35 @@ export class StoryGenerator {
   }
 
   async generateTemplate(theme?: string, playerCount: number = 4): Promise<StoryTemplate> {
+    console.log('🔍 generateTemplate called:', { theme, playerCount, useMock: this.useMock })
+    
     if (this.useMock) {
+      console.log('🔍 Using mock because useMock = true')
       return this.generateMockTemplate(theme, playerCount)
     }
 
     try {
+      console.log('🔍 Creating prompt for Bedrock...')
       const prompt = this.createTemplatePrompt(theme, playerCount)
+      console.log('🔍 Prompt created, calling Bedrock...')
+      
       const response = await this.invokeBedrockModel(prompt)
+      console.log('🔍 Bedrock response received, parsing...')
 
-      return this.parseTemplateResponse(response, theme, playerCount)
+      const template = this.parseTemplateResponse(response, theme, playerCount)
+      console.log('🔍 AI template parsed successfully:', { 
+        title: template.title, 
+        theme: template.theme,
+        paragraphCount: template.paragraphs.length 
+      })
+      return template
     } catch (error) {
-      console.error('Error generating story template with Bedrock, falling back to mock:', error)
+      console.error('❌ Bedrock AI generation failed:', error)
+      console.error('❌ Error name:', (error as any).name)
+      console.error('❌ Error message:', (error as any).message)
+      console.error('❌ Error stack:', (error as any).stack)
+      console.log('🔍 Falling back to mock template')
+      
       // Fall back to mock generator
       return this.generateMockTemplate(theme, playerCount)
     }
@@ -125,11 +143,16 @@ export class StoryGenerator {
   }
 
   private async invokeBedrockModel(prompt: string): Promise<string> {
+    console.log('🔍 invokeBedrockModel called')
+    
     if (!this.bedrockClient) {
+      console.error('❌ Bedrock client not initialized')
       throw new Error('Bedrock client not initialized')
     }
 
     const modelId = process.env.BEDROCK_MODEL_ID || 'amazon.nova-lite-v1:0'
+    console.log('🔍 Using model:', modelId)
+    console.log('🔍 AWS Region:', process.env.AWS_REGION || 'us-east-1')
 
     const payload = {
       messages: [
@@ -156,11 +179,26 @@ export class StoryGenerator {
       accept: 'application/json'
     })
 
-    const response = await this.bedrockClient.send(command)
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body))
-
-    // Nova Lite response format
-    return responseBody.output.message.content[0].text
+    console.log('🔍 Sending request to Bedrock...')
+    try {
+      const response = await this.bedrockClient.send(command)
+      console.log('🔍 Bedrock response received, status:', response.$metadata.httpStatusCode)
+      
+      const responseBody = JSON.parse(new TextDecoder().decode(response.body))
+      console.log('🔍 Response body keys:', Object.keys(responseBody))
+      
+      // Nova Lite response format
+      const text = responseBody.output.message.content[0].text
+      console.log('🔍 Generated text length:', text.length)
+      console.log('🔍 Generated text preview:', text.substring(0, 200) + '...')
+      
+      return text
+    } catch (bedrockError) {
+      console.error('❌ Bedrock API call failed:', bedrockError)
+      console.error('❌ Bedrock error name:', (bedrockError as any).name)
+      console.error('❌ Bedrock error message:', (bedrockError as any).message)
+      throw bedrockError
+    }
   }
 
   private createTemplatePrompt(theme?: string, playerCount: number = 4): string {
@@ -237,11 +275,13 @@ Make it creative and funny!`
 
       const totalWordBlanks = paragraphs.reduce((sum, p) => sum + p.wordBlanks.length, 0)
 
-      // If AI generated wrong number of words, fall back to mock
-      if (totalWordBlanks !== 16) {
-        console.log(`AI generated ${totalWordBlanks} words (expected 16), falling back to mock template`)
+      // Allow some flexibility in word count (between 8-20 words is reasonable)
+      if (totalWordBlanks < 8 || totalWordBlanks > 20) {
+        console.log(`AI generated ${totalWordBlanks} words (expected 8-20), falling back to mock template`)
         return this.generateMockTemplate(theme, playerCount)
       }
+      
+      console.log(`✅ AI template accepted with ${totalWordBlanks} word blanks`)
 
       return {
         id: uuidv4(),
@@ -314,14 +354,36 @@ Make it creative and funny!`
 
     const allWordBlanks = paragraphs.flatMap(p => p.wordBlanks)
 
+    // Create theme-appropriate title
+    const themeTitle = this.getThemeTitle(theme || "adventure");
+    
     return {
       id: uuidv4(),
-      title: "A Magical Adventure",
+      title: themeTitle,
       paragraphs,
       totalWordBlanks: allWordBlanks.length,
       theme: theme || "adventure",
       difficulty: 'easy'
     }
+  }
+
+  private getThemeTitle(theme: string): string {
+    const themeTitles: Record<string, string> = {
+      adventure: "The Great Adventure",
+      school: "A Day at School", 
+      space: "Space Odyssey",
+      food: "Culinary Adventure",
+      animals: "Wildlife Safari",
+      vacation: "Beach Paradise",
+      superhero: "Hero's Journey",
+      mystery: "The Mystery Case",
+      pirates: "Pirate Treasure Hunt",
+      work: "Office Chronicles",
+      sports: "Championship Game",
+      music: "Rock Star Dreams"
+    };
+    
+    return themeTitles[theme] || "A Magical Adventure";
   }
 
   private wordTypeToPlaceholder(wordType: WordType): string {

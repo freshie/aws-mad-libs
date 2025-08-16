@@ -27,6 +27,15 @@ export const handler = async (
       };
     }
 
+    // Debug: Check what template we received
+    console.log('🔍 STORY-FILL: Template received:', {
+      id: template.id,
+      title: template.title,
+      theme: template.theme,
+      paragraphCount: template.paragraphs?.length,
+      totalWordBlanks: template.totalWordBlanks
+    });
+    
     // Fill story template with words
     const storyGenerator = StoryGenerator.getInstance();
     const story = await storyGenerator.fillTemplate(template, words);
