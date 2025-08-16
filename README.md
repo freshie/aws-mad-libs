@@ -1,6 +1,6 @@
 # AWS Mad Libs Game
 
-A serverless Mad Libs game that creates hilarious stories using AI-generated content, images, and videos. Built with Next.js, AWS CDK, and AWS Bedrock AI services.
+A serverless Mad Libs game that creates hilarious stories using AI-generated content and images. Built with Next.js, AWS CDK, and AWS Bedrock AI services.
 
 ## ⚠️ AWS-Only Application
 
@@ -37,7 +37,7 @@ This project showcases what it's like to **vibe code with Kiro** - an AI-powered
 - 🎮 **Local Multiplayer**: Support for 1-8 players on the same device
 - 🤖 **AI-Generated Stories**: Original Mad Libs templates created by Amazon Bedrock
 - 🎨 **AI-Generated Images**: Visual content using Amazon Nova Canvas
-- 🎬 **Video Creation**: Shareable videos using Amazon Nova Reel
+
 - 📱 **Mobile Friendly**: Responsive design optimized for all devices
 - ⚡ **Serverless**: Fully serverless architecture with AWS Lambda
 - 🔒 **Secure**: IAM-based security with encrypted storage
@@ -77,7 +77,7 @@ This project showcases what it's like to **vibe code with Kiro** - an AI-powered
 ### AI & Media Services
 - **Amazon Bedrock Nova Lite** for story generation
 - **Amazon Nova Canvas** for image generation
-- **Amazon Nova Reel** for video generation
+
 - **Amazon S3** for media storage and static hosting
 - **Amazon CloudFront** for global content delivery
 
@@ -98,14 +98,14 @@ The application follows a fully serverless architecture pattern:
 - **Story Generation**: Creates Mad Libs templates using Bedrock Nova Lite
 - **Story Fill**: Fills templates with player words and generates final stories
 - **Image Generation**: Creates images using Amazon Nova Canvas
-- **Video Generation**: Produces videos using Amazon Nova Reel
+
 - **Test AWS**: Validates AWS service connectivity
 
 ### AI Services
 - **Amazon Bedrock**: Foundation models for text and media generation
 - **Nova Lite**: Fast text generation for stories and prompts
 - **Nova Canvas**: High-quality image generation from text descriptions
-- **Nova Reel**: Video generation combining images and text
+
 
 ## Getting Started
 
@@ -214,7 +214,6 @@ The serverless API provides the following endpoints:
 - `POST /api/story/generate-template` - Generate a new Mad Libs template using Bedrock Nova Lite
 - `POST /api/story/fill-template` - Fill template with player words and create complete story
 - `POST /api/image/generate` - Generate images for story paragraphs using Nova Canvas
-- `POST /api/video/generate` - Create shareable video content using Nova Reel
 - `GET /api/test-aws` - Test AWS service connectivity and Bedrock access
 
 **Live API Base URL:** Available after deployment (see CDK outputs for URL)
@@ -227,8 +226,7 @@ The serverless API provides the following endpoints:
 4. **Word Collection**: Players take turns providing words for each blank (noun, verb, adjective, etc.)
 5. **Story Completion**: AI fills the template with player words, highlighting each player's contributions
 6. **Image Generation**: AI creates visual content for each story paragraph using Nova Canvas
-7. **Video Creation**: Combine story, images, and player credits into a shareable video using Nova Reel
-8. **Sharing**: Download or share the completed story and media with all player contributions highlighted
+7. **Sharing**: Download or share the completed story and images with all player contributions highlighted
 
 ## Development
 
