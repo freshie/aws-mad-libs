@@ -13,9 +13,9 @@ const nextConfig = {
     ],
     unoptimized: true, // Required for static export
   },
-  output: 'export', // Enable static export
-  trailingSlash: true, // Add trailing slashes for S3 compatibility
-  distDir: 'out', // Output directory for static files
+  // output: 'export', // Enable static export - temporarily disabled for debugging
+  // trailingSlash: true, // Add trailing slashes for S3 compatibility
+  // distDir: 'out', // Output directory for static files
   
 
   
